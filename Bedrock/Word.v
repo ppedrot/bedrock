@@ -3,6 +3,7 @@
 Require Import Coq.Arith.Arith Coq.Arith.Div2 Coq.NArith.NArith Coq.Bool.Bool Coq.omega.Omega.
 Require Import Bedrock.Nomega.
 
+Global Set Asymmetric Patterns.
 Set Implicit Arguments.
 
 
