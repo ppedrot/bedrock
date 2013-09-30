@@ -5,6 +5,8 @@ Require Import Decidables.
 Set Implicit Arguments.
 Set Strict Implicit.
 
+Global Set Asymmetric Patterns.
+
 Section fin.
   Variable A : Type.
   

@@ -3,6 +3,7 @@
 Require Import Arith Div2 NArith Bool Omega.
 Require Import Nomega.
 
+Global Set Asymmetric Patterns.
 Set Implicit Arguments.
 
 

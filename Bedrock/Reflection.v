@@ -1,6 +1,8 @@
 Require Import Omega.
 Require Setoid.
 
+Global Set Asymmetric Patterns.
+
 (** This file defines some inductives, type-classes and tactics to
 perform reflection on a small scale *)
 

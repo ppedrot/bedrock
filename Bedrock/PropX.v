@@ -3,7 +3,7 @@
 Require Import List.
 
 Set Implicit Arguments.
-
+Global Set Asymmetric Patterns.
 
 Section machine.
   Variables pc state : Type.
