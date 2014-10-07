@@ -3,7 +3,8 @@ Require Import OrderedType FMapAVL.
 Require Import List.
 Require Import Setoid RelationClasses.
 Require Import Reflection.
-Require Import NPeano.
+Require PeanoNat.
+Import PeanoNat.Nat.
 
 Set Implict Arguments.
 Set Strict Implicit.

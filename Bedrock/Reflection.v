@@ -92,22 +92,22 @@ Section reflect_peano.
     apply EqNat.beq_nat_true_iff.
   Qed.
 
-  Global Instance Reflect_leb_nat x y : Reflect (NPeano.leb x y) (x <= y) (y < x).
+  Global Instance Reflect_leb_nat x y : Reflect (PeanoNat.Nat.leb x y) (x <= y) (y < x).
   Proof.
-    intros. case_eq (NPeano.leb x y); intros; constructor.
-    apply NPeano.leb_le in H; auto.
+    intros. case_eq (PeanoNat.Nat.leb x y); intros; constructor.
+    apply PeanoNat.Nat.leb_le in H; auto.
     destruct (Compare_dec.le_lt_dec x y); auto.
     exfalso.
-    apply NPeano.leb_le in l; auto. congruence.
+    apply PeanoNat.Nat.leb_le in l; auto. congruence.
   Qed.
 
-  Global Instance Reflect_ltb_nat x y : Reflect (NPeano.ltb x y) (x < y) (y <= x).
+  Global Instance Reflect_ltb_nat x y : Reflect (PeanoNat.Nat.ltb x y) (x < y) (y <= x).
   Proof.
-    intros. case_eq (NPeano.ltb x y); intros; constructor.
-    apply NPeano.ltb_lt in H; auto.
+    intros. case_eq (PeanoNat.Nat.ltb x y); intros; constructor.
+    apply PeanoNat.Nat.ltb_lt in H; auto.
     destruct (Compare_dec.le_lt_dec y x); auto.
     exfalso.
-    apply NPeano.ltb_lt in l; auto. congruence.
+    apply PeanoNat.Nat.ltb_lt in l; auto. congruence.
   Qed.
 End reflect_peano.
 
@@ -152,7 +152,8 @@ Ltac consider f :=
 
 (**  Some tests *)
 Section test.
-  Require Import NPeano Bool.
+  Require Import PeanoNat Bool.
+  Import Nat.
 
   Require Import Omega.
   Goal forall x y z,  (ltb x y && ltb y z) = true ->
@@ -196,26 +197,3 @@ Ltac t L :=
            | H : false = true |- _ => clear - H; discriminate
          end.
 *)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

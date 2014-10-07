@@ -608,7 +608,7 @@ Module Make (Import E : ADT).
 
     Require Import GetLocalVars.
     Require Import GetLocalVarsFacts.
-    Import NPeano.Nat.
+    Import PeanoNat.Nat.
 
     Lemma PreserveGoodSize_opt : PreserveGoodSize opt.
       unfold PreserveGoodSize, opt; intros.
