@@ -123,7 +123,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         match e with
           | Expr.Const _ _ => e
           | Var v =>
-            if NPeano.ltb v G' then (if U_or_G then UVar (v + U) else Var (v + G))
+            if PeanoNat.Nat.ltb v G' then (if U_or_G then UVar (v + U) else Var (v + G))
             else let idx := U + v - G' in
                  match U.Subst_lookup idx sub with
                    | None => UVar idx (** contradiction **)
@@ -528,7 +528,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
                      clear - H ; abstract (exfalso ; destruct X ; simpl in *; unfold error in *; congruence)
                    | [ |- match ?X with _ => _ end = match ?X with _ => _ end ] =>
                      consider X; intros; try reflexivity
-                   | [ |- context [ NPeano.ltb ?X ?Y ] ] => consider (NPeano.ltb X Y); intros
+                   | [ |- context [ PeanoNat.Nat.ltb ?X ?Y ] ] => consider (PeanoNat.Nat.ltb X Y); intros
                  end; think); auto.
         { rewrite EquivDec_refl_left. destruct U_or_G; simpl; unfold lookupAs; simpl;
           rewrite nth_error_app_R by omega. cutrewrite (x + length U - length U = x); [ | omega ].
@@ -605,7 +605,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
                      clear - H ; abstract (exfalso ; destruct X ; simpl in *; unfold error in *; congruence)
                    | [ |- match ?X with _ => _ end = match ?X with _ => _ end ] =>
                      consider X; intros; try reflexivity
-                   | [ |- context [ NPeano.ltb ?X ?Y ] ] => consider (NPeano.ltb X Y); intros
+                   | [ |- context [ PeanoNat.Nat.ltb ?X ?Y ] ] => consider (PeanoNat.Nat.ltb X Y); intros
                  end; think); auto.
         { destruct U_or_G; simpl; rewrite nth_error_app_R by omega.
           cutrewrite (x + length U - length U = x); [ | omega ]. rewrite H. rewrite tvar_seqb_refl; auto.

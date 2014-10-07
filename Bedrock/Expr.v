@@ -823,9 +823,9 @@ Section env.
       match e with
         | Const _ _ => e
         | Var x =>
-          Var (if NPeano.ltb x a then x else b + x)
+          Var (if PeanoNat.Nat.ltb x a then x else b + x)
         | UVar x =>
-          UVar (if NPeano.ltb x ua then x else ub + x)
+          UVar (if PeanoNat.Nat.ltb x ua then x else ub + x)
         | Func f xs =>
           Func f (map liftExpr xs)
         | Equal t e1 e2 => Equal t (liftExpr e1) (liftExpr e2)
@@ -859,13 +859,13 @@ Section env.
     match s with
       | Const _ t => Const _ t
       | Var x =>
-        if NPeano.ltb x a
+        if PeanoNat.Nat.ltb x a
         then Var x
-        else if NPeano.ltb x b
+        else if PeanoNat.Nat.ltb x b
              then UVar (c + x - a)
              else Var (x + a - b)
       | UVar x =>
-        if NPeano.ltb x c
+        if PeanoNat.Nat.ltb x c
         then UVar x
         else UVar (x + b - a)
       | Func f args => Func f (map (exprSubstU a b c) args)
@@ -909,9 +909,9 @@ Section env.
     is_well_typed tf (tu ++ tg') (tg ++ tg'') (exprSubstU (length tg) (length tg' + length tg) (length tu) s) t.
   Proof.
     induction s; simpl; intros; think; auto.
-    { consider (NPeano.ltb x (length tg)); intros; simpl.
+    { consider (PeanoNat.Nat.ltb x (length tg)); intros; simpl.
       repeat rewrite nth_error_app_L in * by omega. reflexivity.
-      consider (NPeano.ltb x (length tg' + length tg)); simpl; intros.
+      consider (PeanoNat.Nat.ltb x (length tg' + length tg)); simpl; intros.
       repeat rewrite nth_error_app_R in * by omega.
       repeat rewrite nth_error_app_L in * by omega.
       repeat rewrite nth_error_app_R in * by omega.
@@ -919,7 +919,7 @@ Section env.
       repeat (rewrite nth_error_app_R in * by omega).
       cutrewrite (x + length tg - (length tg' + length tg) - length tg = x - length tg - length tg'); [ | omega ].
       reflexivity. }
-    { consider (NPeano.ltb x (length tu)); intros; simpl.
+    { consider (PeanoNat.Nat.ltb x (length tu)); intros; simpl.
       rewrite nth_error_app_L in * by omega. reflexivity.
       rewrite nth_error_app_R in * by omega.
       repeat rewrite nth_error_past_end by omega. auto. }
@@ -1092,9 +1092,9 @@ Lemma exprSubstU_exprD : forall ts tf tu tg tg' tg'' s t,
   exprD tf (tu ++ tg') (tg ++ tg'') (exprSubstU (length tg) (length tg' + length tg) (length tu) s) t.
 Proof.
   induction s; simpl; intros; think; auto.
-  { consider (NPeano.ltb x (length tg)); intros; simpl; unfold lookupAs in *; simpl.
+  { consider (PeanoNat.Nat.ltb x (length tg)); intros; simpl; unfold lookupAs in *; simpl.
     repeat rewrite nth_error_app_L in * by omega. reflexivity.
-    consider (NPeano.ltb x (length tg' + length tg)); simpl; unfold lookupAs in *; intros.
+    consider (PeanoNat.Nat.ltb x (length tg' + length tg)); simpl; unfold lookupAs in *; intros.
     repeat rewrite nth_error_app_R in * by omega.
     repeat rewrite nth_error_app_L in * by omega.
     repeat rewrite nth_error_app_R in * by omega.
@@ -1102,7 +1102,7 @@ Proof.
     repeat (rewrite nth_error_app_R in * by omega).
     cutrewrite (x + length tg - (length tg' + length tg) - length tg = x - length tg - length tg'); [ | omega ].
     reflexivity. }
-  { consider (NPeano.ltb x (length tu)); intros; simpl; unfold lookupAs.
+  { consider (PeanoNat.Nat.ltb x (length tu)); intros; simpl; unfold lookupAs.
     rewrite nth_error_app_L in * by omega. reflexivity.
     rewrite nth_error_app_R in * by omega.
     repeat rewrite nth_error_past_end by omega. reflexivity. }
@@ -1170,8 +1170,8 @@ Lemma liftExpr_ext : forall types (funcs : functions types) U U' U'' G G' G'' e 
 Proof.
   clear. induction e; simpl; intros; unfold lookupAs; think; try reflexivity;
     repeat match goal with
-             | [ |- context [ NPeano.ltb ?X ?Y ] ] =>
-               consider (NPeano.ltb X Y); intros
+             | [ |- context [ PeanoNat.Nat.ltb ?X ?Y ] ] =>
+               consider (PeanoNat.Nat.ltb X Y); intros
              | [ |- _ ] => rewrite nth_error_app_L by omega
              | [ |- _ ] => rewrite nth_error_app_R by omega
              | [ |- match nth_error _ ?X with _ => _ end = match nth_error _ ?Y with _ => _ end ] =>

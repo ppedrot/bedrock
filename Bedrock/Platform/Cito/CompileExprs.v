@@ -291,7 +291,7 @@ Section TopLevel.
     omega.
     Focus 2.
     destruct H1.
-    destruct (NPeano.Nat.max_spec (length x) (length x3)); intuition.
+    destruct (PeanoNat.Nat.max_spec (length x) (length x3)); intuition.
     inversion_clear H16.
     omega.
     unfold is_state in *.
