@@ -208,9 +208,9 @@ Lemma wordToNat_wminus : forall n m:W, n <= m ->
   unfold wminus.
   rewrite wneg_natToW_pow2_minus; auto.
   rewrite <- natToWord_plus.
-  rewrite NPeano.Nat.add_sub_assoc.
+  rewrite PeanoNat.Nat.add_sub_assoc.
   rewrite plus_comm.
-  rewrite <- NPeano.Nat.add_sub_assoc.
+  rewrite <- PeanoNat.Nat.add_sub_assoc.
   rewrite H0.
   autorewrite with N.
   reflexivity.

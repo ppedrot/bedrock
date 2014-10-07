@@ -981,7 +981,7 @@ Module Make (Import E : ADT).
       unfold optimizer, constant_folding; intros; eapply const_folding_depth.
     Qed.
 
-    Import NPeano.Nat.
+    Import PeanoNat.Nat.
     Require Import Bedrock.Platform.Cito.GetLocalVars.
     Require Import Bedrock.Platform.Cito.GetLocalVarsFacts.
 

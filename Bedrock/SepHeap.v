@@ -1188,7 +1188,7 @@ Module Make (SE : SepExpr) <: SepHeap with Module SE := SE.
     Proof.
       clear. induction e; simpl; intros;
       repeat match goal with
-               | [ |- context [ NPeano.ltb ?a ?b ] ] => consider (NPeano.ltb a b) ; intros
+               | [ |- context [ PeanoNat.Nat.ltb ?a ?b ] ] => consider (PeanoNat.Nat.ltb a b) ; intros
                | [ |- _ ] => rewrite nth_error_app_L by omega
                | [ |- _ ] => rewrite nth_error_app_R by omega
              end; think; auto.

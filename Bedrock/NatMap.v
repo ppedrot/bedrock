@@ -3,7 +3,8 @@ Require Import Coq.Structures.OrderedType Coq.FSets.FMapAVL.
 Require Import Coq.Lists.List.
 Require Import Coq.Setoids.Setoid Coq.Classes.RelationClasses.
 Require Import Bedrock.Reflection.
-Require Import Coq.Numbers.Natural.Peano.NPeano.
+Require Coq.Arith.PeanoNat.
+Import PeanoNat.Nat.
 
 Set Implict Arguments.
 Set Strict Implicit.
