@@ -529,6 +529,7 @@ Section env.
               (eapply WellTyped_env_nth_error_Some in H; [ | eassumption ]) ||
               (eapply WellTyped_env_nth_error_None in H; [ | eassumption ])
             | [ |- context[ equiv_dec ?A ?A ] ] => rewrite (EquivDec_refl_left A)
+            | [ H : _ = _ |- _ ] => rewrite H in *
             | [ H : context [ match ?X with
                                 | left _ => _ | right _ => _
                               end ] |- _ ] => destruct X; [ | solve [ exfalso; auto ] ]
@@ -537,14 +538,12 @@ Section env.
                               end ] |- _ ] => destruct X; [ | solve [ exfalso; auto ] ]
             | [ H : match ?pf with refl_equal => _ end = _ |- _ ] => rewrite (UIP_refl pf) in H
             | [ H : exists x, _ |- _ ] => destruct H
-            | [ H : _ = _ |- _ ] => rewrite H in *
             | [ H : Some _ = Some _ |- _ ] => inversion H; clear H; subst
           end).
 
       eapply Forall2_nth_error_both_Some in WT_funcs; eauto. destruct WT_funcs. destruct (equiv_dec (Range s) (TRange t0)); try congruence.
       unfold equiv in *. subst. destruct s; simpl in *. subst. revert H. rewrite (UIP_refl e0).
       induction 1; simpl; destruct TDomain; auto; try congruence.
-
 
       eapply Forall2_nth_error_L_None in WT_funcs; try eassumption.
       rewrite WT_funcs in *. congruence.

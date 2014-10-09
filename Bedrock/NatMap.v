@@ -11,7 +11,7 @@ Set Strict Implicit.
 
 Module Ordered_nat <: OrderedType with Definition t := nat.
   Definition t := nat.
-  Definition eq := @eq nat.
+  Definition eq := @eq.
   Definition lt := @lt.
 
   Theorem eq_refl : forall x, eq x x.
@@ -27,11 +27,11 @@ Module Ordered_nat <: OrderedType with Definition t := nat.
   Qed.
 
   Theorem lt_trans : forall a b c, lt a b -> lt b c -> lt a c.
-    intros. unfold lt in *. omega.
+    intros. unfold lt, Nat.lt in *. omega.
   Qed.
 
   Theorem lt_not_eq : forall a b, lt a b -> ~(eq a b).
-    unfold eq, lt. intros; omega.
+    unfold eq, Nat.eq, lt, Nat.lt. intros; omega.
   Qed.
 
   Definition compare (x y : t) : OrderedType.Compare lt eq x y :=
@@ -217,7 +217,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
 
       unfold PROPS.Add in *; intros.
       specialize (H1 y). repeat (rewrite FACTS.add_o || rewrite FACTS.map_o || rewrite H1).
-      unfold FACTS.option_map.
+      unfold option_map.
       destruct (FM.E.eq_dec x y); auto.
 
       repeat (red; intros; subst). rewrite H3. rewrite H2. reflexivity.
@@ -261,7 +261,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
     Hypothesis G_trans: PROPS.transpose_neqkey equ G.
     Hypothesis G_respect: Morphisms.Proper
       (Morphisms.respectful FM.E.eq
-        (Morphisms.respectful eq (Morphisms.respectful equ equ))) G.
+        (Morphisms.respectful (@Logic.eq U) (Morphisms.respectful equ equ))) G.
 
     Local Hint Resolve G_trans G_respect equ_Equiv.
     Local Hint Extern 1 (Morphisms.Proper _ _) =>
@@ -399,7 +399,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
       intros. unfold PROPS.Add in *.
       destruct H. generalize (H1 k). intros.
       rewrite FACTS.add_o in *. destruct (FM.E.eq_dec k k); try solve [ exfalso; auto ].
-      case_eq (FM.find k n'); intros. exists (FM.remove k n'). exists t.
+      case_eq (FM.find k n'); intros. exists (FM.remove k n'). exists t0.
       { intuition.
         rewrite FACTS.add_o. rewrite FACTS.remove_o. destruct (FM.E.eq_dec k y); auto.
         rewrite <- e0; eauto.
