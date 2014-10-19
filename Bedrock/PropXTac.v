@@ -302,7 +302,7 @@ Section machine.
       assumption.
       auto.
       apply IHp; apply simplify_fwd_ForallX; auto.
-      apply simplify_fwd_ExistsX in H; firstorder.
+      apply simplify_fwd_ExistsX in H. destruct H; eexists. apply IHp; eassumption.
     Qed.
 
     Lemma simplify_fwd : forall p,
