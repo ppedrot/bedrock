@@ -124,12 +124,14 @@ Section OpSem.
   Lemma preserve : forall (ls : list (LabelMap.key * assert)) Q,
     fold_left (fun P p => labelSys (fst p) (snd p) /\ P) ls Q
     -> Q.
+  Proof using .
     induction ls; simpl in *; intuition.
     apply IHls in H; tauto.
   Qed.
 
   Theorem impSys' : forall l pre, LabelMap.MapsTo l pre (Imports m)
     -> labelSys l pre.
+  Proof using impSys.
     rewrite LabelMap.fold_1 in impSys; intros.
     apply LabelMap.elements_1 in H.
     generalize dependent True.
@@ -166,7 +168,7 @@ Section OpSem.
   Lemma unsplit_smem_get' : forall a v ls m m',
     smem_get' ls a m = Some v
     -> smem_get' ls a (join' ls m m') = Some v.
-  Proof.
+  Proof using .
     induction ls; simpl; intuition.
     destruct (H.addr_dec a0 a); subst.
     rewrite H; auto.
@@ -177,18 +179,20 @@ Section OpSem.
     smem_get a m = Some v
     -> split m0 m m1
       -> smem_get a m0 = Some v.
-  Proof.
+  Proof using .
     unfold split; intuition subst; apply unsplit_smem_get'; auto.
   Qed.
 
   Lemma comeOnOut : forall P Q R,
     P * Q * R ===> Q * (P * R).
+  Proof using .
     clear; sepLemma.
   Qed.
 
   Lemma locals_mapped' : forall specs stn st vs ns sp P,
     interp specs (![array (toArray ns vs) sp * P] (stn, st))
     -> mapped sp (length ns * 4) (Mem st).
+  Proof using .
     induction ns; simpl; intuition; hnf; intuition.
     unfold array in H.
     assert (interp specs (![ptsto32m' nil sp 0 (vs a :: toArray ns vs) * P] (stn0, st))).
@@ -268,6 +272,7 @@ Section OpSem.
     interp specs (array8 bs p stn m)
     -> forall n, (n < length bs)%nat
       -> smem_get (p ^+ $ (n)) m <> None.
+  Proof using .
     induction bs; simpl; post.
     intuition.
     destruct n.
@@ -286,6 +291,7 @@ Section OpSem.
   Lemma bytes_mapped : forall specs p sz stn st P,
     interp specs (![p =?>8 sz * P] (stn, st))
     -> mapped p sz (Mem st).
+  Proof using .
     unfold buffer; rewrite sepFormula_eq; post.
     hnf; intros.
     eapply split_comm in H1; eapply split_semp in H1; eauto; subst.
@@ -302,6 +308,7 @@ Section OpSem.
       -> Regs st' Rv = v)
     -> Mem st = m
     -> ReadWord stn m p = Some v.
+  Proof using .
     intros.
     match goal with
       | [ H : (?X <> None)%type |- _ ] => case_eq X; intros; try tauto
@@ -318,6 +325,7 @@ Section OpSem.
   Lemma evalInstrs_slot : forall stn st n,
     evalInstrs stn st (Assign Rv (LvMem (Imm (Regs st Sp ^+ $ (n)))) :: nil)
     = evalInstrs stn st (Assign Rv (LvMem (Sp + $ (n))%loc) :: nil).
+  Proof using .
     auto.
   Qed.
 
@@ -328,6 +336,7 @@ Section OpSem.
     -> exists l, Labels stn l = Some w
       /\ (LabelMap.MapsTo l pre (Imports m)
         \/ exists bl, LabelMap.MapsTo l (pre, bl) (Blocks m)).
+  Proof using Type.
     intros.
     apply specs_hit in H; post; eauto.
     apply specs'_hit in H0; post; eauto.
@@ -335,12 +344,14 @@ Section OpSem.
 
   Lemma smem_get'_emp : forall p ls,
     smem_get' ls p (smem_emp' ls) = None.
+  Proof using .
     induction ls; simpl; intuition.
     destruct (H.addr_dec a p); auto.
   Qed.
 
   Lemma smem_get_emp : forall p,
     smem_get p smem_emp = None.
+  Proof using .
     intros; apply smem_get'_emp.
   Qed.
 
@@ -348,6 +359,7 @@ Section OpSem.
     smem_get' ls p m1 = None
     -> smem_get' ls p m2 = None
     -> smem_get' ls p (join' ls m1 m2) = None.
+  Proof using .
     clear; induction ls; simpl; intuition.
     destruct (H.addr_dec a p); subst; intuition.
     rewrite H; auto.
@@ -358,6 +370,7 @@ Section OpSem.
     -> smem_get p m <> None
     -> smem_get p m1 = None
     -> smem_get p m2 <> None.
+  Proof using .
     destruct 1; intuition subst.
     unfold smem_get, join in H1.
     rewrite must_be' in H1; eauto.
@@ -369,6 +382,7 @@ Section OpSem.
       -> smem_get p m' = smem_get p m)
     -> (forall p, smem_get p m <> None ->
       exists n, (n < length bs)%nat /\ p = base ^+ $ (n)).
+  Proof using .
     clear; induction bs; simpl; propxFo.
 
     hnf in H3; subst.
@@ -396,6 +410,7 @@ Section OpSem.
     smem_get p m = None
     -> split m m1 m2
     -> smem_get p m2 = None.
+  Proof using .
     intros; case_eq (smem_get p m2); intros; auto.
     eapply split_smem_get in H0; eauto.
     congruence.
@@ -404,6 +419,7 @@ Section OpSem.
   Lemma split'_None' : forall p ls m1 m2,
     smem_get' ls p m1 = None
     -> smem_get' ls p m2 = smem_get' ls p (join' ls m1 m2).
+  Proof using .
     induction ls; simpl; intuition.
     destruct (H.addr_dec a p); subst; intuition.
     rewrite H; auto.
@@ -413,6 +429,7 @@ Section OpSem.
     split m m1 m2
     -> smem_get p m1 = None
     -> smem_get p m2 = smem_get p m.
+  Proof using .
     destruct 1; subst; apply split'_None'.
   Qed.
 
@@ -420,6 +437,7 @@ Section OpSem.
     interp specs (array8 bs base stn m)
     -> (forall n, (n < length bs)%nat
       -> smem_get (base ^+ $ (n)) m <> None).
+  Proof using .
     induction bs; simpl; propxFo.
 
     intuition.
@@ -443,6 +461,7 @@ Section OpSem.
     -> forall m,
       (forall p, In p ls -> smem_get' ls p m = None)
       -> m = smem_emp' ls.
+  Proof using .
     clear; induction 1; simpl; intuition.
     rewrite (hlist_nil_only _ m); auto.
     rewrite (hlist_eta _ m); f_equal.
@@ -454,6 +473,7 @@ Section OpSem.
   Lemma semp_eta : forall m,
     (forall p, smem_get p m = None)
     -> semp m.
+  Proof using .
     intros; apply semp_eta'; auto.
     apply H.NoDup_all_addr.
   Qed.
@@ -461,6 +481,7 @@ Section OpSem.
   Lemma get_clear_ne' : forall a a' ls (sm : smem' ls),
     a <> a'
     -> smem_get' ls a (smem_clear _ sm a') = smem_get' ls a sm.
+  Proof using .
     induction sm; simpl; intuition.
     destruct (H.addr_dec x a); auto.
     destruct (H.addr_dec a' x); congruence.
@@ -469,11 +490,13 @@ Section OpSem.
   Lemma get_clear_ne : forall a a' sm,
     a <> a'
     -> smem_get a (smem_clear _ sm a') = smem_get a sm.
+  Proof using .
     intros; apply get_clear_ne'; auto.
   Qed.
 
   Lemma get_clear_eq' : forall a ls (sm : smem' ls),
     smem_get' ls a (smem_clear _ sm a) = None.
+  Proof using .
     induction sm; simpl; intuition.
     destruct (H.addr_dec x a); auto.
     destruct (H.addr_dec a x); congruence.
@@ -481,6 +504,7 @@ Section OpSem.
 
   Lemma get_clear_eq : forall a sm,
     smem_get a (smem_clear _ sm a) = None.
+  Proof using .
     intros; apply get_clear_eq'.
   Qed.
 
@@ -490,6 +514,7 @@ Section OpSem.
   Lemma get_put_eq' : forall a v ls (sm : smem' ls),
     In a ls
     -> smem_get' ls a (smem_put _ sm a v) = Some v.
+  Proof using .
     induction sm; simpl; intuition.
     subst.
     destruct (H.addr_dec a a); intuition idtac.
@@ -502,6 +527,7 @@ Section OpSem.
     (wordToNat w < init)%nat
     -> (init <= pow2 width)%nat
     -> In w (allWordsUpto width init).
+  Proof using .
     induction init; simpl; intuition.
     destruct (weq w $ (init)); subst; auto; right.
     assert (wordToNat w <> init).
@@ -513,6 +539,7 @@ Section OpSem.
 
   Lemma allWords_universal : forall sz w,
     In w (allWords sz).
+  Proof using .
     rewrite allWords_eq; intros; apply allWordsUpto_universal.
     apply wordToNat_bound.
     auto.
@@ -520,6 +547,7 @@ Section OpSem.
 
   Lemma get_put_eq : forall a v sm,
     smem_get a (smem_put _ sm a v) = Some v.
+  Proof using .
     intros; apply get_put_eq'.
     apply allWords_universal.
   Qed.
@@ -527,6 +555,7 @@ Section OpSem.
   Lemma get_put_ne' : forall a a' v ls (sm : smem' ls),
     a <> a'
     -> smem_get' ls a (smem_put _ sm a' v) = smem_get' ls a sm.
+  Proof using .
     induction sm; simpl; intuition.
     destruct (H.addr_dec a' x); intuition idtac.
     destruct (H.addr_dec x a); intuition idtac.
@@ -537,6 +566,7 @@ Section OpSem.
   Lemma get_put_ne : forall a a' v sm,
     a <> a'
     -> smem_get a (smem_put _ sm a' v) = smem_get a sm.
+  Proof using .
     intros; apply get_put_ne'; auto.
   Qed.
 
@@ -546,6 +576,7 @@ Section OpSem.
   Lemma join_None' : forall a ls sm1 sm2,
     smem_get' ls a sm1 = None
     -> smem_get' ls a (join' ls sm1 sm2) = smem_get' ls a sm2.
+  Proof using .
     induction sm1; simpl; intuition.
     destruct (H.addr_dec x a); subst; auto.
   Qed.
@@ -553,12 +584,14 @@ Section OpSem.
   Lemma join_None : forall a sm1 sm2,
     smem_get a sm1 = None
     -> smem_get a (join sm1 sm2) = smem_get a sm2.
+  Proof using .
     intros; apply join_None'; auto.
   Qed.
 
   Lemma join_Some' : forall a v ls sm1 sm2,
     smem_get' ls a sm1 = Some v
     -> smem_get' ls a (join' ls sm1 sm2) = Some v.
+  Proof using .
     induction sm1; simpl; intuition.
     destruct (H.addr_dec x a); subst; auto.
   Qed.
@@ -566,6 +599,7 @@ Section OpSem.
   Lemma join_Some : forall a v sm1 sm2,
     smem_get a sm1 = Some v
     -> smem_get a (join sm1 sm2) = Some v.
+  Proof using .
     intros; apply join_Some'; auto.
   Qed.
 
@@ -573,6 +607,7 @@ Section OpSem.
     NoDup ls
     -> List.Forall (fun w => smem_get' ls w sm1 <> None -> smem_get' ls w sm2 <> None -> False) ls
     -> disjoint' ls sm1 sm2.
+  Proof using .
     induction sm1; simpl; intuition; rewrite (hlist_eta _ sm2) in *; simpl in *.
     inversion H; clear H; subst.
     inversion H0; clear H0; subst.
@@ -591,6 +626,7 @@ Section OpSem.
   Lemma disjoint_get : forall sm1 sm2,
     (forall w, smem_get w sm1 <> None -> smem_get w sm2 <> None -> False)
     -> disjoint sm1 sm2.
+  Proof using .
     intros; apply disjoint_get'.
     apply BedrockHeap.NoDup_all_addr.
     apply Forall_forall; intros.
@@ -601,6 +637,7 @@ Section OpSem.
     disjoint' ls sm1 sm2
     -> NoDup ls
     -> List.Forall (fun w => smem_get' ls w sm1 <> None -> smem_get' ls w sm2 <> None -> False) ls.
+  Proof using .
     induction sm1; simpl; intuition; rewrite (hlist_eta _ sm2) in *; simpl in *;
       subst; constructor; simpl.
     destruct (H.addr_dec x x); tauto.
@@ -622,6 +659,7 @@ Section OpSem.
   Lemma disjoint_get_fwd : forall sm1 sm2,
     disjoint sm1 sm2
     -> (forall w, smem_get w sm1 <> None -> smem_get w sm2 <> None -> False).
+  Proof using .
     intros; eapply disjoint_get_fwd' in H; try apply BedrockHeap.NoDup_all_addr.
     assert (In w H.all_addr) by apply allWords_universal.
     generalize (proj1 (Forall_forall _ _) H _ H2); tauto.
@@ -631,6 +669,7 @@ Section OpSem.
     NoDup ls
     -> List.Forall (fun w => smem_get' ls w sm = smem_get' ls w sm') ls
     -> sm = sm'.
+  Proof using .
     induction sm; simpl; intuition.
     rewrite hlist_nil; auto.
     inversion H0; clear H0; subst.
@@ -647,6 +686,7 @@ Section OpSem.
     split sm sm1 sm2
     -> smem_get a sm2 = Some v
     -> split sm (smem_put _ sm1 a v) (smem_clear _ sm2 a).
+  Proof using .
     unfold split; intuition subst.
     apply disjoint_get; intros.
     destruct (weq w a); subst.
@@ -689,6 +729,7 @@ Section OpSem.
     -> (forall p, smem_get p m <> None ->
       exists n, (n < sz)%nat /\ p = base ^+ $ (n))
     -> exists bs, length bs = sz /\ interp specs (array8 bs base stn m).
+  Proof using .
     clear; induction sz; simpl; intuition.
 
     exists nil; simpl; propxFo.
@@ -765,6 +806,7 @@ Section OpSem.
         -> smem_get' ls p m2 = Some v2
         -> False)
       -> disjoint' ls m1 m2.
+  Proof using .
     induction 1; simpl; intuition auto 1.
     specialize (H1 x); destruct (H.addr_dec x x); try tauto.
     destruct (hlist_hd m1); auto; destruct (hlist_hd m2); auto.
@@ -781,6 +823,7 @@ Section OpSem.
       -> smem_get p m2 = Some v2
       -> False)
     -> disjoint m1 m2.
+  Proof using .
     intros; apply disjoint_eta'.
     apply H.NoDup_all_addr.
     eauto.
@@ -791,6 +834,7 @@ Section OpSem.
     -> smem_get p0 m = Some v \/ (exists n, p0 = p ^+ $ (n)
       /\ (n < sz)%nat
       /\ smem_get p0 m' = Some v).
+  Proof using .
     clear; induction sz; simpl; intuition auto 1.
     case_eq (smem_get p m'); intros;
       match goal with
@@ -813,6 +857,7 @@ Section OpSem.
     disjoint' ls m1 m2
     -> smem_get' ls p m2 = Some v
     -> smem_get' ls p m1 = None.
+  Proof using .
     clear; induction ls; simpl; intuition.
 
     destruct (H.addr_dec a p); eauto.
@@ -824,6 +869,7 @@ Section OpSem.
     disjoint m1 m2
     -> smem_get p m2 = Some v
     -> smem_get p m1 = None.
+  Proof using .
     intros; eapply disjoint_not_both'; eauto.
   Qed.
 
@@ -831,6 +877,7 @@ Section OpSem.
     -> forall m1 m2,
       (forall p, In p ls -> smem_get' ls p m1 = smem_get' ls p m2)
       -> m1 = m2.
+  Proof using .
     clear; induction 1; simpl; intuition.
     rewrite (hlist_nil_only _ m1); rewrite (hlist_nil_only _ m2); auto.
     rewrite (hlist_eta _ m1); rewrite (hlist_eta _ m2).
@@ -846,6 +893,7 @@ Section OpSem.
   Lemma smem_canon : forall m1 m2,
     (forall p, smem_get p m1 = smem_get p m2)
     -> m1 = m2.
+  Proof using .
     intros; apply smem_canon'.
     apply H.NoDup_all_addr.
     auto.
@@ -868,6 +916,7 @@ Section OpSem.
       (forall p v, In p ls
         -> smem_get' ls p m' = Some v -> smem_get' ls p m = Some v)
       -> disjoint' ls (smem_minus' _ m m') m'.
+  Proof using .
     clear; induction 1; simpl; intuition.
     specialize (H1 x).
     destruct (H.addr_dec x x); try tauto.
@@ -880,6 +929,7 @@ Section OpSem.
   Lemma disjoint_minus : forall m m',
     (forall p v, smem_get p m' = Some v -> smem_get p m = Some v)
     -> disjoint (smem_minus' _ m m') m'.
+  Proof using .
     intros; apply disjoint_minus'; auto.
     apply H.NoDup_all_addr.
   Qed.
@@ -889,6 +939,7 @@ Section OpSem.
       (forall p v, In p ls
         -> smem_get' ls p m' = Some v -> smem_get' ls p m = Some v)
       -> m = join' ls (smem_minus' _ m m') m'.
+  Proof using .
     clear; induction 1; simpl; intuition.
     rewrite (hlist_nil_only _ m); auto.
     rewrite (hlist_eta _ m); simpl; f_equal.
@@ -905,6 +956,7 @@ Section OpSem.
   Lemma join_minus : forall m m',
     (forall p v, smem_get p m' = Some v -> smem_get p m = Some v)
     -> m = join (smem_minus' _ m m') m'.
+  Proof using .
     intros; apply join_minus'; auto.
     apply H.NoDup_all_addr.
   Qed.
@@ -912,6 +964,7 @@ Section OpSem.
   Lemma split_minus : forall m m',
     (forall p v, smem_get p m' = Some v -> smem_get p m = Some v)
     -> split m (smem_minus m m') m'.
+  Proof using .
     unfold split; intuition subst; auto using disjoint_minus, join_minus.
   Qed.
 
@@ -921,6 +974,7 @@ Section OpSem.
     -> smem_get' ls p m1 = Some v1
     -> smem_get' ls p m2 = Some v2
     -> False.
+  Proof using .
     induction ls; simpl; intuition subst.
     destruct (H.addr_dec p p); try tauto; congruence.
     destruct (H.addr_dec p p); try tauto; congruence.
@@ -933,6 +987,7 @@ Section OpSem.
     -> smem_get p m1 = Some v1
     -> smem_get p m2 = Some v2
     -> False.
+  Proof using .
     intros; eapply no_overlap'; eauto.
     apply allWords_universal.
   Qed.
@@ -940,6 +995,7 @@ Section OpSem.
   Lemma not_zero : forall sz n,
     (0 < n < pow2 sz)%nat
     -> natToWord sz n <> wzero sz.
+  Proof using .
     intros; intro.
     apply (f_equal (@wordToNat _)) in H0.
     rewrite wordToNat_natToWord_idempotent in H0.
@@ -954,7 +1010,7 @@ Section OpSem.
   Lemma get_minus_out' : forall p ls m1 m2,
     smem_get' ls p m2 = None
     -> smem_get' ls p (smem_minus' _ m1 m2) = smem_get' ls p m1.
-  Proof.
+  Proof using .
     clear; induction ls; simpl; intuition.
     destruct (H.addr_dec a p); intuition.
     rewrite H; auto.
@@ -963,14 +1019,14 @@ Section OpSem.
   Lemma get_minus_out : forall p m1 m2,
     smem_get p m2 = None
     -> smem_get p (smem_minus m1 m2) = smem_get p m1.
-  Proof.
+  Proof using .
     intros; apply get_minus_out'; auto.
   Qed.
 
   Lemma get_minus_in' : forall p ls m1 m2,
     smem_get' ls p m2 <> None
     -> smem_get' ls p (smem_minus' _ m1 m2) = None.
-  Proof.
+  Proof using .
     clear; induction ls; simpl; intuition.
     destruct (H.addr_dec a p); intuition.
     destruct (hlist_hd m2); tauto.
@@ -979,7 +1035,7 @@ Section OpSem.
   Lemma get_minus_in : forall p m1 m2,
     smem_get p m2 <> None
     -> smem_get p (smem_minus m1 m2) = None.
-  Proof.
+  Proof using .
     intros; apply get_minus_in'; auto.
   Qed.
 
@@ -987,6 +1043,7 @@ Section OpSem.
     interp specs (![ p =?>8 sz * P] (stn, st))
     -> onlyChange p sz (Mem st) (Mem st')
     -> interp specs (![ p =?>8 sz * P] (stn, st')).
+  Proof using .
     clear; unfold buffer; rewrite sepFormula_eq.
     intros.
     apply simplify_fwd in H; simpl in *.
@@ -1073,6 +1130,7 @@ Section OpSem.
 
   Lemma onlyChange_refl : forall p len m,
     onlyChange p len m m.
+  Proof using .
     constructor; intuition.
   Qed.
 
@@ -1093,6 +1151,7 @@ Section OpSem.
 
   Lemma progress : forall st, goodState st
     -> exists st', sys_step stn prog st st'.
+  Proof using .
     unfold goodState; post;
       match goal with
         | [ x : label |- _ ] => destruct x
@@ -1163,12 +1222,14 @@ Section OpSem.
 
   Lemma goOnIn : forall P Q R,
     Q * (P * R) ===> P * Q * R.
+  Proof using .
     clear; sepLemma.
   Qed.
 
   Lemma preservation : forall st, goodState st
     -> forall st', sys_step stn prog st st'
       -> goodState st'.
+  Proof using .
     unfold goodState; destruct 2; post;
       try match goal with
             | [ x : label, H : _ |- _ ] =>
@@ -1254,6 +1315,7 @@ Section OpSem.
   Lemma safety' : forall st, goodState st
     -> forall st', sys_reachable stn prog st st'
       -> goodState st'.
+  Proof using Type.
     induction 2; simpl; eauto using preservation.
   Qed.
 
@@ -1261,6 +1323,7 @@ Section OpSem.
     -> Labels stn (mn, Global g) = Some (fst st)
     -> interp (specs0 m stn) (pre (stn, snd st))
     -> sys_safe stn prog st.
+  Proof using .
     unfold sys_safe; intros.
     eapply safety' in H2.
     auto using progress.

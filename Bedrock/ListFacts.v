@@ -3,6 +3,8 @@ Require Import Omega.
 Require Import Tactics.
 Require Import Reflection.
 
+Global Set Suggest Proof Using.
+
 Lemma skipn_length_gt : forall T (ls : list T) n,
   length ls <= n ->
   skipn n ls = nil.

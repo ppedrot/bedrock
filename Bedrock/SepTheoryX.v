@@ -282,7 +282,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma existsEach_perm : forall cs (F : list (@sigT _ typeD) -> _) x x',
         ST.heq cs (existsEach x (fun e => existsEach x' (fun e' => F (e ++ e'))))
                   (existsEach x' (fun e' => existsEach x (fun e => F (e ++ e')))).
-    Proof.
+    Proof using Type.
       intros. eapply ST.heq_defn. split; unfold existsEach;
       revert F; revert x'; induction x; simpl; intros;
         repeat match goal with
@@ -300,7 +300,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma map_eq_app : forall T U (F : T -> U) ls x y,
       map F ls = x ++ y ->
       exists x' y', ls = x' ++ y' /\ map F x' = x /\ map F y' = y.
-    Proof.
+    Proof using .
       clear. induction ls; destruct x; simpl in *; intros; subst; try congruence.
       exists nil; exists nil; simpl; auto.
       exists nil. simpl. eexists; eauto.
@@ -311,7 +311,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma existsEach_app : forall cs x x' (F : list (@sigT _ typeD) -> _) ,
       ST.heq cs (existsEach (x ++ x') F)
                 (existsEach x (fun e => existsEach x' (fun e' => F (e ++ e')))).
-    Proof.
+    Proof using Type.
       intros. eapply ST.heq_defn. split; unfold existsEach;
       revert F; revert x'; induction x; simpl; intros; thinker.
       Focus 2. destruct v; simpl in *; try congruence; reflexivity.
@@ -323,7 +323,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
 
     Lemma existsEach_nil : forall cs (F : list (@sigT _ typeD) -> _) ,
       ST.heq cs (existsEach nil F) (F nil).
-    Proof.
+    Proof using Type.
       intros. eapply ST.heq_defn. unfold existsEach; split; thinker.
       destruct v; try reflexivity. simpl in *; congruence.
     Qed.
@@ -331,7 +331,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma heq_existsEach : forall cs x (F F' : list (@sigT _ typeD) -> _) ,
       (forall G, map (@projT1 _ _) G = x -> ST.heq cs (F G) (F' G)) ->
       ST.heq cs (existsEach x F) (existsEach x F').
-    Proof.
+    Proof using Type.
       intros. eapply ST.heq_ex. intros. apply ST.heq_defn. split; thinker;
       eapply ST.himp_star_pure_cc; eauto; specialize (H _ H0); apply ST.heq_defn in H; intuition.
     Qed.
@@ -339,7 +339,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma himp_existsEach : forall cs x (F F' : list (@sigT _ typeD) -> _) ,
       (forall G, map (@projT1 _ _) G = x -> ST.himp cs (F G) (F' G)) ->
       ST.himp cs (existsEach x F) (existsEach x F').
-    Proof.
+    Proof using Type.
       intros. eapply ST.himp_ex. intros. thinker;
       eapply ST.himp_star_pure_cc; eauto; specialize (H _ H0); apply ST.heq_defn in H; intuition.
     Qed.
@@ -347,7 +347,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma himp_existsEach_p : forall cs x (F : list (@sigT _ typeD) -> _) F',
       (forall G, map (@projT1 _ _) G = x -> ST.himp cs (F G) F') ->
       ST.himp cs (existsEach x F) F'.
-    Proof.
+    Proof using Type.
       intros. eapply ST.himp_ex_p. intros. eapply ST.himp_star_pure_c. intros.
       eapply H; eauto.
     Qed.
@@ -355,14 +355,14 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma himp_existsEach_c : forall cs x (F : list (@sigT _ typeD) -> _) F',
       (exists G, map (@projT1 _ _) G = x /\ ST.himp cs F' (F G)) ->
       ST.himp cs F' (existsEach x F).
-    Proof.
+    Proof using Type.
       intros. eapply ST.himp_ex_c. intros. destruct H.
       exists x0. intuition. rewrite H1. eapply ST.himp_star_pure_cc; auto. reflexivity.
     Qed.
 
     Lemma heq_pushIn : forall P cs x (F : list (@sigT _ typeD) -> _) ,
       ST.heq cs (ST.star P (existsEach x F)) (existsEach x (fun e => ST.star P (F e))).
-    Proof.
+    Proof using Type.
       intros. unfold existsEach; intros.
       rewrite ST.heq_star_comm. rewrite ST.heq_ex_star. eapply ST.heq_ex. intros.
       repeat rewrite ST.heq_star_assoc. eapply ST.heq_defn; split; thinker; eapply ST.himp_star_pure_cc; eauto.
@@ -373,7 +373,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma existsEach_cons : forall cs v vs P,
       ST.heq cs (existsEach (v :: vs) P)
                 (ST.ex (fun x : typeD v => existsEach vs (fun env => P (@existT _ _ v x :: env)))).
-    Proof.
+    Proof using Type.
       intros. change (v :: vs) with ((v :: nil) ++ vs). rewrite existsEach_app.
       eapply ST.heq_defn. simpl. split; unfold existsEach; thinker. eapply ST.himp_ex_c.
       destruct v0; simpl in *; try congruence.
@@ -386,7 +386,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
 
     Lemma existsEach_rev : forall cs v F,
       ST.heq cs (existsEach v F) (existsEach (rev v) (fun e => F (rev e))).
-    Proof.
+    Proof using Type.
       intros; eapply ST.heq_defn; split; revert F; induction v; simpl; intros;
         repeat (rewrite existsEach_nil || rewrite existsEach_cons || rewrite existsEach_app); unfold existsEach; thinker; auto.
       { apply ST.himp_ex_c. exists (rev v1). apply ST.himp_star_pure_cc. subst. rewrite map_rev. reflexivity.
@@ -401,7 +401,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
     Lemma interp_existsEach : forall cs vs P stn st,
       ST.satisfies cs (existsEach vs P) stn st ->
       exists G, map (@projT1 _ _) G = vs /\ ST.satisfies cs (P G) stn st.
-    Proof.
+    Proof using Type.
       intros. apply ST.satisfies_ex in H. destruct H. exists x.
       apply ST.satisfies_star in H.
       repeat match goal with

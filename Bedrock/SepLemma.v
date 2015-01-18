@@ -137,7 +137,7 @@ Module Make (SE : SepExpr) : SepLemma with Module SE := SE.
     (** Lemmas **)
     Lemma forallEachR_sem : forall vs P,
       forallEachR vs P <-> (forall e, map (@projT1 _ _) e = vs -> P e).
-    Proof.
+    Proof using Type.
       clear. split; revert P; induction vs; simpl; intros.
       destruct e; simpl in *; try congruence.
       destruct e; simpl in *; try congruence. inversion H0; clear H0; subst. eapply IHvs in H; eauto.
@@ -151,7 +151,7 @@ Module Make (SE : SepExpr) : SepLemma with Module SE := SE.
       forall cc,
         implyEach HYPS U G cc ->
         cc.
-    Proof.
+    Proof using Type.
       induction HYPS; simpl; intros; auto;
         repeat match goal with
                  | [ H : _ /\ _ |- _ ] => destruct H
@@ -163,7 +163,7 @@ Module Make (SE : SepExpr) : SepLemma with Module SE := SE.
 
     Lemma implyEach_sem : forall cc U G es,
       implyEach es U G cc <-> (AllProvable funcs U G es -> cc).
-    Proof. clear; induction es; simpl; intuition. Qed.
+    Proof using Type. clear; induction es; simpl; intuition. Qed.
 
   End typed.
 End Make.

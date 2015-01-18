@@ -29,7 +29,7 @@ Module Make (FM : WS).
       FM.Equiv (@Permutation.Permutation _).
 
     Global Instance Equivalence_mmap_Equiv : RelationClasses.Equivalence mmap_Equiv.
-    Proof.
+    Proof using Type.
       unfold mmap_Equiv. econstructor; eauto with typeclass_instances.
     Qed.
 
@@ -57,7 +57,7 @@ Module Make (FM : WS).
     Global Add Parametric Morphism : mmap_add with
       signature (FM.E.eq ==> @eq _ ==> mmap_Equiv ==> mmap_Equiv)
       as mmap_add_mor.
-    Proof.
+    Proof using Type.
       unfold mmap_Equiv, mmap_add, FM.Equiv. intros. destruct H0.
       case_eq (FM.find x x0); case_eq (FM.find y y1); intros;
         rewrite H in * ;
@@ -89,7 +89,7 @@ Module Make (FM : WS).
 
     Lemma mmap_add_comm : forall k1 v1 k2 v2 m,
       mmap_Equiv (mmap_add k1 v1 (mmap_add k2 v2 m)) (mmap_add k2 v2 (mmap_add k1 v1 m)).
-    Proof.
+    Proof using Type.
       unfold mmap_Equiv, mmap_add; intros.
       repeat match goal with
                | [ |- _ ] => rewrite FACTS.add_o in *
@@ -126,7 +126,7 @@ Module Make (FM : WS).
     Global Add Parametric Morphism : mmap_extend with
       signature (FM.E.eq ==> (@Permutation.Permutation _) ==> mmap_Equiv ==> mmap_Equiv)
       as mmap_extend_mor.
-    Proof.
+    Proof using Type.
       unfold mmap_Equiv, mmap_extend, FM.Equiv. intros. destruct H1.
       case_eq (FM.find x x1); case_eq (FM.find y y1); intros;
         rewrite H in * ;
@@ -158,13 +158,13 @@ Module Make (FM : WS).
     Qed.
 
     Lemma Proper_mmap_extend : Proper (FM.E.eq ==> eq ==> FM.Equal ==> FM.Equal) mmap_extend.
-    Proof.
+    Proof using Type.
       unfold mmap_extend.
       repeat (red; intros; subst). rewrite H; rewrite H0. destruct (FM.find (elt:=list T) y y1); rewrite H; rewrite H0; auto.
     Qed.
 
     Lemma transpose_neqkey_mmap_extend : PROPS.transpose_neqkey FM.Equal mmap_extend.
-    Proof.
+    Proof using Type.
       unfold mmap_extend. repeat (red; intros; subst).
       (repeat match goal with
                 | [ H : Some _ = Some _ |- _ ] => inversion H; clear H; subst
@@ -209,7 +209,7 @@ Module Make (FM : WS).
           end
         | None => FM.find x b
       end.
-    Proof.
+    Proof using Type.
       clear. unfold mmap_join.
       do 2 intro. apply PROPS.map_induction with (m := a); intros.
       rewrite PROPS.fold_Empty; eauto with typeclass_instances.
@@ -236,7 +236,7 @@ Module Make (FM : WS).
     Lemma mmap_join_remove_acc : forall k (a b : mmap),
       ~FM.In k a ->
       FM.Equal (FM.remove k (mmap_join a b)) (mmap_join a (FM.remove k b)).
-    Proof.
+    Proof using Type.
       unfold FM.Equal. intros.
       repeat (rewrite FACTS.remove_o || rewrite mmap_join_o).
       destruct (FM.E.eq_dec k y); try reflexivity.

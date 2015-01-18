@@ -11,13 +11,13 @@ Section machine.
     PropX_imply cs l r /\ PropX_imply cs r l.
 
   Theorem PropX_imply_refl cs : Reflexive (PropX_imply cs).
-  Proof.
+  Proof using Type.
     unfold Reflexive, PropX_imply. intros.
       eapply Imply_I. econstructor. left; auto.
   Qed.
 
   Theorem PropX_imply_trans cs : Transitive (PropX_imply cs).
-  Proof.
+  Proof using Type.
     unfold Transitive, PropX_imply. intros.
       eapply Imply_I. eapply Imply_E.
       eapply valid_weaken. eassumption. compute; intros; auto.
@@ -26,17 +26,17 @@ Section machine.
   Qed.
 
   Theorem PropX_eq_refl cs : Reflexive (PropX_eq cs).
-  Proof.
+  Proof using Type.
     unfold Reflexive, PropX_eq. generalize (PropX_imply_refl cs). intuition eauto.
   Qed.
 
   Theorem PropX_eq_sym cs : Symmetric (PropX_eq cs).
-  Proof.
+  Proof using Type.
     unfold Symmetric, PropX_eq. intuition.
   Qed.
 
   Theorem PropX_eq_trans cs : Transitive (PropX_eq cs).
-  Proof.
+  Proof using Type.
     unfold Transitive, PropX_eq. generalize PropX_imply_trans.
       intuition;  eapply H; eauto.
   Qed.
@@ -80,7 +80,7 @@ Section tactic.
     valid cs Ps Q ->
     valid cs (Q :: Ps) R ->
     valid cs Ps R.
-  Proof.
+  Proof using Type.
     intros.
     eapply Imply_I in H0.
     eapply Imply_E. eassumption.
@@ -90,7 +90,7 @@ Section tactic.
   Lemma valid_and_split : forall P Ps Q R,
     valid cs ((P /\ Q) :: Ps)%PropX R <->
     valid cs (P :: Q :: Ps)%PropX R.
-  Proof.
+  Proof using Type.
     split; intros.
     eapply Imply_I in H. eapply Imply_E. eapply valid_weaken. eassumption.
     firstorder.
@@ -104,7 +104,7 @@ Section tactic.
   Lemma valid_perm : forall A B C,
     valid cs (A :: B) C <->
     valid cs (B ++ A :: nil) C.
-  Proof.
+  Proof using Type.
     split; intros.
     eapply valid_weaken; eauto. intuition.
     eapply valid_weaken; eauto. intuition.
@@ -114,7 +114,7 @@ Section tactic.
   Lemma valid_inj :  forall (A : Prop) B C,
     (A -> valid cs B C) ->
     valid cs ([| A |] :: B)%PropX C.
-  Proof.
+  Proof using Type.
     intros. eapply Inj_E. econstructor; firstorder. intro.
     eapply H in H0.
     eapply valid_weaken; eauto. intuition.
@@ -123,7 +123,7 @@ Section tactic.
   Lemma valid_ex_clear : forall T (F : T -> PropX pcType stateType) Ps R ,
     (forall x, valid cs (F x :: Ps)%PropX R) ->
     valid cs ((PropX.Exists F) :: Ps)%PropX R.
-  Proof.
+  Proof using Type.
     intros. eapply Exists_E. econstructor. firstorder.
     intros. eapply valid_weaken. eauto.
     instantiate (1 := B). firstorder.

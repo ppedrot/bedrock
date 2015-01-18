@@ -2,6 +2,8 @@
 
 Require Import Arith Omega NArith.
 
+Global Set Suggest Proof Using.
+
 Local Open Scope N_scope.
 
 Hint Rewrite Nplus_0_r nat_of_Nsucc nat_of_Nplus nat_of_Nminus

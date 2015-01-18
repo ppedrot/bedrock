@@ -37,6 +37,7 @@ Section module.
     importsGlobal m
     -> importsGlobal (List.fold_left (fun m p => let '(modl, f, pre) := p in
       LabelMap.add (modl, Global f) pre m) im m).
+  Proof using .
     unfold importsGlobal; induction im as [ | [ ] ]; simpl; intuition.
     apply IHim in H0; auto.
     intros.
@@ -44,6 +45,7 @@ Section module.
   Qed.
 
   Theorem importsMapGlobal : importsGlobal importsMap.
+  Proof using Type.
     apply importsMapGlobal'; red; intros.
     destruct (LabelMap.empty_1 H).
   Qed.
@@ -56,12 +58,14 @@ Section module.
     importsGlobal m
     -> importsGlobal (List.fold_left (fun m p => let '(f, pre, _) := p in
       LabelMap.add (modName, Global f) pre m) fs m).
+  Proof using Type.
     induction fs as [ | [ ] ]; simpl; intuition.
     apply IHfs; red; intros.
     apply LabelFacts.add_mapsto_iff in H0; intuition; subst; simpl; eauto.
   Qed.
 
   Theorem fullImportsGlobal : importsGlobal fullImports.
+  Proof using Type.
     apply fullImportsGlobal'; apply importsMapGlobal.
   Qed.
 
@@ -98,6 +102,7 @@ Section module.
   Lemma Forall_MapsTo : forall A (P : _ * A -> Prop) m,
     (forall k v, LabelMap.MapsTo k v m -> P (k, v))
     -> List.Forall P (LabelMap.elements m).
+  Proof using .
     intros.
     generalize (fun k v H' => H k v (LabelMap.elements_2 H')); clear H; intro H.
     induction (LabelMap.elements m); simpl in *; intuition.
@@ -112,6 +117,7 @@ Section module.
       b || if string_dec m modName then true else false) imports false = false.
 
   Theorem importsNotThis : forall l, LabelMap.In (elt:=assert) (modName, l) importsMap -> False.
+  Proof using NoSelfImport.
     intros.
     assert (forall k v, LabelMap.MapsTo k v (LabelMap.empty assert) -> k <> (modName, l)).
     intros.
@@ -139,6 +145,7 @@ Section module.
   Hint Immediate importsNotThis.
 
   Theorem importsNotThis' : forall l v, LabelMap.MapsTo (elt:=assert) (modName, l) v importsMap -> False.
+  Proof using NoSelfImport.
     intros; eapply importsNotThis.
     hnf.
     eauto.
@@ -150,6 +157,7 @@ Section module.
     List.Forall P ls
     -> forall n, nth_error ls n = Some x
       -> P x.
+  Proof using .
     induction 1; destruct n; simpl; intuition; try discriminate.
     injection H1; congruence.
     eauto.
@@ -184,6 +192,7 @@ Section module.
     let cout := c fullImports fullImportsGlobal pre in
     (forall stn_st specs, ~interp specs (Postcondition cout stn_st))
     /\ vcs (VerifCond cout)) functions.
+  Proof using BlocksGood.
     generalize BlocksGood; clear.
     induction functions; simpl; intuition.
     destruct a as [ [ ] ].
@@ -197,6 +206,7 @@ Section module.
     LabelMap.MapsTo k v (buildLocals bls Base')
     -> Base' >= Base
     -> exists l, k = (modName, Local l) /\ l >= Base /\ l < Base' + N_of_nat (length bls).
+  Proof using Type.
     unfold buildLocals; intros.
     assert (LabelMap.MapsTo k v (LabelMap.empty (assert * block)) -> exists l, k = (modName, Local l) /\ l >= Base /\ l < Base' + N_of_nat (length bls))
       by (intro uhoh; destruct (LabelMap.empty_1 uhoh)).
@@ -218,12 +228,14 @@ Section module.
   Theorem buildLocals_notImport : forall k v Base bls,
     LabelMap.MapsTo k v (buildLocals bls Base)
     -> exists l, k = (modName, Local l) /\ l >= Base /\ l < Base + N_of_nat (length bls).
+  Proof using Type.
     intros; eapply buildLocals_notImport'; eauto; nomega.
   Qed.
 
   Lemma getLocal : forall v bls Base Entry,
     nth_error bls (nat_of_N Entry) = Some v
     -> LabelMap.MapsTo (modName, Local (Base + Entry)) v (buildLocals bls Base).
+  Proof using Type.
     unfold buildLocals; intros.
     generalize (LabelMap.empty (assert * block)).
     generalize dependent Base.
@@ -260,6 +272,7 @@ Section module.
       (Nsucc b, LabelMap.add (modName, Local b) p m)) bls (Base, m)))
     -> LabelMap.MapsTo k v m
     \/ exists n, nth_error bls n = Some v /\ k = (modName, Local (Base + N_of_nat n)).
+  Proof using Type.
     clear; induction bls; simpl; intuition.
     apply IHbls in H; clear IHbls; intuition.
     apply LabelFacts.add_mapsto_iff in H0; intuition; subst.
@@ -273,6 +286,7 @@ Section module.
   Lemma ungetLocal : forall k v bls Base,
     LabelMap.MapsTo k v (buildLocals bls Base)
     -> exists n, nth_error bls n = Some v /\ k = (modName, Local (Base + N_of_nat n)).
+  Proof using Type.
     unfold buildLocals; intros.
     apply ungetLocal' in H; intuition.
     destruct (LabelMap.empty_1 H0).
@@ -293,6 +307,7 @@ Section module.
             /\ v = (pre, (nil, Uncond (RvLabel (modName, Local (Nsucc Base' + Entry cg))))))
           \/ (k = (modName, Local Base') /\ v = (Postcondition cout, (nil, Uncond (RvLabel (modName, Local Base')))))
           \/ exists n, k = (modName, Local (Nsucc Base' + N_of_nat n)) /\ nth_error (Blocks cg) n = Some v).
+  Proof using Type.
     clear; induction fs as [ | [ [ ] ] ]; simpl; intuition.
     destruct (LabelMap.empty_1 H).
     apply LabelFacts.add_mapsto_iff in H; intuition; subst.
@@ -412,6 +427,7 @@ Section module.
     (LabelMap.fold
       (fun (l : LabelMap.key) (x : assert * block) (m : LabelMap.t assert) =>
         LabelMap.add l (fst x) m) m importsMap).
+  Proof using NoSelfImport.
     clear NoDupFunc BlocksGood.
     unfold importsMap.
     generalize NoSelfImport; clear NoSelfImport.
@@ -482,6 +498,7 @@ Section module.
     -> (k = (modName, Local exit) /\ v = post)
     \/ LabelMap.MapsTo k v ims
     \/ exists n, exists bl, nth_error bls n = Some (v, bl) /\ k = (modName, Local (base + N_of_nat n)).
+  Proof using Type.
     induction bls; simpl; intuition.
 
     apply LabelFacts.add_mapsto_iff in H; intuition.
@@ -501,6 +518,7 @@ Section module.
     LabelMap.MapsTo k v fullImports
     -> LabelMap.MapsTo k v importsMap
     \/ (exists f, k = (modName, Global f) /\ exists c, In (f, v, c) functions).
+  Proof using Type.
     clear; unfold fullImports; do 2 intro; generalize importsMap.
     induction functions as [ | [ [ ] ] ]; simpl; intuition.
     apply IHl in H; clear IHl; intuition.
@@ -516,6 +534,7 @@ Section module.
     -> LabelMap.MapsTo l pre (fold_left (fun m p => let '(modl, f, pre) := p in
       LabelMap.add (modl, Global f) pre m) imps acc)
     -> exists g, snd l = Global g.
+  Proof using .
     clear; induction imps; simpl; intuition eauto.
     eapply IHimps; [ | eauto ].
     intros.
@@ -528,6 +547,7 @@ Section module.
 
   Lemma importsMap_global : forall l pre,
     LabelMap.MapsTo l pre importsMap -> exists g, snd l = Global g.
+  Proof using Type.
     intros; apply importsMap_global' with pre imports (LabelMap.empty _).
     intros.
     apply LabelMap.empty_1 in H0; tauto.
@@ -538,6 +558,7 @@ Section module.
     LabelMap.MapsTo k v m
     -> LabelMap.MapsTo k v' m
     -> v = v'.
+  Proof using .
     intros.
     apply LabelMap.find_1 in H.
     apply LabelMap.find_1 in H0.
@@ -548,6 +569,7 @@ Section module.
     funcs start,
     LabelMap.MapsTo (mn, Global g) (pre, bl) (blocks funcs start) ->
     LabelMap.MapsTo (mn, Global g) pre (exps funcs).
+  Proof using Type.
     clear; induction funcs; simpl; intuition.
     apply LabelMap.empty_1 in H; tauto.
     destruct a as [ [ ] ].
@@ -575,6 +597,7 @@ Section module.
     funcs start,
     LabelMap.MapsTo (mn, Global g) pre (exps funcs)
     -> exists bl, LabelMap.MapsTo (mn, Global g) (pre, bl) (blocks funcs start).
+  Proof using Type.
     induction funcs; simpl; intuition.
     apply LabelMap.empty_1 in H; tauto.
     destruct a as [ [ ] ].
@@ -602,6 +625,7 @@ Section module.
   Lemma blocks_modName : forall mn l pre_bl funcs start,
     LabelMap.MapsTo (mn, l) pre_bl (blocks funcs start)
     -> modName = mn.
+  Proof using Type.
     clear; induction funcs; simpl; intuition.
     apply LabelMap.empty_1 in H; tauto.
     destruct a as [ [ ] ].
@@ -617,6 +641,7 @@ Section module.
   Qed.
 
   Theorem bmoduleOk : moduleOk bmodule_.
+  Proof using All.
     constructor.
 
     clear NoDupFunc BlocksGood.

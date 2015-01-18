@@ -64,6 +64,7 @@ Section machine.
       Theorem incl_cons : forall A x (G G' : list A),
         incl G G'
         -> incl (x :: G) (x :: G').
+      Proof using .
         auto.
       Qed.
 
@@ -72,7 +73,7 @@ Section machine.
       Lemma valid_weaken : forall G Q, valid (state := state) specs G Q
         -> forall G', incl G G'
           -> valid specs G' Q.
-      Proof.
+      Proof using Type.
         induction 1; intros.
         intuition.
         intuition.
@@ -97,11 +98,13 @@ Section machine.
 
       Theorem interp_weaken : forall Q, interp (state := state) specs Q
         -> forall G, valid specs G Q.
+      Proof using Type.
         intros; eapply valid_weaken; eauto.
       Qed.
 
       Theorem valid_weaken1 : forall G (P : PropX pc state), valid specs G P
         -> forall T, valid specs (T :: G) P.
+      Proof using Type.
         intros; eapply valid_weaken; eauto.
       Qed.
     End weaken.
@@ -123,57 +126,67 @@ Section machine.
 
     Lemma Substs_Inj : forall G (s : subs G) P,
       Substs s (Inj P)= Inj P.
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Cptr_fwd : forall G (s : subs G) f a,
       interp specs (Substs s (Cptr f a))
       -> interp specs (Cptr f (fun x => Substs s (a x))).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Cptr_bwd : forall G (s : subs G) f a,
       interp specs (Cptr f (fun x => Substs s (a x)))
       -> interp specs (Substs s (Cptr f a)).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_And : forall G (s : subs G) p1 p2,
       Substs s (And p1 p2) = And (Substs s p1) (Substs s p2).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Or : forall G (s : subs G) p1 p2,
       Substs s (Or p1 p2) = Or (Substs s p1) (Substs s p2).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Imply : forall G (s : subs G) p1 p2,
       Substs s (Imply p1 p2) = Imply (Substs s p1) (Substs s p2).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Forall_fwd : forall G (s : subs G) A (p1 : A -> _),
       interp specs (Substs s (Forall p1))
       -> interp specs (Forall (fun x => Substs s (p1 x))).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Forall_bwd : forall G (s : subs G) A (p1 : A -> _),
       interp specs (Forall (fun x => Substs s (p1 x)))
       -> interp specs (Substs s (Forall p1)).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Exists_fwd : forall G (s : subs G) A (p1 : A -> _),
       interp specs (Substs s (Exists p1))
       -> interp specs (Exists (fun x => Substs s (p1 x))).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
     Lemma Substs_Exists_bwd : forall G (s : subs G) A (p1 : A -> _),
       interp specs (Exists (fun x => Substs s (p1 x)))
       -> interp specs (Substs s (Exists p1)).
+    Proof using Type.
       induction s; simpl; intuition.
     Qed.
 
@@ -182,10 +195,12 @@ Section machine.
         | nil => fun s => Substs s p = p
         | _ :: _ => fun _ => True
       end s.
+    Proof using Type.
       destruct s; simpl; intuition.
     Qed.
 
     Theorem subs_nil : forall (s : subs nil) p, Substs s p = p.
+    Proof using Type.
       intros; apply (subs_nil' s).
     Qed.
 
@@ -196,12 +211,14 @@ Section machine.
         | nil => fun _ => True
         | T :: G' => fun s => forall v, Substs s (Var0 v) = SHead s v
       end s.
+    Proof using Type.
       induction s; simpl; intuition.
       destruct Ts; simpl in *; intuition.
     Qed.
 
     Lemma Substs_Var0 : forall T G (s : subs (T :: G)) v,
       Substs s (Var0 v) = SHead s v.
+    Proof using Type.
       intros; apply (Substs_Var0' s); assumption.
     Qed.
 
@@ -210,18 +227,21 @@ Section machine.
         | nil => fun _ => True
         | T :: G' => fun s => forall p1, Substs s (Lift p1) = Substs (STail s) p1
       end s.
+    Proof using Type.
       induction s; simpl; intuition.
       destruct Ts; simpl in *; intuition.
     Qed.
 
     Lemma Substs_Lift : forall T G (s : subs (T :: G)) p1,
       Substs s (Lift p1) = Substs (STail s) p1.
+    Proof using Type.
       intros; apply (Substs_Lift' s); assumption.
     Qed.
 
     Theorem Imply_easyL'' : forall G (p1 p2 p : PropX pc state),
       valid specs G (Imply p1 (Imply p2 p))
       -> valid specs G (Imply (And p1 p2) p).
+    Proof using Type.
       intros.
       apply Imply_I.
       eapply Imply_E.
@@ -238,6 +258,7 @@ Section machine.
     Lemma simplify_bwd_ForallX : forall G A s (p : propX pc state (A :: G)),
       (forall a, interp specs (Substs (SPush s a) p))
       -> interp specs (Substs s (AlX : A, p)).
+    Proof using Type.
       induction s; simpl; intuition.
       apply ForallX_I; auto.
     Qed.
@@ -245,6 +266,7 @@ Section machine.
     Lemma simplify_bwd_ExistsX : forall G A a s (p : propX pc state (A :: G)),
       interp specs (Substs (SPush s a) p)
       -> interp specs (Substs s (ExX : A, p)).
+    Proof using Type.
       induction s; simpl; intuition.
       apply ExistsX_I with a; auto.
     Qed.
@@ -252,6 +274,7 @@ Section machine.
     Lemma simplify_bwd' : forall G (p : propX pc state G) s,
       simplify p s
       -> interp specs (Substs s p).
+    Proof using Type.
       induction p; simpl; intuition; autorewrite with Substs in *.
 
       apply Inj_I; auto.
@@ -270,12 +293,14 @@ Section machine.
     Lemma simplify_bwd : forall p,
       simplify p SNil
       -> interp specs p.
+    Proof using Type.
       intros; change (interp specs (Substs SNil p)); apply simplify_bwd'; auto.
     Qed.
 
     Lemma simplify_fwd_ForallX : forall G A a s (p : propX pc state (A :: G)),
       interp specs (Substs s (AlX  : A, p))
       -> interp specs (Substs (SPush s a) p).
+    Proof using Type.
       induction s; simpl; intuition.
       apply ForallX_sound; auto.
     Qed.
@@ -283,6 +308,7 @@ Section machine.
     Lemma simplify_fwd_ExistsX : forall G A s (p : propX pc state (A :: G)),
       interp specs (Substs s (ExX  : A, p))
       -> exists a, interp specs (Substs (SPush s a) p).
+    Proof using Type.
       induction s; simpl; intuition.
       apply ExistsX_sound; auto.
     Qed.
@@ -290,6 +316,7 @@ Section machine.
     Lemma simplify_fwd' : forall G (p : propX pc state G) s,
       interp specs (Substs s p)
       -> simplify p s.
+    Proof using Type.
       induction p; simpl; intuition; autorewrite with Substs in *.
 
       apply (Inj_sound H).
@@ -308,6 +335,7 @@ Section machine.
     Lemma simplify_fwd : forall p,
       interp specs p
       -> simplify p SNil.
+    Proof using Type.
       intros; apply simplify_fwd'; auto.
     Qed.
 
@@ -323,6 +351,7 @@ Section machine.
     Lemma Substs_Cptr : forall G (s : subs G) f a,
       exists a', Substs s (Cptr f a) = Cptr f a'
         /\ forall x, a' x = Substs s (a x).
+    Proof using Type.
       induction s; simpl; intuition eauto.
     Qed.
 
@@ -330,6 +359,7 @@ Section machine.
       In (Substs s p) PG
       -> (simplifyH p s -> valid specs PG (Substs s p'))
       -> valid specs PG (Substs s p').
+    Proof using Type.
       induction p; simpl; intuition; autorewrite with Substs in *.
 
       eapply Inj_E; [ constructor; eauto | auto ].
@@ -360,6 +390,7 @@ Section machine.
     Theorem simplify_Imply : forall p1 p2,
       (simplifyH p1 SNil -> simplify p2 SNil)
       -> interp specs (Imply p1 p2).
+    Proof using Type.
       intros.
       change (interp specs (Imply (Substs SNil p1) (Substs SNil p2))).
       apply Imply_I.
@@ -374,6 +405,7 @@ Section machine.
     Theorem Imply_easyL' : forall G (p1 p2 p : PropX pc state),
       (simplifyH p1 SNil -> valid specs G (Imply p2 p))
       -> valid specs G (Imply (And p1 p2) p).
+    Proof using Type.
       intros; apply Imply_easyL''.
       apply Imply_I.
       change (p2 ---> p)%PropX with (Substs SNil (p2 ---> p)%PropX).
@@ -387,6 +419,7 @@ Section machine.
     Theorem Imply_easyL : forall (p1 p2 p : PropX pc state),
       (simplifyH p1 SNil -> interp specs (Imply p2 p))
       -> interp specs (Imply (And p1 p2) p).
+    Proof using Type.
       intros; apply Imply_easyL'; auto.
     Qed.
 
@@ -394,6 +427,7 @@ Section machine.
       valid specs G (Imply p1 p2)
       -> valid specs G (Imply p2 p3)
       -> valid specs G (Imply p1 p3).
+    Proof using Type.
       intros; apply Imply_I.
       eapply Imply_E.
       apply valid_weaken1; eassumption.
@@ -406,12 +440,14 @@ Section machine.
       interp specs (Imply p1 p2)
       -> interp specs (Imply p2 p3)
       -> interp specs (Imply p1 p3).
+    Proof using Type.
       unfold interp; intros; eapply Imply_trans'; eauto.
     Qed.
 
     Theorem Imply_easyEx' : forall G T (p1 : T -> _) (p : PropX pc state),
       (forall x, valid specs G (Imply (p1 x) p))
       -> valid specs G (Imply (Exists p1) p).
+    Proof using Type.
       intros; apply Imply_I.
       eapply Exists_E.
       apply Env; simpl; tauto.
@@ -426,10 +462,12 @@ Section machine.
     Theorem Imply_easyEx : forall T (p1 : T -> _) (p : PropX pc state),
       (forall x, interp specs (Imply (p1 x) p))
       -> interp specs (Imply (Exists p1) p).
+    Proof using Type.
       unfold interp; intros; apply Imply_easyEx'; auto.
     Qed.
 
     Theorem Env1 : forall (G : list (PropX pc state)) P, valid specs (P :: G) P.
+    Proof using Type.
       intros; apply Env; simpl; tauto.
     Qed.
   End specs.

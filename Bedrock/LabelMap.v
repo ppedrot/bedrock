@@ -29,18 +29,21 @@ Section CompSpec.
 
   Theorem Comp_eq : (forall z, lt z z -> False)
     -> x = y -> c = Datatypes.Eq.
+  Proof using All.
     inversion H; intros; subst; auto; elimtype False; eauto.
   Qed.
 
   Theorem Comp_lt : (forall z z', lt z z' -> eq z z' -> False)
     -> (forall z z', lt z z' -> lt z' z -> False)
     -> lt x y -> c = Datatypes.Lt.
+  Proof using All.
     inversion H; intros; subst; auto; elimtype False; eauto.
   Qed.
 
   Theorem Comp_gt : (forall z z', lt z' z -> eq z z' -> False)
     -> (forall z z', lt z z' -> lt z' z -> False)
     -> lt y x -> c = Datatypes.Gt.
+  Proof using All.
     inversion H; intros; subst; auto; elimtype False; eauto.
   Qed.
 End CompSpec.

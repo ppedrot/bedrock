@@ -4,6 +4,7 @@ Require Import List.
 
 Set Implicit Arguments.
 Global Set Asymmetric Patterns.
+Global Set Suggest Proof Using.
 
 Section machine.
   Variables pc state : Type.
@@ -544,7 +545,7 @@ Section machine.
     Theorem normal_neutral_sound : forall G,
       (forall P, normal G P -> valid G P)
       /\ (forall P, neutral G P -> valid G P).
-    Proof.
+    Proof using Type.
       apply normal_neutral_min; try solve [
         intros; ((eapply Or_I1; assumption) ||
                  (eapply Or_I2; assumption))
@@ -554,7 +555,7 @@ Section machine.
     Theorem normalP_neutralP_sound : forall G,
       (forall P, normalP G P -> valid G P)
       /\ (forall P, neutralP G P -> valid G P).
-    Proof.
+    Proof using Type.
       apply normalP_neutralP_min; try solve [
         intros; ((eapply Or_I1; assumption) ||
                  (eapply Or_I2; assumption))
@@ -562,12 +563,12 @@ Section machine.
     Qed.
 
     Theorem normalP_complete : forall G P, valid G P -> normalP G P.
-    Proof.
+    Proof using Type.
       induction 1; eauto.
     Qed.
 
     Theorem neutralP_complete : forall G P, valid G P -> neutralP G P.
-    Proof.
+    Proof using Type.
       induction 1; eauto.
     Qed.
 
@@ -582,7 +583,7 @@ Section machine.
     Theorem incl_cons : forall A x (G G' : list A),
       incl G G'
       -> incl (x :: G) (x :: G').
-    Proof.
+    Proof using .
       auto.
     Qed.
 
@@ -595,21 +596,21 @@ Section machine.
     /\ (forall Q, neutral G Q
       -> (forall G', incl G G'
         -> neutral G' Q)).
-    Proof.
+    Proof using Type.
       apply normal_neutral_min; eauto; eauto 7.
     Qed.
 
     Lemma normal_weaken : forall G Q, normal G Q
       -> forall G', incl G G'
         -> normal G' Q.
-    Proof.
+    Proof using Type.
       generalize normal_neutral_weaken; firstorder.
     Qed.
 
     Lemma neutral_weaken : forall G Q, neutral G Q
       -> forall G', incl G G'
         -> neutral G' Q.
-    Proof.
+    Proof using Type.
       generalize normal_neutral_weaken; firstorder.
     Qed.
 
@@ -626,7 +627,7 @@ Section machine.
     Lemma incl_cons2 : forall A (P P0 : A) G G0,
       incl G (P :: G0)
       -> incl (P0 :: G) (P :: P0 :: G0).
-    Proof.
+    Proof using .
       auto.
     Qed.
 
@@ -636,7 +637,7 @@ Section machine.
       In x ls1
       -> incl ls1 ls2
       -> In x ls2.
-    Proof.
+    Proof using .
       intuition.
     Qed.
 
@@ -647,7 +648,7 @@ Section machine.
       -> incl G (P :: G0)
       -> neutral G0 P
       -> neutral G0 P0.
-    Proof.
+    Proof using Type.
       intros ? ? ? ? H1 H2; generalize (H2 _ H1); simpl; intuition; subst; auto.
     Qed.
 
@@ -661,7 +662,7 @@ Section machine.
       -> (forall G, incl PG (P :: G)
         -> neutral G P
         -> neutral G Q)).
-    Proof.
+    Proof using Type.
       intro; apply normal_neutral_min; eauto; eauto 7.
     Qed.
 
@@ -669,14 +670,14 @@ Section machine.
       normal (P :: G) Q
       -> neutral G P
       -> normal G Q.
-    Proof.
+    Proof using Type.
       generalize normal_neutral_subst; firstorder.
     Qed.
 
     Hint Resolve normal_subst.
 
     Theorem seq_sound : forall G P, seq G P -> normal G P.
-    Proof.
+    Proof using Type.
       induction 1; eauto.
     Qed.
 
@@ -691,7 +692,7 @@ Section machine.
     Theorem seq_weaken : forall G p, seq G p
       -> forall G', incl G G'
         -> seq G' p.
-    Proof.
+    Proof using Type.
       induction 1; eauto; doLeft.
     Qed.
 
@@ -704,7 +705,7 @@ Section machine.
         /\ (forall P, neutral G P
           -> forall Q, seq (P :: G) Q
             -> seq G Q).
-      Proof.
+      Proof using Type.
         apply normal_neutral_min; eauto; intros;
           match goal with
             | [ H : _ |- _ ] => apply H; doLeft
@@ -725,18 +726,21 @@ Section machine.
       /\ (forall Q, neutralP G Q
         -> (forall G', incl G G'
           -> neutralP G' Q)).
+    Proof using Type.
       apply normalP_neutralP_min; eauto; eauto 7.
     Qed.
 
     Lemma normalP_weaken : forall G Q, normalP G Q
       -> forall G', incl G G'
         -> normalP G' Q.
+    Proof using Type.
       generalize normalP_neutralP_weaken; firstorder.
     Qed.
 
     Lemma neutralP_weaken : forall G Q, neutralP G Q
       -> forall G', incl G G'
         -> neutralP G' Q.
+    Proof using Type.
       generalize normalP_neutralP_weaken; firstorder.
     Qed.
 
@@ -755,6 +759,7 @@ Section machine.
       -> incl G (P :: G0)
       -> neutralP G0 P
       -> neutralP G0 P0.
+    Proof using Type.
       intros ? ? ? ? H1 H2; generalize (H2 _ H1); simpl; intuition; subst; auto.
     Qed.
 
@@ -769,7 +774,7 @@ Section machine.
         -> (forall G, incl PG (P :: G)
           -> neutralP G P
           -> neutralP G Q)).
-    Proof.
+    Proof using Type.
       intro; apply normalP_neutralP_min; try solve [ eauto ].
       intros; eapply NopOr_E. eapply H0. eassumption. eassumption. eauto. eauto.
     Qed.
@@ -778,21 +783,21 @@ Section machine.
       normalP (P :: G) Q
       -> neutralP G P
       -> normalP G Q.
-    Proof.
+    Proof using Type.
       generalize normalP_neutralP_subst; firstorder.
     Qed.
 
     Hint Resolve normalP_subst.
 
     Theorem seqP_sound : forall G P, seqP G P -> normalP G P.
-    Proof.
+    Proof using Type.
       induction 1; eauto.
     Qed.
 
     Theorem seqP_weaken : forall G p, seqP G p
       -> forall G', incl G G'
         -> seqP G' p.
-    Proof.
+    Proof using Type.
       induction 1; eauto.
     Qed.
 
@@ -804,7 +809,7 @@ Section machine.
       /\ (forall P, neutralP G P
         -> forall Q, seqP (P :: G) Q
           -> seqP G Q).
-    Proof.
+    Proof using Type.
       apply normalP_neutralP_min; eauto.
     Qed.
 
@@ -822,7 +827,7 @@ Section machine.
           \/ (exists A, exists p1 : propX (A :: _), P = ExistsX p1)
         | _ => fun _ => True
       end P.
-    Proof.
+    Proof using Type.
       destruct P; destruct G; eauto 11.
     Qed.
 
@@ -836,7 +841,7 @@ Section machine.
       \/ (exists A, exists p1 : A -> _, P = Exists p1)
       \/ (exists A, exists p1 : propX (A :: _), P = ForallX p1)
       \/ (exists A, exists p1 : propX (A :: _), P = ExistsX p1).
-    Proof.
+    Proof using Type.
       intros; exact (destruct_PropX' P).
     Qed.
 
@@ -894,7 +899,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -918,7 +923,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -947,7 +952,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -971,7 +976,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -995,7 +1000,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -1023,7 +1028,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -1047,7 +1052,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -1071,7 +1076,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -1090,7 +1095,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -1109,7 +1114,7 @@ Section machine.
               end -> incl PG (P' :: G) -> seq G Q
           | T :: l => fun _ : propX (T :: l) => True
         end P'.
-    Proof.
+    Proof using Type.
       innerPredicative.
     Qed.
 
@@ -1143,13 +1148,13 @@ Section machine.
           | Inj GG' _ => incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
     Lemma outer_Inj : forall PG Q, seq PG Q
       -> forall G P, seq G (Inj P) -> incl PG (Inj P :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_Inj' H H0); eauto.
     Qed.
 
@@ -1167,7 +1172,7 @@ Section machine.
             end P1 -> incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
@@ -1178,7 +1183,7 @@ Section machine.
           forall G0 : list (propX nil),
             incl PG0 (P1 st :: G0) -> seq G0 (P1 st) -> seq G0 Q0)
         -> incl PG (Cptr i P1 :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_Cptr' H H0); eauto.
     Qed.
 
@@ -1200,7 +1205,7 @@ Section machine.
             end P1 P2 -> incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
@@ -1215,7 +1220,7 @@ Section machine.
           forall G0 : list (propX nil),
             incl PG0 (P2 :: G0) -> seq G0 P2 -> seq G0 Q0)
         -> incl PG (And P1 P2 :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_And' H H0); eauto.
     Qed.
 
@@ -1237,7 +1242,7 @@ Section machine.
             end P1 P2 -> incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
@@ -1252,7 +1257,7 @@ Section machine.
           forall G0 : list (propX nil),
             incl PG0 (P2 :: G0) -> seq G0 P2 -> seq G0 Q0)
         -> incl PG (Or P1 P2 :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_Or' H H0); eauto.
     Qed.
 
@@ -1274,7 +1279,7 @@ Section machine.
             end P1 P2 -> incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
@@ -1289,6 +1294,7 @@ Section machine.
           forall G0 : list (propX nil),
             incl PG0 (P2 :: G0) -> seq G0 P2 -> seq G0 Q0)
         -> incl PG (Imply P1 P2 :: G) -> seq G Q.
+    Proof using Type.
       intros; specialize (outer_Imply' H H0); eauto.
     Qed.
 
@@ -1306,7 +1312,7 @@ Section machine.
             end p -> incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
@@ -1317,7 +1323,7 @@ Section machine.
           forall G0 : list (propX nil),
             incl PG0 (p a :: G0) -> seq G0 (p a) -> seq G0 Q0)
         -> incl PG (Forall p :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_Forall' H H0); eauto.
     Qed.
 
@@ -1335,7 +1341,7 @@ Section machine.
             end p -> incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
@@ -1346,7 +1352,7 @@ Section machine.
           forall G0 : list (propX nil),
             incl PG0 (p a :: G0) -> seq G0 (p a) -> seq G0 Q0)
         -> incl PG (Exists p :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_Exists' H H0); eauto.
     Qed.
 
@@ -1357,14 +1363,14 @@ Section machine.
             incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
     Lemma outer_ForallX : forall PG Q, seq PG Q
       -> forall G A (p : propX (A :: _)), seq G (ForallX p) ->
         incl PG (ForallX p :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_ForallX' H H0); eauto.
     Qed.
 
@@ -1375,14 +1381,14 @@ Section machine.
             incl PG (P :: G) -> seq G Q
           | _ => True
         end.
-    Proof.
+    Proof using Type.
       outerPredicative.
     Qed.
 
     Lemma outer_ExistsX : forall PG Q, seq PG Q
       -> forall G A (p : propX (A :: _)), seq G (ExistsX p) ->
         incl PG (ExistsX p :: G) -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; specialize (outer_ExistsX' H H0); eauto.
     Qed.
 
@@ -1397,7 +1403,7 @@ Section machine.
           -> seq G P
           -> seq G Q
       end P.
-    Proof.
+    Proof using Type.
       induction P; destruct G; intuition eauto.
     Qed.
 
@@ -1405,7 +1411,7 @@ Section machine.
       seq G P
       -> seq (P :: G) Q
       -> seq G Q.
-    Proof.
+    Proof using Type.
       intros; eapply (@cut_admissibility' nil); eauto.
     Qed.
 
@@ -1414,20 +1420,20 @@ Section machine.
     Theorem cut_elimination : forall G P,
       seqP G P
       -> seq G P.
-    Proof.
+    Proof using Type.
       induction 1; eauto; doLeft.
     Qed.
 
     Lemma seqP_complete' : forall G P, normalP G P
       -> seqP G P.
-    Proof.
+    Proof using Type.
       generalize seqP_complete; firstorder.
     Qed.
 
     Theorem normalization : forall G P,
       valid G P
       -> normal G P.
-    Proof.
+    Proof using Type.
       intros; apply seq_sound; apply cut_elimination; apply seqP_complete';
         apply normalP_complete; assumption.
     Qed.
@@ -1437,13 +1443,13 @@ Section machine.
     Lemma neutral_contra' : forall G P, neutral G P
       -> G = nil
       -> False.
-    Proof.
+    Proof using Type.
       induction 1; simpl in *; intros; subst; intuition.
     Qed.
 
     Lemma neutral_contra : forall P, neutral nil P
       -> False.
-    Proof.
+    Proof using Type.
       intros; eapply neutral_contra'; eauto.
     Qed.
 
@@ -1452,6 +1458,7 @@ Section machine.
     Hint Unfold interp.
 
     Theorem normal_sound : forall G P, normal G P -> valid G P.
+    Proof using Type.
       generalize normal_neutral_sound; firstorder.
     Qed.
 
@@ -1494,6 +1501,7 @@ Section machine.
                                end P1
            | _ => False
          end.
+    Proof using Type.
       intros ? H; apply normalization in H; inversion H; subst; clear H; try solve [ elimtype False; eauto ]; intuition eauto.
     Qed.
 
@@ -1502,46 +1510,55 @@ Section machine.
                           end.
 
     Theorem Inj_sound : forall p, interp (Inj p) -> p.
+    Proof using Type.
       sound.
     Qed.
 
     Theorem Cptr_sound : forall f a, interp (Cptr f a)
       -> specs f = Some (fun x => a x).
+    Proof using Type.
       sound.
     Qed.
 
     Theorem And_sound : forall P Q, interp (And P Q)
       -> interp P /\ interp Q.
+    Proof using Type.
       sound.
     Qed.
 
     Theorem Or_sound : forall P Q, interp (Or P Q)
       -> interp P \/ interp Q.
+    Proof using Type.
       sound.
     Qed.
 
     Theorem Imply_sound : forall P Q, interp (Imply P Q)
       -> interp P -> interp Q.
+    Proof using Type.
       sound.
     Qed.
 
     Theorem Forall_sound : forall A (P : A -> _), interp (Forall P)
       -> forall x, interp (P x).
+    Proof using Type.
       sound.
     Qed.
 
     Theorem Exists_sound : forall A (P : A -> _), interp (Exists P)
       -> exists x, interp (P x).
+    Proof using Type.
       sound.
     Qed.
 
     Theorem ForallX_sound : forall A (P : propX (A :: nil)), interp (ForallX P)
       -> forall f, interp (Subst P f).
+    Proof using Type.
       sound.
     Qed.
 
     Theorem ExistsX_sound : forall A (P : propX (A :: nil)), interp (ExistsX P)
       -> exists f, interp (Subst P f).
+    Proof using Type.
       sound.
     Qed.
   End specs.

@@ -50,20 +50,24 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Notation eqk := (@eq_key elt).
 
       Lemma In_MapsTo : forall k m, In k m -> exists v, MapsTo k v m.
+      Proof using Type.
         unfold In; eauto.
       Qed.
 
       Lemma not_in_find : forall k m, ~ In k m -> find k m = None.
+      Proof using Type.
         intros; eapply not_find_in_iff; eauto.
       Qed.
 
       Lemma of_list_empty : of_list [] == @empty elt.
+      Proof using Type.
         eauto.
       Qed.
 
       (* update *)
 
       Lemma update_o_1 : forall k m1 m2, ~ In k m2 -> find k (m1 + m2) = find k m1.
+      Proof using Type.
         intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H0; eapply update_mapsto_iff in H0; openhyp.
@@ -74,6 +78,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_o_2 : forall k m1 m2, In k m2 -> find k (m1 + m2) = find k m2.
+      Proof using Type.
         intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H0; eapply update_mapsto_iff in H0; openhyp.
@@ -84,6 +89,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_empty_1 : forall m, {} + m == m.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H.
@@ -95,6 +101,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_empty_2 : forall m, m + {} == m.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H.
@@ -109,6 +116,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_assoc : forall m1 m2 m3, m1 + m2 + m3 == m1 + (m2 + m3).
+      Proof using Type.
         intros.
         unfold Equal.
         intros.
@@ -167,6 +175,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_self : forall m, m + m == m.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H; eapply update_mapsto_iff in H; openhyp.
@@ -177,12 +186,14 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_same : forall m1 m2, m1 == m2 -> m1 + m2 == m1.
+      Proof using Type.
         intros.
         rewrite H.
         eapply update_self.
       Qed.
 
       Lemma update_diff_same : forall m1 m2 m3, m1 - m3 + (m2 - m3) == m1 + m2 - m3.
+      Proof using Type.
         intros.
         unfold Equal.
         intros.
@@ -229,6 +240,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Disjoint_diff_update_comm : forall m1 m2 m3, Disjoint m2 m3 -> m1 - m2 + m3 == m1 + m3 - m2.
+      Proof using Type.
         intros.
         unfold Equal.
         intros.
@@ -276,10 +288,12 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Definition update_all ms := List.fold_left (fun acc m => update acc m) ms (@empty elt).
 
       Lemma update_all_nil : update_all [] == {}.
+      Proof using Type.
         eauto.
       Qed.
 
       Lemma update_all_single : forall m, update_all [m] == m.
+      Proof using Type.
         intros.
         unfold update_all; simpl.
         eapply update_empty_1.
@@ -288,6 +302,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Definition update_all' m ms := fold_left (fun acc m0 : t elt => acc + m0) ms m.
 
       Lemma update_all'_m' : forall ms m1 m2, m1 == m2 -> update_all' m1 ms == update_all' m2 ms.
+      Proof using Type.
         unfold update_all'.
         induction ms; simpl; intros.
         eauto.
@@ -303,6 +318,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_all_cons : forall ms m, update_all (m :: ms) == m + (update_all ms).
+      Proof using Type.
         induction ms; simpl; intros.
         rewrite update_all_nil.
         rewrite update_all_single.
@@ -320,6 +336,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_all_Equal : forall ms1 ms2, List.Forall2 (@Equal elt) ms1 ms2 -> update_all ms1 == update_all ms2.
+      Proof using Type.
         induction 1; simpl; intros.
         eauto.
         repeat rewrite update_all_cons.
@@ -329,6 +346,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma app_all_update_all : forall lsls, @NoDupKey elt (app_all lsls) -> of_list (app_all lsls) == update_all (List.map (@of_list _) lsls).
+      Proof using Type.
         induction lsls; simpl; intros.
         eauto.
         rewrite update_all_cons.
@@ -338,6 +356,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma update_all_elim : forall ms k v, MapsTo k v (update_all ms) -> exists m, List.In m ms /\ MapsTo k v m.
+      Proof using Type.
         induction ms; simpl; intros.
         rewrite update_all_nil in H.
         eapply empty_mapsto_iff in H; intuition.
@@ -351,6 +370,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       (* diff *)
 
       Lemma diff_empty : forall m, diff m {} == m.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H; eapply diff_mapsto_iff in H; openhyp.
@@ -362,6 +382,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma empty_diff : forall m, {} - m == {}.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H; eapply diff_mapsto_iff in H; openhyp.
@@ -370,6 +391,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma diff_same : forall m, m - m == {}.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H; eapply diff_mapsto_iff in H; openhyp.
@@ -378,6 +400,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma diff_update : forall m1 m2 m3, m1 - (m2 + m3) == m1 - m2 - m3.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H; eapply diff_mapsto_iff in H; openhyp.
@@ -394,6 +417,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma diff_diff_sym : forall m1 m2 m3, m1 - m2 - m3 == m1 - m3 - m2.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H; eapply diff_mapsto_iff in H; openhyp.
@@ -409,6 +433,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma diff_o : forall k m1 m2, ~ In k m2 -> find k (m1 - m2) = find k m1.
+      Proof using Type.
         intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H0; eapply diff_mapsto_iff in H0; openhyp.
@@ -418,6 +443,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma diff_o_none : forall k m1 m2, In k m2 -> find k (m1 - m2) = None.
+      Proof using Type.
         intros.
         eapply not_in_find.
         intuition.
@@ -430,10 +456,12 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Definition Compat m1 m2 := forall k, In k m1 -> In k m2 -> find k m1 = find k m2.
 
       Lemma Compat_sym : forall m1 m2, Compat m1 m2 -> Compat m2 m1.
+      Proof using Type.
         unfold Compat; intros; symmetry; eauto.
       Qed.
 
       Lemma Compat_refl : forall m, Compat m m.
+      Proof using Type.
         unfold Compat; intros; eauto.
       Qed.
 
@@ -455,6 +483,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Compat_diff : forall m1 m2 m, Compat m1 m2 -> Compat (m1 - m) m2.
+      Proof using Type.
         unfold Compat; intros.
         rewrite <- H; eauto.
         rewrite diff_o; eauto.
@@ -463,11 +492,13 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Compat_empty : forall m, Compat m {}.
+      Proof using Type.
         unfold Compat; intros.
         eapply empty_in_iff in H0; intuition.
       Qed.
 
       Lemma Compat_update : forall m1 m2 m3, Compat m1 m2 -> Compat m1 m3 -> Compat m1 (m2 + m3).
+      Proof using Type.
         unfold Compat; intros.
         destruct (In_dec m3 k).
         rewrite update_o_2; eauto.
@@ -477,6 +508,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Compat_update_sym : forall m1 m2, Compat m1 m2 -> m1 + m2 == m2 + m1.
+      Proof using Type.
         unfold Compat; intros.
         unfold Equal; intros.
         destruct (In_dec m1 y); destruct (In_dec m2 y).
@@ -495,6 +527,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Compat_update_all : forall ms m, List.Forall (Compat m) ms -> Compat m (update_all ms).
+      Proof using Type.
         induction ms; simpl; intros.
         unfold update_all; simpl.
         eapply Compat_empty.
@@ -504,6 +537,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Compat_add_not_In : forall k v m1 m2, Compat (add k v m1) m2 -> ~ In k m1 -> Compat m1 m2.
+      Proof using Type.
         intros.
         unfold Compat in *.
         intros.
@@ -515,6 +549,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Compat_eq : forall k v1 v2 m1 m2, Compat m1 m2 -> find k m1 = Some v1 -> find k m2 = Some v2 -> v1 = v2.
+      Proof using Type.
         intros.
         unfold Compat in *.
         erewrite H in H0.
@@ -526,6 +561,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Compat_MapsTo : forall m1 m2, Compat m1 m2 -> forall k v1 v2, MapsTo k v1 m1 -> MapsTo k v2 m2 -> v1 = v2.
+      Proof using Type.
         intros.
         generalize H0; intro.
         generalize H1; intro.
@@ -541,6 +577,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Definition AllCompat := ForallOrdPairs Compat.
 
       Lemma update_all_intro : forall ms, AllCompat ms -> forall k v m, List.In m ms -> MapsTo k v m -> MapsTo k v (update_all ms).
+      Proof using Type.
         induction 1; simpl; intros.
         intuition.
         openhyp.
@@ -565,40 +602,47 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
             as Disjoint_rel.
 
       Lemma Disjoint_Compat : forall m1 m2, Disjoint m1 m2 -> Compat m1 m2.
+      Proof using Type.
         unfold Disjoint, Compat; intros; firstorder.
       Qed.
 
       Lemma Disjoint_empty : forall m, Disjoint m {}.
+      Proof using Type.
         unfold Disjoint; intros.
         intuition.
         eapply empty_in_iff in H1; intuition.
       Qed.
 
       Lemma Disjoint_update : forall m1 m2 m3, Disjoint m1 m2 -> Disjoint m1 m3 -> Disjoint m1 (m2 + m3).
+      Proof using Type.
         unfold Disjoint; intros.
         intuition.
         eapply update_in_iff in H3; firstorder.
       Qed.
 
       Lemma Disjoint_update_sym : forall m1 m2, Disjoint m1 m2 -> update m1 m2 == update m2 m1.
+      Proof using Type.
         intros.
         eapply Compat_update_sym.
         eapply Disjoint_Compat; eauto.
       Qed.
 
       Lemma Disjoint_diff : forall m1 m2 m3, Disjoint m1 m2 -> Disjoint m1 (m2 - m3).
+      Proof using Type.
         unfold Disjoint; intros.
         intuition.
         eapply diff_in_iff in H2; firstorder.
       Qed.
 
       Lemma Disjoint_after_diff : forall m1 m2, Disjoint (m1 - m2) m2.
+      Proof using Type.
         unfold Disjoint; intros.
         intuition.
         eapply diff_in_iff in H0; firstorder.
       Qed.
 
       Lemma Disjoint_diff_no_effect : forall m1 m2, Disjoint m1 m2 -> m1 - m2 == m1.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence; split; intros.
         eapply find_2 in H0; eapply diff_mapsto_iff in H0; openhyp.
@@ -610,6 +654,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma Disjoint_update_all : forall ms m, List.Forall (Disjoint m) ms -> Disjoint m (update_all ms).
+      Proof using Type.
         induction ms; simpl; intros.
         unfold update_all; simpl.
         eapply Disjoint_empty.
@@ -621,6 +666,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       (* map *)
 
       Lemma map_empty : forall B (f : elt -> B), map f {} == {}.
+      Proof using Type.
         unfold Equal; intros.
         rewrite map_o.
         repeat rewrite empty_o.
@@ -628,6 +674,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma map_add : forall B (f : _ -> B) k v m, map f (add k v m) == add k (f v) (map f m).
+      Proof using Type.
         unfold Equal; intros.
         rewrite map_o.
         repeat rewrite add_o.
@@ -638,6 +685,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma map_update : forall B (f : _ -> B) m1 m2, map f (m1 + m2) == map f m1 + map f m2.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence.
         split; intros.
@@ -686,6 +734,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma map_of_list : forall B (f : elt -> B) ls, map f (of_list ls) == of_list (List.map (fun p => (fst p, f (snd p))) ls).
+      Proof using Type.
         induction ls; simpl; intros.
         eapply map_empty.
         unfold uncurry; simpl in *.
@@ -710,6 +759,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
         forall B (f : _ -> _ -> B) k v m,
           find k m = Some v ->
           find k (mapi f m) = Some (f k v).
+      Proof using Type.
         intros.
         rewrite mapi_o.
         rewrite H.
@@ -718,6 +768,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma mapi_empty : forall B (f : _ -> elt -> B), mapi f {} == {}.
+      Proof using Type.
         unfold Equal; intros.
         rewrite mapi_o.
         repeat rewrite empty_o.
@@ -728,6 +779,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma mapi_add : forall B (f : _ -> _ -> B) k v m, mapi f (add k v m) == add k (f k v) (mapi f m).
+      Proof using Type.
         unfold Equal; intros.
         rewrite mapi_o.
         repeat rewrite add_o.
@@ -741,6 +793,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma mapi_of_list : forall B (f : _ -> _ -> B) ls, mapi f (of_list ls) == of_list (List.map (fun p => (fst p, f (fst p) (snd p))) ls).
+      Proof using Type.
         induction ls; simpl; intros.
         eapply mapi_empty.
         unfold uncurry; simpl in *.
@@ -750,6 +803,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma mapi_update : forall B (f : _ -> _ -> B) m1 m2, mapi f (m1 + m2) == mapi f m1 + mapi f m2.
+      Proof using Type.
         unfold Equal; intros.
         eapply option_univalence.
         split; intros.
@@ -805,6 +859,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma NoDupKey_app_all_elim : forall lsls, NoDupKey (app_all lsls) -> forall ls, List.In ls lsls -> NoDupKey ls.
+      Proof using Type.
         induction lsls; simpl; intuition.
         subst.
         eapply NoDupKey_unapp1; eauto.
@@ -813,6 +868,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma NoDupKey_app_all_AllCompat : forall lsls, NoDupKey (app_all lsls) -> AllCompat (List.map (@of_list _) lsls).
+      Proof using Type.
         induction lsls; simpl; intuition.
         econstructor.
         econstructor.
@@ -1506,20 +1562,20 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Definition EqualOn (m1 m2 : t elt) := forall k, Domain k -> find k m1 = find k m2.
 
       Lemma EqualOn_refl a : EqualOn a a.
-      Proof.
+      Proof using Type.
         unfold EqualOn.
         eauto.
       Qed.
 
       Lemma EqualOn_sym a b : EqualOn a b -> EqualOn b a.
-      Proof.
+      Proof using Type.
         intros H.
         unfold EqualOn in *; intros.
         symmetry; eauto.
       Qed.
 
       Lemma EqualOn_trans a b c : EqualOn a b -> EqualOn b c -> EqualOn a c.
-      Proof.
+      Proof using Type.
         intros H1 H2.
         unfold EqualOn in *; intros.
         etransitivity. 
@@ -1534,7 +1590,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
             as EqualOn_rel.
 
       Lemma Equal_EqualOn a a' b b' : a == a' -> b == b' -> (EqualOn a b <-> EqualOn a' b').
-      Proof.
+      Proof using Type.
         intros Ha Hb.
         split; intros H.
         - unfold EqualOn in *.
@@ -1556,7 +1612,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma add_EqualOn k v m1 m2 : EqualOn m1 m2 -> EqualOn (add k v m1) (add k v m2).
-      Proof.
+      Proof using Type.
         intros Heq.
         unfold EqualOn in *.
         intros k' Hk'.
@@ -1569,7 +1625,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma remove_EqualOn k m1 m2 : EqualOn m1 m2 -> EqualOn (remove k m1) (remove k m2).
-      Proof.
+      Proof using Type.
         intros Heq.
         unfold EqualOn in *.
         intros k' Hk'.
@@ -1592,7 +1648,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       Qed.
 
       Lemma out_add_EqualOn a b k v : EqualOn a b -> ~ Domain k -> EqualOn (add k v a) b.
-      Proof.
+      Proof using Type.
         intros Heq Hk.
         unfold EqualOn in *.
         intros k' Hk'.

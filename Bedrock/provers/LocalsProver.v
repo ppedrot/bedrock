@@ -37,6 +37,7 @@ Section LocalsProver.
   Lemma localsSimplify_correct : forall uvars vars (e : expr types) t v,
     exprD funcs uvars vars e t = Some v
     -> exprD funcs uvars vars (localsSimplify e) t = Some v.
+  Proof using Type.
     destruct e; simpl; intuition idtac.
     do 12 (destruct f; try assumption).
     do 2 (destruct l; try assumption).
@@ -57,6 +58,7 @@ Section LocalsProver.
   Qed.
 
   Theorem localsProveCorrect : ProverCorrect funcs reflexivityValid localsProve.
+  Proof using Type.
     unfold localsProve; hnf; simpl; intros.
 
     destruct goal; try discriminate.
@@ -81,6 +83,7 @@ Section LocalsProver.
       ; Prove := localsProve |}.
 
   Definition localsProver_correct : ProverT_correct localsProver funcs.
+  Proof using Type.
     eapply Build_ProverT_correct with (Valid := reflexivityValid : _ -> _ -> Facts localsProver -> Prop); unfold reflexivityValid; eauto.
     apply localsProveCorrect.
   Qed.

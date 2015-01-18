@@ -1,5 +1,6 @@
 Set Implicit Arguments.
 Set Strict Implicit.
+Global Set Suggest Proof Using.
 
 Section PairWF.
   Variables T U : Type.

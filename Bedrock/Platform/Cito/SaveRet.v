@@ -86,6 +86,7 @@ Section TopLevel.
       Lemma evalInstrs_write_var : forall sm x s,
         evalInstrs sm x (Assign (var_slot s) Rv :: nil)
         = evalInstrs sm x (Assign (LvMem (Imm ((Regs x Sp ^+ natToW vars_start) ^+ natToW (variablePosition vars s)))) Rv :: nil).
+      Proof using Type.
         Transparent evalInstrs.
         simpl.
         intros.

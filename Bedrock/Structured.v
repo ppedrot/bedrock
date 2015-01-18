@@ -54,18 +54,21 @@ Section imports.
     vcs Ps1
     -> vcs Ps2
     -> vcs (Ps1 ++ Ps2).
+  Proof using .
     induction 1; simpl; auto.
   Qed.
 
   Theorem vcs_app_bwd1 : forall Ps1 Ps2,
     vcs (Ps1 ++ Ps2)
     -> vcs Ps1.
+  Proof using .
     induction Ps1; inversion 1; subst; eauto.
   Qed.
 
   Theorem vcs_app_bwd2 : forall Ps1 Ps2,
     vcs (Ps1 ++ Ps2)
     -> vcs Ps2.
+  Proof using .
     induction Ps1; inversion 1; subst; eauto.
   Qed.
 
@@ -110,6 +113,7 @@ Section imports.
   Hint Extern 1 (~(eq (A := N) _ _)) => nomega.
 
   Lemma ge_refl : forall n, n >= n.
+  Proof using .
     intros; nomega.
   Qed.
 
@@ -126,6 +130,7 @@ Section imports.
     nth_error bls (nat_of_N n) = Some (p, bl)
     -> LabelMap.MapsTo (modName, Local (base + n)) p
     (imps bls base exit post).
+  Proof using Type.
     induction bls; simpl in *; intuition.
 
     destruct (nat_of_N n); discriminate.
@@ -150,6 +155,7 @@ Section imports.
   Lemma imps_exit : forall exit post bls base,
     exit < base
     -> LabelMap.MapsTo (modName, Local exit) post (imps bls base exit post).
+  Proof using Type.
     induction bls; simpl; intuition.
   Qed.
 
@@ -161,6 +167,7 @@ Section imports.
     /\ (forall base', base = Nsucc base'
       -> forall n p bl, nth_error bls (nat_of_N n) = Some (p, bl)
         -> P (modName, Local (base + n)) p).
+  Proof using Type.
     intuition.
 
     apply H.
@@ -169,10 +176,12 @@ Section imports.
   Qed.
 
   Lemma lt_succ : forall n, n < Nsucc n.
+  Proof using .
     intros; nomega.
   Qed.
 
   Lemma lt_succ' : forall n m, n < m -> n < Nsucc m.
+  Proof using .
     intros; nomega.
   Qed.
 
@@ -184,6 +193,7 @@ Section imports.
     (forall k' v', LabelMap.MapsTo k' v' (LabelMap.add k v m) -> P k' v')
     -> P k v
     /\ (forall k' v', LabelMap.MapsTo k' v' m -> k' <> k -> P k' v').
+  Proof using .
     intuition.
   Qed.
 
@@ -198,6 +208,7 @@ Section imports.
 
   Lemma nth_error_app2 : forall n A (ls2 ls1 : list A),
     nth_error (ls1 ++ ls2) (length ls1 + n) = nth_error ls2 n.
+  Proof using .
     induction ls1; simpl; intuition.
   Qed.
 
@@ -206,6 +217,7 @@ Section imports.
   Lemma nth_error_app2' : forall n A (ls2 ls1 : list A) x,
     nth_error ls2 n = x
     -> nth_error (ls1 ++ ls2) (nat_of_N (N_of_nat (length ls1) + N_of_nat n)) = x.
+  Proof using .
     intros; subst; autorewrite with N; reflexivity.
   Qed.
 
@@ -213,6 +225,7 @@ Section imports.
     List.Forall P ls1
     -> List.Forall P ls2
     -> List.Forall P (ls1 ++ ls2).
+  Proof using .
     induction 1; simpl; intuition.
   Qed.
 
@@ -226,6 +239,7 @@ Section imports.
   Lemma imps_imports : forall exit post k v bls base,
     LabelMap.MapsTo k v imports
     -> LabelMap.MapsTo k v (imps bls base exit post).
+  Proof using All.
     induction bls; simpl; intuition.
     destruct (imports_global H).
     auto.
@@ -240,6 +254,7 @@ Section imports.
     exit < base
     -> LabelMap.MapsTo k v (imps bls1 base exit post)
     -> LabelMap.MapsTo k v (imps (bls1 ++ bls2) base exit post).
+  Proof using All.
     induction bls1; simpl; intuition.
 
     apply LabelFacts.add_mapsto_iff in H0; intuition; subst; auto.
@@ -250,6 +265,7 @@ Section imports.
   Lemma imps_app2'' : forall k v exit exit' post post' bls base,
     LabelMap.MapsTo k v (imps bls base exit' post')
     -> (k = (modName, Local exit') /\ v = post') \/ LabelMap.MapsTo k v (imps bls base exit post).
+  Proof using All.
     induction bls; simpl; intuition.
 
     apply LabelFacts.add_mapsto_iff in H; intuition; subst.
@@ -271,6 +287,7 @@ Section imports.
     -> l < base
     -> l <> exit
     -> (modName, Local l) <> k.
+  Proof using All.
     induction bls; simpl; intuition.
 
     apply LabelFacts.add_mapsto_iff in H; intuition; subst.
@@ -290,6 +307,7 @@ Section imports.
     LabelMap.MapsTo k v (imps bls2 (base + N_of_nat (length bls1)) exit' post')
     -> exit < base
     -> (k = (modName, Local exit') /\ v = post') \/ LabelMap.MapsTo k v (imps (bls1 ++ bls2) base exit post).
+  Proof using All.
     induction bls1; simpl; intuition.
 
     replace (base + 0) with base in H by nomega.
@@ -304,6 +322,7 @@ Section imports.
   Lemma nth_error_app1 : forall A x (ls2 ls1 : list A) n,
     nth_error ls1 n = Some x
     -> nth_error (ls1 ++ ls2) n = Some x.
+  Proof using .
     induction ls1; destruct n; simpl; intuition; discriminate.
   Qed.
 
@@ -314,6 +333,7 @@ Section imports.
     -> nth_error bls1 (nat_of_N offset) = Some (post', bl)
     -> exit < base
     -> LabelMap.MapsTo k v (imps (bls1 ++ bls2) base exit post).
+  Proof using All.
     intros.
     eapply imps_app2' in H.
     intuition; subst; eauto.
@@ -331,6 +351,7 @@ Section imports.
       nth_error ls1 (nat_of_N n) = Some (x, y) -> P n x y)
     /\ (forall n (x : A) (y : B),
       nth_error ls2 (nat_of_N n) = Some (x, y) -> P (N_of_nat (length ls1) + n) x y).
+  Proof using .
     intuition.
     eapply nth_error_app2' in H0.
     apply H in H0.
@@ -407,6 +428,7 @@ Section imports.
     (k = k' -> v = v')
     -> (k <> k' -> LabelMap.MapsTo k v m)
     -> LabelMap.MapsTo k v (LabelMap.add k' v' m).
+  Proof using .
     intros; destruct (LabelKey.eq_dec k k'); unfold LabelKey.eq in *; intuition; subst; eauto.
   Qed.
 
@@ -422,6 +444,7 @@ Section imports.
     -> k < base
     -> k <> exit
     -> False.
+  Proof using All.
     induction bls; simpl; intuition; use_add;
       match goal with
         | [ H : _ |- _ ] => injection H; intros; subst; nomega
@@ -432,6 +455,7 @@ Section imports.
     LabelMap.MapsTo (modName, Local exit) post' (imps bls base exit post)
     -> exit < base
     -> post' = post.
+  Proof using Type.
     intros.
     eapply imps_exit in H0.
     eauto using LabelFacts.MapsTo_fun.
@@ -442,6 +466,7 @@ Section imports.
     -> k <> (modName, Local exit)
     -> exit' < base + N_of_nat (length bls1)
     -> LabelMap.MapsTo k v (imps (bls1 ++ bls2) base exit' post').
+  Proof using All.
     induction bls1; simpl; intuition; use_add.
   Qed.
 
@@ -450,6 +475,7 @@ Section imports.
     -> k <> (modName, Local exit)
     -> exit' < base
     -> LabelMap.MapsTo k v (imps (bls1 ++ bls2) base exit' post').
+  Proof using All.
     induction bls1; simpl; intuition.
 
     replace (base + 0) with base in * by nomega.
@@ -465,6 +491,7 @@ Section imports.
     -> exit < base
     -> k <> (modName, Local exit)
     -> LabelMap.MapsTo k v (imps bls base exit' post').
+  Proof using All.
     induction bls; simpl; intuition; use_add.
   Qed.
 

@@ -13,6 +13,7 @@ Section starL_weaken_mem.
   Theorem starL_weaken_mem : forall ls,
     List.Forall (fun x => P x ===> P' x) ls
     -> starL P ls ===> starL P' ls.
+  Proof using Type.
     induction 1; simpl; intuition.
     sepLemma.
     apply Himp_star_frame; auto.
@@ -171,17 +172,20 @@ Module Make(M : S).
                       end.
 
     Theorem starS_empty_bwd : Emp ===> starS P empty.
+    Proof using .
       to_himp; apply existsR with nil; from_himp; sepLemma.
     Qed.
 
     Lemma setify_cong : forall ls b1 b2,
       b1 %= b2
       -> fold_left add ls b1 %= fold_left add ls b2.
+    Proof using .
       induction ls; simpl; intuition.
     Qed.
 
     Lemma add_something : forall v ls b,
       fold_left add ls (b %+ v) %= fold_left add ls b %+ v.
+    Proof using .
       induction ls; simpl; intuition.
       eapply equiv_trans; [ | apply IHls ].
       apply setify_cong; auto.
@@ -191,6 +195,7 @@ Module Make(M : S).
       In v ls
       -> b %= fold_left add ls b'
       -> v %in b.
+    Proof using .
       induction ls; simpl; intuition (subst; eauto).
       assert (b %= fold_left add ls b' %+ v) by (eapply equiv_trans; [ eassumption | apply add_something ]); auto.
     Qed.
@@ -199,6 +204,7 @@ Module Make(M : S).
       In v ls
       -> b %= setify ls
       -> v %in b.
+    Proof using .
       intros; eapply setify_include'; eauto.
     Qed.
 
@@ -206,6 +212,7 @@ Module Make(M : S).
       ~v %in b
       -> b %= setify ls
       -> ~In v ls.
+    Proof using .
       intuition.
       specialize (setify_include _ _ H1 H0); assumption.
     Qed.
@@ -213,6 +220,7 @@ Module Make(M : S).
     Hint Immediate setify_omit.
 
     Theorem starS_add_bwd : forall b v, ~v %in b -> starS P b * P v ===> starS P (b %+ v).
+    Proof using .
       intros; eapply Himp_trans; [ apply exists_starL_fwd | ]; cbv beta.
       to_himp; apply existsL; intro ls; apply existsR with (v :: ls); from_himp.
       simpl; generalize (starL P ls); generalize (P v); sepLemma.
@@ -323,11 +331,13 @@ Module Make(M : S).
       -> In v ls
       -> b %= setify ls
       -> b %- v %= setify (nuke v ls).
+    Proof using .
       intros; apply setify_nuke'; auto.
     Qed.
 
     Theorem starS_del_fwd : forall b v, v %in b
       -> starS P b ===> P v * starS P (b %- v).
+    Proof using .
       intros; eapply Himp_trans; [ | apply exists_starR_bwd ]; cbv beta.
       to_himp; apply existsL; intro ls; apply existsR with (nuke v ls).
       specialize (starL_del_fwd v ls);
@@ -342,11 +352,28 @@ Module Make(M : S).
     Lemma fun_fun_fun : forall A P Q R,
       P * (Ex ls : A, Q ls * R ls)
       ===> (Ex ls : A, Q ls * (P * R ls)).
+    Proof using .
       sepLemma.
+    Qed.
+
+    Lemma del_to_add : forall b b' v,
+      v %in b
+      -> b %- v %= b'
+      -> b %= b' %+ v.
+    Proof using .
+      intros.
+      assert (b %- v %+ v %= b' %+ v) by sets.
+      clear H0.
+      apply equiv_trans with (b %- v %+ v); auto.
+      clear H1.
+      unfold mem, equiv, del, add in *.
+      intros.
+      destruct (eq_dec v x); subst; intuition.
     Qed.
 
     Theorem starS_del_bwd : forall b v, v %in b
       -> P v * starS P (b %- v) ===> starS P b.
+    Proof using .
       unfold starS; intros.
       eapply Himp_trans; [ apply fun_fun_fun | ]; cbv beta.
       apply Himp'_ex; intro ls.
@@ -358,20 +385,6 @@ Module Make(M : S).
       unfold setify in *; simpl.
       eapply equiv_trans; [ | apply equiv_symm; apply add_something ].
 
-      Lemma del_to_add : forall b b' v,
-        v %in b
-        -> b %- v %= b'
-        -> b %= b' %+ v.
-        intros.
-        assert (b %- v %+ v %= b' %+ v) by sets.
-        clear H0.
-        apply equiv_trans with (b %- v %+ v); auto.
-        clear H1.
-        unfold mem, equiv, del, add in *.
-        intros.
-        destruct (eq_dec v x); subst; intuition.
-      Qed.
-
       apply del_to_add; auto.
 
       sepLemma.
@@ -382,10 +395,12 @@ Module Make(M : S).
     Qed.
 
     Lemma star_cancel_right : forall a b c, b ===> c -> b * a ===> c * a.
+    Proof using .
       sepLemma.
     Qed.
 
     Lemma starS_equiv : forall P a b, a %= b -> starS P a ===> starS P b.
+    Proof using .
       intros; unfold starS; to_himp; apply existsL; intros; apply existsR with x; from_himp; eapply star_cancel_right; sepLemma.
     Qed.
 
@@ -394,6 +409,7 @@ Module Make(M : S).
     Theorem starS_weaken : forall b,
       (forall x, x %in b -> P x ===> P' x)
       -> starS P b ===> starS P' b.
+    Proof using .
       unfold starS; intros.
       apply Himp'_ex; intro; apply Himp_ex_c; eexists.
       eapply Himp_trans; [ apply Himp_star_assoc | ].

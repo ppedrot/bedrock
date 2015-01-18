@@ -662,12 +662,14 @@ Section boot.
   Hypothesis heapSizeUpperBound : goodSize (heapSize * 4).
 
   Lemma goodSize_heapSize : goodSize heapSize.
+  Proof using -(globalsSize heapSize).
     eapply goodSize_weaken; [ eassumption | omega ].
   Qed.
 
   Hint Immediate goodSize_heapSize.
 
   Theorem heapSizeLowerBound' : natToW heapSize < natToW 3 -> False.
+  Proof using -(globalsSize heapSize).
     change (natToW 3 <= natToW heapSize).
     intro; pre_nomega.
     rewrite wordToNat_natToWord_idempotent in *.
@@ -680,6 +682,7 @@ Section boot.
   Hint Immediate heapSizeLowerBound'.
 
   Theorem noWrap : noWrapAround (natToW 4) (heapSize - 1).
+  Proof using -(globalsSize heapSize).
     simpl; hnf; intros.
     intro.
     rewrite <- natToW_plus in H0.
@@ -690,6 +693,7 @@ Section boot.
   Qed.
 
   Theorem heapSize_roundTrip : wordToNat (natToW heapSize) = heapSize.
+  Proof using -(globalsSize heapSize).
     intros; apply wordToNat_natToWord_idempotent;
       change (goodSize heapSize); eauto.
   Qed.
@@ -749,6 +753,7 @@ Section boot.
     -> sp = heapSize * 4
     -> goodSize (heapSize * 4)
     -> False.
+  Proof using heapSizeLowerBound.
     intros; subst; apply natToW_inj in H0; auto; omega.
   Qed.
 
@@ -758,6 +763,7 @@ Section boot.
   Lemma bootstrap_Sp_freeable : forall sp : W,
     sp = heapSize * 4
     -> freeable sp 50.
+  Proof using (heapSizeLowerBound mem_size).
     intros; subst; constructor; auto.
     hnf; intros.
     rewrite <- natToW_plus.

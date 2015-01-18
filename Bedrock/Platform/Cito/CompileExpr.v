@@ -123,6 +123,7 @@ Section ExprComp.
       Lemma evalInstrs_read_var : forall sm x s,
         evalInstrs sm x (Assign Rv (var_slot s) :: nil)
         = evalInstrs sm x (Assign Rv (LvMem (Imm ((Regs x Sp ^+ natToW vars_start) ^+ natToW (variablePosition vars s)))) :: nil).
+      Proof using Type.
         Transparent evalInstrs.
         simpl.
         intros.
@@ -144,6 +145,7 @@ Section ExprComp.
         forall x ls,
           StringSet.In x (SSP.of_list ls)
           -> List.In x ls.
+      Proof using .
         intros.
         eapply SSP.of_list_1 in H.
         eapply InA_eq_In_iff; eauto.
