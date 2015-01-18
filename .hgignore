@@ -19,6 +19,7 @@ Bedrock/ILTac.v
 *.log
 *.out
 timing/
+.coq-native/
 *.cmo
 *.cmx
 *.cmxs
