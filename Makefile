@@ -26,7 +26,12 @@ not-containing = $(foreach v,$2,$(if $(findstring $1,$v),,$v))
 
 .DEFAULT_GOAL := examples
 
-.PHONY: examples platform cito facade facade_all src src-test clean native ltac version dist time install install-platform install-cito install-facade install-facade-all install-facade-allv install-src install-examples update-_CoqProject
+.PHONY: examples platform cito facade facade_all src src-test \
+	examples-quick platform-quick cito-quick facade-quick facade_all-quick src-quick src-test-quick \
+	examples-vio2vo platform-vio2vo cito-vio2vo facade-vio2vo facade_all-vio2vo src-vio2vo src-test-vio2vo \
+	examples-checkproofs platform-checkproofs cito-checkproofs facade-checkproofs facade_all-checkproofs src-checkproofs src-test-checkproofs \
+	install install-platform install-cito install-facade install-facade-all install-facade-allv install-src install-examples \
+	clean native ltac version dist time update-_CoqProject
 
 Makefile.coq::
 	$(VECHO) "COQ_MAKEFILE -f _CoqProject > $@"
@@ -140,7 +145,32 @@ src:
 	$(MAKE) -f Makefile.coq $(SRC_VO)
 
 src-test:
-	$(MAKE) -f Makefile.coq $(SRC_TEST_VO)
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(SRC_TEST_VO)))
+
+examples-quick: src-quick
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(EXAMPLES_VO)))
+
+facade-quick: src-quick
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(FACADE_VO)))
+
+facade_all-quick: src-quick
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(FACADE_ALL_VO)))
+
+facade_allv-quick: src-quick
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(FACADE_ALLVO)))
+
+cito-quick: src-quick
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(CITO_VO)))
+
+platform-quick: src-quick
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(PLATFORM_VO)))
+
+src-quick:
+	$(MAKE) -C Bedrock/reification quick
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(SRC_VO)))
+
+src-test-quick:
+	$(MAKE) -f Makefile.coq $(addsuffix .vio,$(basename $(SRC_TEST_VO)))
 
 install-examples: T=$(EXAMPLES_VO)
 install-examples: selective-install
@@ -164,15 +194,77 @@ install-src: T=$(SRC_VO)
 install-src: selective-install
 	$(MAKE) -C Bedrock/reification install
 
+examples-vio2vo: T=$(EXAMPLES_VO)
+examples-vio2vo: selective-vio2vo
+facade-vio2vo: T=$(FACADE_VO)
+facade-vio2vo: selective-vio2vo
+facade-all-vio2vo: T=$(FACADE_ALL_VO)
+facade-all-vio2vo: selective-vio2vo
+facade-allv-vio2vo: T=$(FACADE_ALLVO)
+facade-allv-vio2vo: selective-vio2vo
+cito-vio2vo: T=$(CITO_VO)
+cito-vio2vo: selective-vio2vo
+platform-vio2vo: T=$(PLATFORM_VO)
+platform-vio2vo: selective-vio2vo
+examples-vio2vo: T=$(EXAMPLES_VO)
+examples-vio2vo: selective-vio2vo
+examples-vio2vo: T=$(EXAMPLES_VO)
+examples-vio2vo: selective-vio2vo
+src-test-vio2vo: T=$(SRC_TEST_VO)
+src-test-vio2vo: selective-vio2vo
+
+# TODO: combine Bedrock/reification/Makefile with this makefile
+src-vio2vo: T=$(SRC_VO)
+src-vio2vo: selective-vio2vo
+	$(MAKE) -C Bedrock/reification vio2vo
+
+examples-checkproofs: T=$(EXAMPLES_VO)
+examples-checkproofs: selective-checkproofs
+facade-checkproofs: T=$(FACADE_VO)
+facade-checkproofs: selective-checkproofs
+facade-all-checkproofs: T=$(FACADE_ALL_VO)
+facade-all-checkproofs: selective-checkproofs
+facade-allv-checkproofs: T=$(FACADE_ALLVO)
+facade-allv-checkproofs: selective-checkproofs
+cito-checkproofs: T=$(CITO_VO)
+cito-checkproofs: selective-checkproofs
+platform-checkproofs: T=$(PLATFORM_VO)
+platform-checkproofs: selective-checkproofs
+examples-checkproofs: T=$(EXAMPLES_VO)
+examples-checkproofs: selective-checkproofs
+examples-checkproofs: T=$(EXAMPLES_VO)
+examples-checkproofs: selective-checkproofs
+src-test-checkproofs: T=$(SRC_TEST_VO)
+src-test-checkproofs: selective-checkproofs
+
+# TODO: combine Bedrock/reification/Makefile with this makefile
+src-checkproofs: T=$(SRC_VO)
+src-checkproofs: selective-checkproofs
+	$(MAKE) -C Bedrock/reification checkproofs
+
 selective-install:
 	cd "." && for i in $(addsuffix .vo,$(basename $(T))) $(addsuffix .v,$(basename $(T))) $(addsuffix .glob,$(basename $(T))); do \
 	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/Bedrock/$$i`"; \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Bedrock/$$i; \
 	done
 
+selective-vio2vo:
+	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio2vo $(J) $(addsuffix .vio,$(basename $(T)))
+
+selective-checkproofs:
+	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio-checking $(J) $(addsuffix .vio,$(basename $(T)))
+
 install:
 	$(MAKE) -C Bedrock/reification install
 	$(MAKE) -f Makefile.coq install
+
+vio2vo:
+	$(MAKE) -C Bedrock/reification vio2vo
+	$(MAKE) -f Makefile.coq vio2vo
+
+checkproofs:
+	$(MAKE) -C Bedrock/reification checkproofs
+	$(MAKE) -f Makefile.coq checkproofs
 
 update-_CoqProject:
 	(echo '-R Bedrock Bedrock'; echo '-I Bedrock/reification'; find Bedrock -name "*.v"; find Bedrock/reification -name "*.mli" -o -name "*.ml4" -o -name "*.ml") > _CoqProject
