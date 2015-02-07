@@ -320,6 +320,7 @@ Module SymIL_Correct.
               | [ H : reg |- _ ] => destruct H
             end; intuition); subst.
 
+    Opaque stateD.
     Lemma sym_evalInstrs_correct : forall (facts : Facts Prover) (meta_env var_env : env types),
       Valid PC meta_env var_env facts  ->
       forall is stn_st isD cs ss,
@@ -350,7 +351,6 @@ Module SymIL_Correct.
             end
         end.
     Proof.
-      Opaque stateD.
       induction is; simpl; intros;
         repeat match goal with
                  | [ H : Some _ = Some _ |- _ ] => inversion H; clear H; subst
@@ -413,6 +413,7 @@ Module SymIL_Correct.
       eapply skip_to_nil in H. rewrite <- H in H0. simpl in *; congruence.
     Qed.
     Hint Resolve skip_prove_nil : env_resolution.
+    Transparent stateD.
     Lemma stateD_addToPures : forall U G cs ss stn_st P,
       stateD funcs preds U G cs stn_st ss ->
       Provable funcs U G P ->
@@ -421,11 +422,10 @@ Module SymIL_Correct.
         ; SymRegs := SymRegs ss
         ; SymPures := P :: SymPures ss |}.
     Proof.
-      Transparent stateD.
       clear. intros; shatter_state ss; destruct stn_st; simpl in *. intuition.
       destruct SymMem; intuition.
-      Opaque stateD.
     Qed.
+    Opaque stateD.
     Hint Resolve stateD_addToPures : stateD_solver.
 
     Ltac qstateD_solver :=
@@ -706,6 +706,8 @@ Module SymIL_Correct.
                | [ H : option bool |- _ ] => destruct H
              end.
 
+    Opaque stateD.
+
     Lemma evalStream_correct_Safe : forall sound_or_safe cs stn path facts ss qs qs' ss' uvars vars env_q,
       sym_evalStream Prover meval learnHook facts path (appendQ qs env_q) uvars vars ss = Safe (appendQ qs' env_q) ss' ->
       forall meta_env vars_env,
@@ -723,7 +725,6 @@ Module SymIL_Correct.
               stateD funcs preds meta_env vars_env cs (stn, st') ss'
           end).
     Proof.
-      Opaque stateD.
       induction path; simpl; intros; sym_eval_prover IHpath; try contradiction.
     Qed.
 

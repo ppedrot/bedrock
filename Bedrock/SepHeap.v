@@ -991,7 +991,7 @@ Module Make (SE : SepExpr) <: SepHeap with Module SE := SE.
           heq_canceler. }
           eapply transpose_neqkey_starred. }
 
-        Opaque starred.
+        (* Opaque starred. *) (* https://coq.inria.fr/bugs/show_bug.cgi?id=4006 *)
         { symmetry. rewrite starred_def. induction pures0; try reflexivity.
           simpl. rewrite IHpures0.
           match goal with
@@ -1010,6 +1010,8 @@ Module Make (SE : SepExpr) <: SepHeap with Module SE := SE.
           end.
           apply heq_liftSExpr. symmetry. repeat rewrite starred_def. simpl. reflexivity. }
     Qed.
+
+    Opaque starred.
 
     Lemma hash_denote' : forall EG cs (s : sexpr _ _ _) G,
       heq funcs preds EG G cs s (existsEach (fst (hash s)) (sheapD' (snd (hash s)))).
@@ -1430,7 +1432,7 @@ Module Make (SE : SepExpr) <: SepHeap with Module SE := SE.
       rewrite WellTyped_impures_eq in H0. apply WellTyped_impures_eq. intros.
       unfold MM.mmap_map in *. rewrite MM.FACTS.map_o in H2. unfold MM.FACTS.option_map in H2.
       consider (FM.find (elt:=list (list (expr types))) k impures0); intros. think.
-      specialize (H0 _ _ H2). Opaque allb. destruct l; simpl in *; auto. Transparent allb.
+      specialize (H0 _ _ H2). (* Opaque allb. *) destruct l; simpl in *; auto. (* Transparent allb. *) (* https://coq.inria.fr/bugs/show_bug.cgi?id=4006 *)
       change (map F l :: map (map F) l0) with (map (map F) (l :: l0)). generalize dependent (l :: l0); intros.
       think. revert H3. clear - H. induction l1; simpl in *; intros; think; auto.
       rewrite all2_map_1. erewrite all2_impl; eauto. congruence.
