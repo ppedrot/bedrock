@@ -1428,7 +1428,7 @@ Module Make (SE : SepExpr) <: SepHeap with Module SE := SE.
       clear. intros. rewrite WellTyped_sheap_eq in *. destruct s; unfold applySHeap; simpl in *.
       think. apply andb_true_iff; split.
       rewrite WellTyped_impures_eq in H0. apply WellTyped_impures_eq. intros.
-      unfold MM.mmap_map in *. rewrite MM.FACTS.map_o in H2. unfold MM.FACTS.option_map in H2.
+      unfold MM.mmap_map in *. rewrite MM.FACTS.map_o in H2. unfold option_map in H2.
       consider (FM.find (elt:=list (list (expr types))) k impures0); intros. think.
       specialize (H0 _ _ H2). Opaque allb. destruct l; simpl in *; auto. Transparent allb.
       change (map F l :: map (map F) l0) with (map (map F) (l :: l0)). generalize dependent (l :: l0); intros.
