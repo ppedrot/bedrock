@@ -264,6 +264,7 @@ Section Cond.
     replace (size b1 + n - size b1) with n by omega.
     eauto.
     rewrite length_size; omega.
+    (*Unshelve. all:admit.*)
   Qed.
 
   Ltac choosePost :=
@@ -309,27 +310,8 @@ Section Cond.
 
   Hint Resolve interp_eta ex_up bexpSafe_really.
 
-  Definition Cond_ (b : bexp) (Then Else : cmd imports modName) : cmd imports modName.
-    red; refine (fun pre =>
-      let cout1 := Then (fun stn_st => pre stn_st /\ [|bexpTrue b (fst stn_st) (snd stn_st)|])%PropX in
-      let cout2 := Else (fun stn_st => pre stn_st /\ [|bexpFalse b (fst stn_st) (snd stn_st)|])%PropX in
-      {|
-        Postcondition := (fun stn_st => Postcondition cout1 stn_st \/ Postcondition cout2 stn_st)%PropX;
-        VerifCond := (forall stn st specs, interp specs (pre (stn, st)) -> bexpSafe b stn st)
-          :: VerifCond cout1 ++ VerifCond cout2;
-        Generate := fun Base Exit =>
-          let Base' := (Nsucc (Nsucc Base) + N_of_nat (size b))%N in
-          let cg1 := Generate cout1 Base' Base in
-          let Base'' := (Base' + N_of_nat (length (Blocks cg1)))%N in
-          let cg2 := Generate cout2 Base'' (Nsucc Base) in
-          {|
-            Entry := 2;
-            Blocks := (Postcondition cout1, (nil, Uncond (RvLabel (modName, Local Exit))))
-              :: (Postcondition cout2, (nil, Uncond (RvLabel (modName, Local Exit))))
-              :: blocks (Nsucc (Nsucc Base)) pre b (Base' + Entry cg1) (Base'' + Entry cg2)
-              ++ Blocks cg1 ++ Blocks cg2
-          |}
-      |}); abstract (struct;
+  Local Ltac Cond_t :=
+    struct;
         try match goal with
               | [ |- context[blocks ?Base ?pre ?b ?Tru ?Fals] ] =>
                 solve [ let H := fresh in destruct (blocks_first b Base pre Tru Fals) as [ ? [ ? H ] ];
@@ -354,7 +336,410 @@ Section Cond.
                   end; auto; eapply lookup_imps in H; rewrite length_size; eauto
               | [ H : nth_error ?Blocks ?n = Some _ |- LabelMap.MapsTo (_, Local (_ + N.of_nat ?n)) _ ?m ] =>
                 apply imps_app_1; auto; eapply lookup_imps; rewrite Nat2N.id; eauto
-            end)) || eauto 15).
+            end)) || eauto 15.
+
+  Theorem Cond__subproof1 :    forall (b : bexp) (Then Else : cmd imports modName) (pre : assert),
+   let cout1 :=
+     Then
+       (fun stn_st : prod settings state =>
+        @PropX.And W (prod settings state) (@nil Type)
+          (pre stn_st)
+          (@Inj W (prod settings state) (@nil Type)
+             (bexpTrue b (@fst settings state stn_st)
+                (@snd settings state stn_st)))) in
+   let cout2 :=
+     Else
+       (fun stn_st : prod settings state =>
+        @PropX.And W (prod settings state) (@nil Type)
+          (pre stn_st)
+          (@Inj W (prod settings state) (@nil Type)
+             (bexpFalse b (@fst settings state stn_st)
+                (@snd settings state stn_st)))) in
+   forall Base Exit : N,
+   let Base' := N.add (N.succ (N.succ Base)) (N.of_nat (size b)) in
+   let cg1 :=
+     @Generate imports modName
+       (fun stn_st : prod settings state =>
+        @PropX.And W (prod settings state) (@nil Type)
+          (pre stn_st)
+          (@Inj W (prod settings state) (@nil Type)
+             (bexpTrue b (@fst settings state stn_st)
+                (@snd settings state stn_st)))) cout1 Base' Base in
+   let Base'' :=
+     N.add Base'
+       (N.of_nat
+          (@Datatypes.length (prod assert block)
+             (@Blocks imports modName
+                (fun stn_st : prod settings state =>
+                 @PropX.And W (prod settings state)
+                   (@nil Type) (pre stn_st)
+                   (@Inj W (prod settings state) (@nil Type)
+                      (bexpTrue b (@fst settings state stn_st)
+                         (@snd settings state stn_st)))) Base' Base
+                (@Postcondition imports modName
+                   (fun stn_st : prod settings state =>
+                    @PropX.And W (prod settings state)
+                      (@nil Type) (pre stn_st)
+                      (@Inj W (prod settings state)
+                         (@nil Type)
+                         (bexpTrue b (@fst settings state stn_st)
+                            (@snd settings state stn_st)))) cout1)
+                (@VerifCond imports modName
+                   (fun stn_st : prod settings state =>
+                    @PropX.And W (prod settings state)
+                      (@nil Type) (pre stn_st)
+                      (@Inj W (prod settings state)
+                         (@nil Type)
+                         (bexpTrue b (@fst settings state stn_st)
+                            (@snd settings state stn_st)))) cout1) cg1))) in
+   let cg2 :=
+     @Generate imports modName
+       (fun stn_st : prod settings state =>
+        @PropX.And W (prod settings state) (@nil Type)
+          (pre stn_st)
+          (@Inj W (prod settings state) (@nil Type)
+             (bexpFalse b (@fst settings state stn_st)
+                (@snd settings state stn_st)))) cout2 Base''
+       (N.succ Base) in
+   forall
+     (_ : vcs
+            (@cons Prop
+               (forall (stn : settings) (st : state)
+                  (specs : codeSpec W (prod settings state))
+                  (_ : @interp W (prod settings state) specs
+                         (pre (@pair settings state stn st))),
+                bexpSafe b stn st)
+               (@app Prop
+                  (@VerifCond imports modName
+                     (fun stn_st : prod settings state =>
+                      @PropX.And W (prod settings state)
+                        (@nil Type) (pre stn_st)
+                        (@Inj W (prod settings state)
+                           (@nil Type)
+                           (bexpTrue b (@fst settings state stn_st)
+                              (@snd settings state stn_st)))) cout1)
+                  (@VerifCond imports modName
+                     (fun stn_st : prod settings state =>
+                      @PropX.And W (prod settings state)
+                        (@nil Type) (pre stn_st)
+                        (@Inj W (prod settings state)
+                           (@nil Type)
+                           (bexpFalse b (@fst settings state stn_st)
+                              (@snd settings state stn_st)))) cout2))))
+     (_ : N.lt Exit Base),
+   @List.Forall (prod assert block)
+     (fun p : prod assert block =>
+      blockOk
+        (imps imports modName
+           (@cons (prod assert (prod (list instr) jmp))
+              (@pair assert (prod (list instr) jmp)
+                 (@Postcondition imports modName
+                    (fun stn_st : prod settings state =>
+                     @PropX.And W (prod settings state)
+                       (@nil Type) (pre stn_st)
+                       (@Inj W (prod settings state)
+                          (@nil Type)
+                          (bexpTrue b (@fst settings state stn_st)
+                             (@snd settings state stn_st)))) cout1)
+                 (@pair (list instr) jmp (@nil instr)
+                    (Uncond
+                       (RvLabel (@pair string label' modName (Local Exit))))))
+              (@cons (prod assert (prod (list instr) jmp))
+                 (@pair assert (prod (list instr) jmp)
+                    (@Postcondition imports modName
+                       (fun stn_st : prod settings state =>
+                        @PropX.And W (prod settings state)
+                          (@nil Type) (pre stn_st)
+                          (@Inj W (prod settings state)
+                             (@nil Type)
+                             (bexpFalse b (@fst settings state stn_st)
+                                (@snd settings state stn_st)))) cout2)
+                    (@pair (list instr) jmp (@nil instr)
+                       (Uncond
+                          (RvLabel (@pair string label' modName (Local Exit))))))
+                 (@app (prod assert block)
+                    (blocks (N.succ (N.succ Base)) pre b
+                       (N.add Base'
+                          (@Entry imports modName
+                             (fun stn_st : prod settings state =>
+                              @PropX.And W (prod settings state)
+                                (@nil Type) (pre stn_st)
+                                (@Inj W (prod settings state)
+                                   (@nil Type)
+                                   (bexpTrue b (@fst settings state stn_st)
+                                      (@snd settings state stn_st)))) Base'
+                             Base
+                             (@Postcondition imports modName
+                                (fun stn_st : prod settings state =>
+                                 @PropX.And W (prod settings state)
+                                   (@nil Type) (pre stn_st)
+                                   (@Inj W (prod settings state)
+                                      (@nil Type)
+                                      (bexpTrue b
+                                         (@fst settings state stn_st)
+                                         (@snd settings state stn_st))))
+                                cout1)
+                             (@VerifCond imports modName
+                                (fun stn_st : prod settings state =>
+                                 @PropX.And W (prod settings state)
+                                   (@nil Type) (pre stn_st)
+                                   (@Inj W (prod settings state)
+                                      (@nil Type)
+                                      (bexpTrue b
+                                         (@fst settings state stn_st)
+                                         (@snd settings state stn_st))))
+                                cout1) cg1))
+                       (N.add Base''
+                          (@Entry imports modName
+                             (fun stn_st : prod settings state =>
+                              @PropX.And W (prod settings state)
+                                (@nil Type) (pre stn_st)
+                                (@Inj W (prod settings state)
+                                   (@nil Type)
+                                   (bexpFalse b (@fst settings state stn_st)
+                                      (@snd settings state stn_st)))) Base''
+                             (N.succ Base)
+                             (@Postcondition imports modName
+                                (fun stn_st : prod settings state =>
+                                 @PropX.And W (prod settings state)
+                                   (@nil Type) (pre stn_st)
+                                   (@Inj W (prod settings state)
+                                      (@nil Type)
+                                      (bexpFalse b
+                                         (@fst settings state stn_st)
+                                         (@snd settings state stn_st))))
+                                cout2)
+                             (@VerifCond imports modName
+                                (fun stn_st : prod settings state =>
+                                 @PropX.And W (prod settings state)
+                                   (@nil Type) (pre stn_st)
+                                   (@Inj W (prod settings state)
+                                      (@nil Type)
+                                      (bexpFalse b
+                                         (@fst settings state stn_st)
+                                         (@snd settings state stn_st))))
+                                cout2) cg2)))
+                    (@app (prod assert block)
+                       (@Blocks imports modName
+                          (fun stn_st : prod settings state =>
+                           @PropX.And W (prod settings state)
+                             (@nil Type) (pre stn_st)
+                             (@Inj W (prod settings state)
+                                (@nil Type)
+                                (bexpTrue b (@fst settings state stn_st)
+                                   (@snd settings state stn_st)))) Base' Base
+                          (@Postcondition imports modName
+                             (fun stn_st : prod settings state =>
+                              @PropX.And W (prod settings state)
+                                (@nil Type) (pre stn_st)
+                                (@Inj W (prod settings state)
+                                   (@nil Type)
+                                   (bexpTrue b (@fst settings state stn_st)
+                                      (@snd settings state stn_st)))) cout1)
+                          (@VerifCond imports modName
+                             (fun stn_st : prod settings state =>
+                              @PropX.And W (prod settings state)
+                                (@nil Type) (pre stn_st)
+                                (@Inj W (prod settings state)
+                                   (@nil Type)
+                                   (bexpTrue b (@fst settings state stn_st)
+                                      (@snd settings state stn_st)))) cout1)
+                          cg1)
+                       (@Blocks imports modName
+                          (fun stn_st : prod settings state =>
+                           @PropX.And W (prod settings state)
+                             (@nil Type) (pre stn_st)
+                             (@Inj W (prod settings state)
+                                (@nil Type)
+                                (bexpFalse b (@fst settings state stn_st)
+                                   (@snd settings state stn_st)))) Base''
+                          (N.succ Base)
+                          (@Postcondition imports modName
+                             (fun stn_st : prod settings state =>
+                              @PropX.And W (prod settings state)
+                                (@nil Type) (pre stn_st)
+                                (@Inj W (prod settings state)
+                                   (@nil Type)
+                                   (bexpFalse b (@fst settings state stn_st)
+                                      (@snd settings state stn_st)))) cout2)
+                          (@VerifCond imports modName
+                             (fun stn_st : prod settings state =>
+                              @PropX.And W (prod settings state)
+                                (@nil Type) (pre stn_st)
+                                (@Inj W (prod settings state)
+                                   (@nil Type)
+                                   (bexpFalse b (@fst settings state stn_st)
+                                      (@snd settings state stn_st)))) cout2)
+                          cg2))))) Base Exit
+           (fun stn_st : prod settings state =>
+            @PropX.Or W (prod settings state) (@nil Type)
+              (@Postcondition imports modName
+                 (fun stn_st0 : prod settings state =>
+                  @PropX.And W (prod settings state)
+                    (@nil Type) (pre stn_st0)
+                    (@Inj W (prod settings state) (@nil Type)
+                       (bexpTrue b (@fst settings state stn_st0)
+                          (@snd settings state stn_st0)))) cout1 stn_st)
+              (@Postcondition imports modName
+                 (fun stn_st0 : prod settings state =>
+                  @PropX.And W (prod settings state)
+                    (@nil Type) (pre stn_st0)
+                    (@Inj W (prod settings state) (@nil Type)
+                       (bexpFalse b (@fst settings state stn_st0)
+                          (@snd settings state stn_st0)))) cout2 stn_st)))
+        (@fst assert block p) (@snd assert block p))
+     (@cons (prod assert (prod (list instr) jmp))
+        (@pair assert (prod (list instr) jmp)
+           (@Postcondition imports modName
+              (fun stn_st : prod settings state =>
+               @PropX.And W (prod settings state) (@nil Type)
+                 (pre stn_st)
+                 (@Inj W (prod settings state) (@nil Type)
+                    (bexpTrue b (@fst settings state stn_st)
+                       (@snd settings state stn_st)))) cout1)
+           (@pair (list instr) jmp (@nil instr)
+              (Uncond (RvLabel (@pair string label' modName (Local Exit))))))
+        (@cons (prod assert (prod (list instr) jmp))
+           (@pair assert (prod (list instr) jmp)
+              (@Postcondition imports modName
+                 (fun stn_st : prod settings state =>
+                  @PropX.And W (prod settings state)
+                    (@nil Type) (pre stn_st)
+                    (@Inj W (prod settings state) (@nil Type)
+                       (bexpFalse b (@fst settings state stn_st)
+                          (@snd settings state stn_st)))) cout2)
+              (@pair (list instr) jmp (@nil instr)
+                 (Uncond (RvLabel (@pair string label' modName (Local Exit))))))
+           (@app (prod assert block)
+              (blocks (N.succ (N.succ Base)) pre b
+                 (N.add Base'
+                    (@Entry imports modName
+                       (fun stn_st : prod settings state =>
+                        @PropX.And W (prod settings state)
+                          (@nil Type) (pre stn_st)
+                          (@Inj W (prod settings state)
+                             (@nil Type)
+                             (bexpTrue b (@fst settings state stn_st)
+                                (@snd settings state stn_st)))) Base' Base
+                       (@Postcondition imports modName
+                          (fun stn_st : prod settings state =>
+                           @PropX.And W (prod settings state)
+                             (@nil Type) (pre stn_st)
+                             (@Inj W (prod settings state)
+                                (@nil Type)
+                                (bexpTrue b (@fst settings state stn_st)
+                                   (@snd settings state stn_st)))) cout1)
+                       (@VerifCond imports modName
+                          (fun stn_st : prod settings state =>
+                           @PropX.And W (prod settings state)
+                             (@nil Type) (pre stn_st)
+                             (@Inj W (prod settings state)
+                                (@nil Type)
+                                (bexpTrue b (@fst settings state stn_st)
+                                   (@snd settings state stn_st)))) cout1) cg1))
+                 (N.add Base''
+                    (@Entry imports modName
+                       (fun stn_st : prod settings state =>
+                        @PropX.And W (prod settings state)
+                          (@nil Type) (pre stn_st)
+                          (@Inj W (prod settings state)
+                             (@nil Type)
+                             (bexpFalse b (@fst settings state stn_st)
+                                (@snd settings state stn_st)))) Base''
+                       (N.succ Base)
+                       (@Postcondition imports modName
+                          (fun stn_st : prod settings state =>
+                           @PropX.And W (prod settings state)
+                             (@nil Type) (pre stn_st)
+                             (@Inj W (prod settings state)
+                                (@nil Type)
+                                (bexpFalse b (@fst settings state stn_st)
+                                   (@snd settings state stn_st)))) cout2)
+                       (@VerifCond imports modName
+                          (fun stn_st : prod settings state =>
+                           @PropX.And W (prod settings state)
+                             (@nil Type) (pre stn_st)
+                             (@Inj W (prod settings state)
+                                (@nil Type)
+                                (bexpFalse b (@fst settings state stn_st)
+                                   (@snd settings state stn_st)))) cout2) cg2)))
+              (@app (prod assert block)
+                 (@Blocks imports modName
+                    (fun stn_st : prod settings state =>
+                     @PropX.And W (prod settings state)
+                       (@nil Type) (pre stn_st)
+                       (@Inj W (prod settings state)
+                          (@nil Type)
+                          (bexpTrue b (@fst settings state stn_st)
+                             (@snd settings state stn_st)))) Base' Base
+                    (@Postcondition imports modName
+                       (fun stn_st : prod settings state =>
+                        @PropX.And W (prod settings state)
+                          (@nil Type) (pre stn_st)
+                          (@Inj W (prod settings state)
+                             (@nil Type)
+                             (bexpTrue b (@fst settings state stn_st)
+                                (@snd settings state stn_st)))) cout1)
+                    (@VerifCond imports modName
+                       (fun stn_st : prod settings state =>
+                        @PropX.And W (prod settings state)
+                          (@nil Type) (pre stn_st)
+                          (@Inj W (prod settings state)
+                             (@nil Type)
+                             (bexpTrue b (@fst settings state stn_st)
+                                (@snd settings state stn_st)))) cout1) cg1)
+                 (@Blocks imports modName
+                    (fun stn_st : prod settings state =>
+                     @PropX.And W (prod settings state)
+                       (@nil Type) (pre stn_st)
+                       (@Inj W (prod settings state)
+                          (@nil Type)
+                          (bexpFalse b (@fst settings state stn_st)
+                             (@snd settings state stn_st)))) Base''
+                    (N.succ Base)
+                    (@Postcondition imports modName
+                       (fun stn_st : prod settings state =>
+                        @PropX.And W (prod settings state)
+                          (@nil Type) (pre stn_st)
+                          (@Inj W (prod settings state)
+                             (@nil Type)
+                             (bexpFalse b (@fst settings state stn_st)
+                                (@snd settings state stn_st)))) cout2)
+                    (@VerifCond imports modName
+                       (fun stn_st : prod settings state =>
+                        @PropX.And W (prod settings state)
+                          (@nil Type) (pre stn_st)
+                          (@Inj W (prod settings state)
+                             (@nil Type)
+                             (bexpFalse b (@fst settings state stn_st)
+                                (@snd settings state stn_st)))) cout2) cg2))))).
+  Proof using All.
+    Cond_t.
+  Qed.
+
+  Definition Cond_ (b : bexp) (Then Else : cmd imports modName) : cmd imports modName.
+    red; refine (fun pre =>
+      let cout1 := Then (fun stn_st => pre stn_st /\ [|bexpTrue b (fst stn_st) (snd stn_st)|])%PropX in
+      let cout2 := Else (fun stn_st => pre stn_st /\ [|bexpFalse b (fst stn_st) (snd stn_st)|])%PropX in
+      {|
+        Postcondition := (fun stn_st => Postcondition cout1 stn_st \/ Postcondition cout2 stn_st)%PropX;
+        VerifCond := (forall stn st specs, interp specs (pre (stn, st)) -> bexpSafe b stn st)
+          :: VerifCond cout1 ++ VerifCond cout2;
+        Generate := fun Base Exit =>
+          let Base' := (Nsucc (Nsucc Base) + N_of_nat (size b))%N in
+          let cg1 := Generate cout1 Base' Base in
+          let Base'' := (Base' + N_of_nat (length (Blocks cg1)))%N in
+          let cg2 := Generate cout2 Base'' (Nsucc Base) in
+          {|
+            Entry := 2;
+            Blocks := (Postcondition cout1, (nil, Uncond (RvLabel (modName, Local Exit))))
+              :: (Postcondition cout2, (nil, Uncond (RvLabel (modName, Local Exit))))
+              :: blocks (Nsucc (Nsucc Base)) pre b (Base' + Entry cg1) (Base'' + Entry cg2)
+              ++ Blocks cg1 ++ Blocks cg2
+          |}
+      |}).
+    abstract Cond_t.
+    apply Cond__subproof1.
   Defined.
 
 End Cond.
