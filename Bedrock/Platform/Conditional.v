@@ -143,6 +143,37 @@ Section Cond.
                        rewrite H; reflexivity
                    end.
 
+  Ltac t := repeat match goal with
+                     | [ |- blockOk _ _ _ ] => hnf; simpl; intros
+                     | [ H1 : _, H2 : interp _ _ |- _ ] => destruct (H1 _ _ H2); clear H1; simpl in *
+                     | [ H : Some _ = Some _ |- _ ] => injection H; clear H; intros; subst
+                     | [ H : _ = _ |- _ ] => rewrite H in *
+                     | [ H : match ?E with Some _ => _ | _ => _ end = Some _ |- _ ] => case_eq E; intros
+                     | [ |- context[if ?E then _ else _] ] => case_eq E; intros
+                     | [ H : LabelMap.MapsTo ?Which _ _ |- context[Labels _ ?Which] ] =>
+                       match goal with
+                         | [ H' : LabelMap.MapsTo _ _ _ |- _ ] =>
+                           match H' with
+                             | H => fail 1
+                             | _ => clear H'
+                           end
+                       end
+                   end; discriminate || intuition; struct;
+  repeat match goal with
+           | [ |- Logic.ex _ ] => eexists
+           | [ |- _ /\ _ ] => split
+         end; (simpl; simpl; eauto);
+  try match goal with
+        | [ |- interp _ _ ] =>
+          propxFo;
+          try match goal with
+                | [ H : _ |- _ ] => apply H; auto
+              end; simpl;
+          repeat match goal with
+                   | [ H : _ = _ |- _ ] => rewrite H in *
+                 end; trivial
+      end.
+
   Lemma blocks_ok : forall imps b Base pre Tru Fals Tru_spec Fals_spec,
     (forall specs st, interp specs (pre st)
       -> exists v, bexpD b (fst st) (snd st) = Some v)
@@ -161,37 +192,6 @@ Section Cond.
     induction b; simpl; intuition; repeat match goal with
                                             | [ |- List.Forall _ _ ] => (constructor || apply Forall_app); simpl
                                           end.
-
-    Ltac t := repeat match goal with
-                       | [ |- blockOk _ _ _ ] => hnf; simpl; intros
-                       | [ H1 : _, H2 : interp _ _ |- _ ] => destruct (H1 _ _ H2); clear H1; simpl in *
-                       | [ H : Some _ = Some _ |- _ ] => injection H; clear H; intros; subst
-                       | [ H : _ = _ |- _ ] => rewrite H in *
-                       | [ H : match ?E with Some _ => _ | _ => _ end = Some _ |- _ ] => case_eq E; intros
-                       | [ |- context[if ?E then _ else _] ] => case_eq E; intros
-                       | [ H : LabelMap.MapsTo ?Which _ _ |- context[Labels _ ?Which] ] =>
-                         match goal with
-                           | [ H' : LabelMap.MapsTo _ _ _ |- _ ] =>
-                             match H' with
-                               | H => fail 1
-                               | _ => clear H'
-                             end
-                         end
-                     end; discriminate || intuition; struct;
-    repeat match goal with
-             | [ |- Logic.ex _ ] => eexists
-             | [ |- _ /\ _ ] => split
-           end; (simpl; simpl; eauto);
-    try match goal with
-          | [ |- interp _ _ ] =>
-            propxFo;
-            try match goal with
-                  | [ H : _ |- _ ] => apply H; auto
-                end; simpl;
-            repeat match goal with
-                     | [ H : _ = _ |- _ ] => rewrite H in *
-                   end; trivial
-        end.
 
     t.
     eapply IHb; intuition eauto; t.

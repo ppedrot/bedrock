@@ -1,4 +1,5 @@
 Require Import Omega.
+Require Import Arith.
 Require Import PreAutoSep Util Sys.
 Export PreAutoSep Util Sys.
 
@@ -318,6 +319,8 @@ Qed.
 
 Hint Rewrite substH_in2 : sepFormula.
 
+Opaque mult.
+
 Lemma create_stack : forall ns ss sp,
   NoDup ns
   -> sp =?> (length ns + ss) ===> Ex vs, locals ns vs ss sp.
@@ -328,10 +331,10 @@ Lemma create_stack : forall ns ss sp,
   apply behold_the_array; auto.
   apply Himp_refl.
   unfold locals, array.
-  Opaque mult.
+
   sepLemma.
   apply allocated_shift_base.
-  Require Import Arith.
+
   unfold natToW; rewrite mult_comm; words.
   omega.
 Qed.

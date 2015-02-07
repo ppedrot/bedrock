@@ -515,8 +515,8 @@ Lemma goodSize_dec : forall n, {goodSize n} + {~goodSize n}.
   Opaque goodSize.
 Qed.
 
+Transparent goodSize.
 Lemma not_goodSize : forall n, ~goodSize n -> (n >= pow2 32)%nat.
-  Transparent goodSize.
   unfold goodSize; intros.
   generalize dependent 32; intro sz; intros.
   assert (N.of_nat n >= Npow2 sz)%N.
@@ -524,8 +524,8 @@ Lemma not_goodSize : forall n, ~goodSize n -> (n >= pow2 32)%nat.
   apply Nge_out in H0.
   rewrite Npow2_nat in *.
   rewrite Nat2N.id in *; auto.
-  Opaque goodSize.
 Qed.
+Opaque goodSize.
 
 Lemma noWrapAround_goodSize' : forall p (n : W) cur (sz : W),
   noWrapAround p (wordToNat n)
@@ -734,10 +734,11 @@ Section ok.
 
   Hint Rewrite tickle using assumption : sepFormula.
 
+  Opaque mult.
+  Hint Rewrite wordToNat_wminus using nomega : N.
+  Opaque minus.
   Theorem ok : moduleOk m.
     vcgen; try t.
-
-    Opaque mult.
 
     post.
     evaluate hints.
@@ -838,7 +839,6 @@ Section ok.
 
     sep hints.
 
-    Hint Rewrite wordToNat_wminus using nomega : N.
 
     Focus 4.
     eapply Himp_trans; [ eapply allocated_split | sepLemma ].
@@ -888,7 +888,6 @@ Section ok.
     nomega.
 
     f_equal.
-    Opaque minus.
     nomega.
 
     eapply noWrapAround_weaken'; [ eassumption | nomega ].
