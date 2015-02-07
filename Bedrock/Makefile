@@ -27,7 +27,7 @@ TESTS := UnfolderTests
 VS         := $(MODULES:%=%.v)
 TVS        := $(TESTS:%=%.v)
 
-ARGS :=-R . Bedrock
+ARGS :=-R . Bedrock -I reification
 
 .PHONY: coq quick vio2vo clean package native ltac version install
 
