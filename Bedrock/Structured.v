@@ -736,6 +736,17 @@ Module DefineStructured.
 
   Ltac destrOpt E := let Heq := fresh "Heq" in case_eq E; (intros ? Heq || intro Heq); rewrite Heq in *.
 
+  Ltac wrap_evar_change2 H1 H2 tac H3 :=
+    let TH1 := type of H1 in
+    let TH2 := type of H2 in
+    (tryif (has_evar TH1 || has_evar TH2)
+     then tac
+     else (tac;
+           let TH3 := type of H3 in
+           (tryif has_evar TH3
+            then fail
+            else idtac))).
+
   Ltac simp := repeat (match goal with
                          | [ x : codeGen _ _ _ _ _ _ _ |- _ ] => destruct x; simpl in *
                          | [ H : _ /\ _ |- _ ] => destruct H
@@ -749,13 +760,13 @@ Module DefineStructured.
                          | [ |- vcs (_ :: _) ] => constructor
                          | [ |- vcs (_ ++ _) ] => apply vcs_app_fwd
 
-                         | [ H1 : notStuck _ _, H2 : _ |- _ ] => specialize (H1 _ _ _ H2)
+                         | [ H1 : notStuck _ _, H2 : _ |- _ ] => wrap_evar_change2 H1 H2 ltac:(specialize (H1 _ _ _ H2)) H1
                          | [ H : LabelMap.find _ _ = Some _ |- _ ] => apply LabelMap.find_2 in H
                          | [ H : forall k v, _ |- _ ] => destruct (split_add H); clear H
                          | [ H : forall n x y, _ |- _ ] => destruct (nth_app_hyp H); clear H
                          | [ H : _ |- _ ] => destruct (specialize_imps H); clear H
                          | [ H : forall x, _ -> _ |- _ ] => specialize (H _ (refl_equal _))
-                         | [ H : forall x y z, _ -> _ , H' : _ |- _ ] => specialize (H _ _ _ H')
+                         | [ H : forall x y z, _ -> _ , H' : _ |- _ ] => wrap_evar_change2 H H' ltac:(specialize (H _ _ _ H')) H
                          | [ H : forall x y, _ -> _ , H' : LabelMap.MapsTo _ _ _ |- _ ] => destruct (H _ _ H'); clear H; auto
                          | [ |- blockOk _ _ _ ] => red
                          | [ _ : match ?E with Some _ => _ | None => _ end = Some _ |- _ ] => destrOpt E; [ | discriminate ]
