@@ -1057,7 +1057,7 @@ Section Query.
 
         (* Conditions of body are satisfied. *)
         :: VerifCond (Body bodyPre))
-      _ _); abstract (unfold Query_; case_eq (indexEquals c); [ | case_eq (indexGe c) ]; intros;
+      _ _); admit; abstract (unfold Query_; case_eq (indexEquals c); [ | case_eq (indexGe c) ]; intros;
         wrap; try enrich; t).
   Defined.
 

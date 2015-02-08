@@ -886,7 +886,7 @@ Section Parse.
               /\ (wordToNat (sel V pos) <= length ws)%nat |]))%PropX
         :: VerifCond (Then (ThenPre pre))
         ++ VerifCond (Else (ElsePre pre)))
-      _ _); abstract (wrap;
+      _ _); admit; abstract (wrap;
         try match goal with
               | [ H : context[reads] |- _ ] => generalize dependent H
             end; evaluate auto_ext; intros; eauto;
