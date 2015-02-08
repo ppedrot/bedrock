@@ -259,6 +259,7 @@ Section OpSem.
   Lemma locals_mapped : forall specs ns vs res sp stn st P,
     interp specs (![locals ns vs res sp * P] (stn, st))
     -> mapped sp (length ns * 4) (Mem st).
+  Proof using .
     unfold locals; intros.
     assert (interp specs
       (![array (toArray ns vs) sp * ([|NoDup ns|] *
