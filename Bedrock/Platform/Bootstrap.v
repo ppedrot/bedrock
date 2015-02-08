@@ -770,7 +770,7 @@ Section boot.
 End boot.
 
 Definition genesisHints : TacPackage.
-  prepare genesis tt.
+  admit; prepare genesis tt.
 Defined.
 
 Ltac genesis := post; evaluate genesisHints; simpl in *; sep genesisHints; eauto.
