@@ -182,7 +182,7 @@ Section Parse.
     -> forall p' offset, bexpTrue (guard p' offset) stn st
       -> Regs st Rv <= sel V size.
   Proof using . (* ? - manually done - broken proof *)
-    clear H; induction p' as [ | [ ] ]; simpl; intuition eauto.
+    (*clear H;*) induction p' as [ | [ ] ]; simpl; intuition eauto.
 
     prep_locals; evaluate auto_ext; tauto.
   Qed.
@@ -199,7 +199,7 @@ Section Parse.
       -> goodSize (offset + wordToNat (sel V pos) + Datatypes.length p')
       -> bexpSafe (guard p' offset) stn st.
   Proof using . (* ? - manually done - broken proof *)
-    clear H; induction p' as [ | [ ] ]; simpl; intuition.
+    (*clear H;*) induction p' as [ | [ ] ]; simpl; intuition.
 
     prep_locals; evaluate auto_ext.
 
@@ -392,7 +392,7 @@ Section Parse.
       -> evalInstrs stn st (reads p' offset) = None
       -> False.
   Proof using . (* ? - manually done *)
-    clear H; induction p' as [ | [ ] ]; simpl; intuition.
+    (*clear H;*) induction p' as [ | [ ] ]; simpl; intuition.
 
     eapply IHp'; eauto.
     match goal with
@@ -485,7 +485,7 @@ Section Parse.
         interp specs (![array ws (sel V stream) * locals ("rp" :: ns) V' r (Regs st Sp) * fr] (stn, st'))
         /\ Regs st' Sp = Regs st Sp.
   Proof using . (* ? - manually done *)
-    clear H; induction p' as [ | [ ] ]; simpl; intuition.
+    (*clear H;*) induction p' as [ | [ ] ]; simpl; intuition.
 
     injection H6; intros; subst.
     eauto.

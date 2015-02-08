@@ -428,7 +428,7 @@ Section module.
       (fun (l : LabelMap.key) (x : assert * block) (m : LabelMap.t assert) =>
         LabelMap.add l (fst x) m) m importsMap).
   Proof using NoSelfImport.
-    clear NoDupFunc BlocksGood.
+    (*clear NoDupFunc BlocksGood.*)
     unfold importsMap.
     generalize NoSelfImport; clear NoSelfImport.
     generalize false at 2.

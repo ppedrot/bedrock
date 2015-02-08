@@ -1013,7 +1013,7 @@ Section link.
     -> LabelMap.find k exp = Some p
     -> v = p.
   Proof using .
-    clear ImportsAgree; unfold importsOk; intros.
+    (*clear ImportsAgree;*) unfold importsOk; intros.
 
     rewrite LabelMap.fold_1 in *.
     apply LabelMap.elements_1 in H0.
