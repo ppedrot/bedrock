@@ -16,7 +16,7 @@ vio2vo: Makefile.coq
 	$(MAKE) -f Makefile.coq vio2vo
 
 Makefile.coq: Makefile $(MODULES)
-	$(COQBIN)coq_makefile -R . $(PREFIX) \
+	$(COQBIN)coq_makefile -R . $(PREFIX) -I $(ROOT)/src/reification \
 		     $(MODULES) -o Makefile.coq
 
 install: Makefile.coq
