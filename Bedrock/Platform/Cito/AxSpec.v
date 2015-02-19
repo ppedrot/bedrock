@@ -44,14 +44,14 @@ Section ADTSection.
     end.
 
   Lemma is_same_type_sound a b : is_same_type a b = true -> same_type a b.
-  Proof.
+  Proof using Type.
     destruct a; destruct b; simpl in *; intuition.
   Qed.
 
   Definition same_types ls1 ls2 := List.Forall2 same_type ls1 ls2.
 
   Lemma is_same_types_sound ls1 ls2 : is_same_types ls1 ls2 = true -> same_types ls1 ls2.
-  Proof.
+  Proof using Type.
     eapply forall2_sound; eapply is_same_type_sound.
   Qed.
 
@@ -64,7 +64,7 @@ Section ADTSection.
   Require Import Bedrock.Platform.Cito.GeneralTactics.
 
   Lemma is_adt_iff v : is_adt v = true <-> exists a : ADTValue, v = ADT a.
-  Proof.
+  Proof using Type.
     destruct v as [w | a]; simpl in *.
     split; intros; openhyp; discriminate.
     intuition.

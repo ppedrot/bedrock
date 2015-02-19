@@ -20,5 +20,6 @@ Definition alwaysZero := bmodule "alwaysZero" {{
 }}.
 
 Theorem alwaysZeroOk : moduleOk alwaysZero.
+Proof using .
   vcgen; abstract (post; evaluate auto_ext; try congruence; sep_auto).
 Qed.

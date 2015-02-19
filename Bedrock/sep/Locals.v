@@ -403,7 +403,7 @@ Section correctness.
              /\ exprD funcs uvars vars nm stringT = Some nmV
              /\ w = wb ^+ $ (variablePosition nmsV nmV)
        end.
-  Proof.
+  Proof using Type. (* ? - done manually - proof diverging on trying to unify [t ^+ natToW (n + (n + (n + (n + 0))))] with [t ^+ $ (n * 4)] *)
     destruct e; simpl deref; intuition; try discriminate.
     deconstruct.
 
@@ -429,7 +429,7 @@ Section correctness.
 
   Lemma listIn_correct : forall uvars vars e ns, listIn e = Some ns
     -> exprD funcs uvars vars e listStringT = Some ns.
-  Proof.
+  Proof using Type.
     induction e; simpl; intuition; try discriminate.
     repeat match type of H with
              | Forall _ (_ :: _ :: nil) => inversion H; clear H; subst
@@ -457,7 +457,7 @@ Section correctness.
   Lemma sym_sel_correct : forall uvars vars nm (vs : expr types0) vsv,
     exprD funcs uvars vars vs valsT = Some vsv
     -> exprD funcs uvars vars (sym_sel vs nm) wordT = Some (sel vsv nm).
-  Proof.
+  Proof using Type.
     induction vs; simpl; intros; try discriminate.
 
     destruct (equiv_dec t valsT); congruence.
@@ -502,7 +502,7 @@ Section correctness.
   Lemma array_selN : forall nm vs ns n,
     nth_error ns n = Some nm
     -> Array.selN (toArray ns vs) n = sel vs nm.
-  Proof.
+  Proof using .
     induction ns; destruct n; simpl; intuition; try discriminate.
     injection H; clear H; intros; subst; reflexivity.
   Qed.
@@ -511,7 +511,7 @@ Section correctness.
 
   Lemma length_toArray : forall ns vs,
     length (toArray ns vs) = length ns.
-  Proof.
+  Proof using .
     induction ns; simpl; intuition.
   Qed.
 
@@ -524,6 +524,7 @@ Section correctness.
 
   Lemma variablePosition'_4 : forall nm ns,
     variablePosition' ns nm * 4 = variablePosition ns nm.
+  Proof using .
     induction ns; simpl; intuition.
     destruct (string_dec a nm); intuition.
   Qed.
@@ -531,6 +532,7 @@ Section correctness.
   Lemma nth_error_variablePosition' : forall nm ns,
     In nm ns
     -> nth_error ns (variablePosition' ns nm) = Some nm.
+  Proof using .
     induction ns; simpl; intuition; subst.
     destruct (string_dec nm nm); tauto.
     destruct (string_dec a nm); intuition; subst; auto.
@@ -539,6 +541,7 @@ Section correctness.
   Lemma variablePosition'_length : forall nm ns,
     In nm ns
     -> (variablePosition' ns nm < length ns)%nat.
+  Proof using .
     induction ns; simpl; intuition; subst.
     destruct (string_dec nm nm); intuition.
     destruct (string_dec a nm); omega.
@@ -559,7 +562,7 @@ Section correctness.
         ST.HT.smem_get_word (IL.implode stn) p m = Some v
       | _ => False
     end.
-  Proof.
+  Proof using Type.
     simpl; intuition.
     do 5 (destruct args; simpl in *; intuition; try discriminate).
     generalize (deref_correct uvars vars pe); destruct (deref pe); intro Hderef; try discriminate.
@@ -750,6 +753,7 @@ Section correctness.
        end
     -> exists ve', sym_read_easier Prover summ args pe = Some ve'
       /\ exprD funcs uvars vars ve wordT = exprD funcs uvars vars ve' wordT.
+  Proof using Type.
     intros.
     simpl in H0.
     repeat (destruct args; simpl in *; try discriminate).
@@ -789,7 +793,7 @@ Section correctness.
         ST.HT.smem_get_word (IL.implode stn) p m = Some v
       | _ => False
     end.
-  Proof.
+  Proof using Type.
     intros.
     eapply easy_bridge in H; eauto.
     2: instantiate (1 := fun p => ST.satisfies cs p stn m); eauto.
@@ -801,6 +805,7 @@ Section correctness.
   Lemma toArray_irrel : forall vs v nm ns,
     ~In nm ns
     -> toArray ns (upd vs nm v) = toArray ns vs.
+  Proof using .
     induction ns; simpl; intuition.
     f_equal; auto.
     unfold upd.
@@ -810,6 +815,7 @@ Section correctness.
   Lemma nth_error_In : forall A (x : A) ls n,
     nth_error ls n = Some x
     -> In x ls.
+  Proof using .
     induction ls; destruct n; simpl; intuition; try discriminate; eauto.
     injection H; intros; subst; auto.
   Qed.
@@ -819,6 +825,7 @@ Section correctness.
     -> forall n, nth_error ns n = Some nm
       -> Array.updN (toArray ns vs) n v
       = toArray ns (upd vs nm v).
+  Proof using .
     induction 1; destruct n; simpl; intuition.
     injection H1; clear H1; intros; subst.
     rewrite toArray_irrel by assumption.
@@ -835,6 +842,7 @@ Section correctness.
     NoDup ns
     -> In nm ns
     -> toArray ns (upd vs nm v) = updN (toArray ns vs) (variablePosition' ns nm) v.
+  Proof using .
     induction 1; simpl; intuition; subst.
     destruct (string_dec nm nm); try tauto.
     rewrite toArray_irrel; auto.
@@ -874,7 +882,7 @@ Section correctness.
           | Some sm' => ST.satisfies cs pr stn sm'
         end
     end.
-  Proof.
+  Proof using .
     simpl; intuition.
     do 5 (destruct args; simpl in *; intuition; try discriminate).
     generalize (deref_correct uvars vars pe); destruct (deref pe); intro Hderef; try discriminate.

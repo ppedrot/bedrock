@@ -12,6 +12,7 @@ Section TopSection.
   Require Import Bedrock.Platform.Cito.GeneralTactics.
 
   Lemma label_mapsto_in : forall modules imports lbl spec, @label_mapsto ADTValue modules imports lbl spec -> label_in modules imports lbl.
+  Proof using Type.
     unfold label_mapsto, label_in.
     intros.
     openhyp.
@@ -20,6 +21,7 @@ Section TopSection.
   Qed.
 
   Lemma label_in_mapsto : forall modules imports lbl, @label_in ADTValue modules imports lbl -> exists spec, label_mapsto modules imports lbl spec.
+  Proof using Type.
     unfold label_mapsto, label_in.
     intros.
     openhyp.
@@ -33,6 +35,7 @@ Section TopSection.
   Definition specs_equal specs modules imports := forall lbl spec, find lbl specs = Some spec <-> @label_mapsto ADTValue modules imports lbl spec.
 
   Lemma specs_equal_in : forall specs modules imports, specs_equal specs modules imports -> forall lbl, In lbl specs <-> label_in modules imports lbl.
+  Proof using Type.
     split; intros.
     eapply In_MapsTo in H0.
     openhyp.
@@ -48,6 +51,7 @@ Section TopSection.
   Require Import Bedrock.Platform.Cito.ProgramLogic2.
 
   Lemma specs_equal_agree : forall specs modules imports, specs_equal specs modules imports -> forall stn fs, env_good_to_use modules imports stn fs -> specs_env_agree specs (from_bedrock_label_map (Labels stn), fs stn).
+  Proof using Type.
     intros.
     split.
 

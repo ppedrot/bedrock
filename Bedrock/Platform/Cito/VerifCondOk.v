@@ -40,7 +40,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         vcs (verifCond vars temp_size s k rv_postcond pre) ->
         vcs
           (VerifCond (do_compile s k pre)).
-    Proof.
+    Proof using Type.
 
       unfold verifCond, imply; induction s.
 

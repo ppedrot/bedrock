@@ -82,6 +82,7 @@ Ltac constructors :=
 Ltac good_module := shakeup; repeat (constructors; shakeup).
 
 Lemma good : IsGoodModule m.
+Proof using .
   good_module.
 Qed.
 
@@ -150,6 +151,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     * mallocHeap 0 * F
     ===> is_state sp (sel vs "rp") (wordToNat (sel vs "extra_stack")) e_stack nil
     (vs, heap_empty) (toArray args vs) * mallocHeap 0 * F.
+  Proof using .
     intros; sepLemma.
     etransitivity; [ | apply is_state_in ]; auto.
     sepLemma.
@@ -159,6 +161,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     P ===> P'
     -> interp specs (![P'] st ---> Q)%PropX
     -> interp specs (![P] st ---> Q)%PropX.
+  Proof using .
     intros.
     eapply Imply_trans; try apply H0.
     rewrite sepFormula_eq.
@@ -181,6 +184,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     ===> Ex vs', locals ("rp" :: "extra_stack" :: args) vs' e_stack' sp
     * is_heap (make_heap pairs) * [| sel vs' "extra_stack" = e_stack |]
     * [| saved_vars vs' args pairs |].
+  Proof using .
     unfold is_state, locals, Inv.has_extra_stack; simpl.
     intros.
     apply Himp_ex_c.
@@ -223,6 +227,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     ===> Ex vs', locals ("rp" :: "extra_stack" :: nil) vs' e_stack' sp
     * [| sel vs' "extra_stack" = e_stack|]
     * mallocHeap 0 * F.
+  Proof using .
     intros.
     change heap_empty with (@make_heap ADTValue nil).
     change (@nil W) with (List.map (@fst W ArgIn) nil).
@@ -236,7 +241,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
   Require Import Bedrock.Platform.Cito.WordFacts.
 
   Theorem is_state_in'' : forall vs sp args e_stack h, locals ("rp" :: "extra_stack" :: args) vs e_stack sp * is_heap h ===> is_state sp (sel vs "rp") (wordToNat (sel vs "extra_stack")) e_stack args (vs, h) nil.
-  Proof.
+  Proof using .
     intros; sepLemma.
     set (_ :: _ :: _).
     set (_ * _)%Sep.
@@ -271,12 +276,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
                              * mallocHeap 0 * F
                                                 ===> is_state sp (sel vs "rp") (wordToNat (sel vs "extra_stack")) e_stack args
                                                 (vs, heap_empty) nil * mallocHeap 0 * F.
+  Proof using .
     intros; sepLemma.
     etransitivity; [ | apply is_state_in'' ]; auto.
     sepLemma.
   Qed.
 
   Lemma toArray_map_length : forall A vs f ls1 ls2, toArray ls1 vs = @List.map A _ f ls2 -> length ls1 = length ls2.
+  Proof using .
     intros.
     eapply f_equal with (f := @length _) in H.
     rewrite length_toArray in *.
@@ -299,6 +306,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
                                           ===> Ex vs', locals ("rp" :: "extra_stack" :: args) vs' e_stack' sp
                                                        * is_heap (make_heap pairs) * [| sel vs' "extra_stack" = e_stack |]
                                                        * [| saved_vars vs' args pairs |].
+  Proof using .
     unfold Himp; intros.
     etransitivity.
     2 : eapply is_state_out''; eauto.
@@ -321,10 +329,12 @@ Module Make (Import E : ADT) (Import M : RepInv E).
   Qed.
 
   Lemma make_heap_heap_empty : forall ls, make_heap (List.map (fun w : W => (w, SCA _ w)) ls) = heap_empty.
+  Proof using .
     induction ls; simpl; intuition.
   Qed.
 
   Lemma map_id : forall A ls, List.map (fun x : A => x) ls = ls.
+  Proof using .
     induction ls; simpl; intuition.
   Qed.
 
@@ -337,6 +347,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
                                                                                      ===> Ex vs', locals ("rp" :: "extra_stack" :: args) vs' e_stack' sp
                                                                                                   * [| sel vs' "extra_stack" = e_stack|]
                                                                                                   * mallocHeap 0 * F.
+  Proof using .
     intros.
     assert (make_heap (List.map (fun w => (w, SCA ADTValue w)) (toArray args vs)) = heap_empty).
     eapply make_heap_heap_empty.
@@ -353,6 +364,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
 
   Require Import Bedrock.Platform.Cito.WordMap.
   Lemma length_nil : forall A ls, @length A ls = 0 -> ls = nil.
+  Proof using .
     destruct ls; simpl in *; intuition.
   Qed.
 
@@ -366,6 +378,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
                                                                                      ===> Ex vs', locals ("rp" :: "extra_stack" :: args) vs' e_stack' sp
                                                                                                   * [| sel vs' "extra_stack" = e_stack|]
                                                                                                   * mallocHeap 0 * F.
+  Proof using .
     intros.
     unfold is_state.
     unfold is_heap.
@@ -403,6 +416,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
   Module Import ElimDeadMake := ElimDead.Make E.
 
   Lemma opt_good : GoodOptimizer opt.
+  Proof using .
     eapply GoodOptimizer_trans.
     eapply ConstFoldingMake.good_optimizer.
     eapply ElimDeadMake.good_optimizer.

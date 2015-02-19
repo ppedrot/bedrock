@@ -28,6 +28,7 @@ Module Adt : ADT.
     * [| goodSize (2 + length ws) |]
     * (Ex junk, self ==*> $ (length ws), junk)
     * array ws (self ^+ $8).
+  Proof using .
     unfold arr; sepLemma.
   Qed.
 
@@ -35,6 +36,7 @@ Module Adt : ADT.
     * [| goodSize (2 + length ws) |]
     * (Ex junk, self ==*> $ (length ws), junk)
     * array ws (self ^+ $8) ===> arr ws self.
+  Proof using .
     unfold arr; sepLemma.
   Qed.
 End Adt.
@@ -44,6 +46,7 @@ Export Adt.
 
 Lemma allocated_out'' : forall p len offset,
   allocated p offset len ===> Ex ws, ptsto32m' nil p offset ws * [| length ws = len |].
+Proof using .
   induction len; sepLemmaLhsOnly.
   apply himp_ex_c; exists nil; sepLemma.
   etransitivity; [ apply himp_star_frame; [ apply IHlen | reflexivity ] | ].
@@ -54,6 +57,7 @@ Qed.
 
 Lemma allocated_out' : forall p len offset,
   allocated p offset len ===> Ex ws, ptsto32m nil p offset ws * [| length ws = len |].
+Proof using .
   intros; eapply Himp_trans; [ apply allocated_out'' | ].
   apply Himp_ex; intro.
   apply Himp_star_frame; try apply Himp_refl.
@@ -66,6 +70,7 @@ Local Hint Constructors view_shift.
 Lemma allocated_out : forall p offset len,
   view_shift offset
   -> allocated p offset len ===> Ex ws, array ws (p ^+ $ (offset)) * [| length ws = len |].
+Proof using .
   intros; eapply Himp_trans; [ apply allocated_out' | ].
   apply Himp_ex; intro.
   apply Himp_star_frame; try apply Himp_refl.
@@ -76,6 +81,7 @@ Qed.
 
 Lemma allocated_in'' : forall p len offset,
   (Ex ws, ptsto32m' nil p offset ws * [| length ws = len |]) ===> allocated p offset len.
+Proof using .
   induction len; sepLemmaLhsOnly.
   destruct x; sepLemma.
   destruct x; sepLemma.
@@ -87,6 +93,7 @@ Qed.
 
 Lemma allocated_in' : forall p len offset,
   (Ex ws, ptsto32m nil p offset ws * [| length ws = len |]) ===> allocated p offset len.
+Proof using .
   intros; eapply Himp_trans; [ | apply allocated_in'' ].
   apply Himp_ex; intro.
   apply Himp_star_frame; try apply Himp_refl.
@@ -96,6 +103,7 @@ Qed.
 Lemma allocated_in : forall p ws,
   goodSize (S (S (length ws)))
   -> p =?> 2 * array ws (p ^+ $8) ===> p =?> wordToNat (natToW (S (S (length ws)))).
+Proof using .
   intros.
 
   replace (wordToNat (natToW (S (S (length ws))))) with (S (S (length ws))).
@@ -166,6 +174,7 @@ Local Hint Extern 1 (@eq W _ _) => words.
 Lemma twoPlus_le : forall w,
   goodSize (2 + wordToNat w)
   -> natToW 2 <= natToW 2 ^+ w.
+Proof using .
   intros.
   rewrite <- (natToWord_wordToNat w).
   rewrite <- natToWord_plus.
@@ -184,6 +193,7 @@ Lemma twoPlus_freeable : forall w len,
   freeable w (S (S len))
   -> goodSize (S (S len))
   -> freeable w (wordToNat (natToW (S (S len)))).
+Proof using .
   intros; rewrite wordToNat_natToWord_idempotent; auto.
 Qed.
 
@@ -193,6 +203,7 @@ Section hints.
   Hint Rewrite wordToNat_wplus using assumption : sepFormula.
 
   Theorem ok : moduleOk m.
+  Proof using .
     vcgen; abstract (sep hints; auto).
   Qed.
 End hints.

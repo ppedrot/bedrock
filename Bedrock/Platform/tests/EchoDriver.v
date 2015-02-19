@@ -37,6 +37,7 @@ Section boot.
     }}.
 
   Theorem ok : moduleOk boot.
+  Proof using Type.
     vcgen; abstract genesis.
   Qed.
 
@@ -44,10 +45,12 @@ Section boot.
   Definition m1 := link Echo.m m0.
 
   Lemma ok0 : moduleOk m0.
+  Proof using Type.
     link Malloc.ok ok.
   Qed.
 
   Lemma ok1 : moduleOk m1.
+  Proof using Type.
     link Echo.ok ok0.
   Qed.
 
@@ -80,6 +83,7 @@ Section boot.
   Hypothesis mem_high : forall w, $ (size * 4) <= w -> st.(Mem) w = None.
 
   Theorem safe : sys_safe stn prog (w, st).
+  Proof using All.
     safety ok1.
   Qed.
 End boot.

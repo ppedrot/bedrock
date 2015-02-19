@@ -19,10 +19,12 @@ Module M'.
   Definition inbuf_size := 40.
 
   Theorem inbuf_size_lower : (inbuf_size >= 2)%nat.
+  Proof using .
     unfold inbuf_size; auto.
   Qed.
 
   Theorem inbuf_size_upper : (N_of_nat (inbuf_size * 4) < Npow2 32)%N.
+  Proof using .
     reflexivity.
   Qed.
 End M'.
@@ -40,6 +42,7 @@ Section boot.
   Hypothesis mem_size : goodSize (size * 4)%nat.
 
   Let heapSizeUpperBound : goodSize (heapSize * 4).
+  Proof using All.
     goodSize.
   Qed.
 
@@ -62,6 +65,7 @@ Section boot.
   Ltac t := unfold globalSched, localsInvariantMain, M'.globalSock, M'.globalSched; genesis.
 
   Theorem ok0 : moduleOk boot.
+  Proof using .
     vcgen; abstract t.
   Qed.
 
@@ -71,18 +75,22 @@ Section boot.
   Definition m := link E.m m3.
 
   Lemma ok1 : moduleOk m1.
+  Proof using .
     link ok0 E.T.ok.
   Qed.
 
   Lemma ok2 : moduleOk m2.
+  Proof using .
     link Buffers.ok ok1.
   Qed.
 
   Lemma ok3 : moduleOk m3.
+  Proof using .
     link E.MyIo.ok ok2.
   Qed.
 
   Theorem ok : moduleOk m.
+  Proof using .
     link E.ok ok3.
   Qed.
 
@@ -115,6 +123,7 @@ Section boot.
   Hypothesis mem_high : forall w, $ (size * 4) <= w -> st.(Mem) w = None.
 
   Theorem safe : sys_safe stn prog (w, st).
+  Proof using .
     safety ok.
   Qed.
 End boot.

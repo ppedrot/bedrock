@@ -93,6 +93,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Notation get_module_Imports := (StubMake.get_module_Imports modules imports).
 
     Lemma MName_neq_Disjoint : forall m1 m2, MName m1 <> MName m2 -> Disjoint (get_module_Exports m1) (get_module_Exports m2).
+    Proof using Type.
       unfold Disjoint.
       intros.
       not_not.
@@ -103,6 +104,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Disjoint_exports : forall m ms, incl (m :: ms) modules -> List.NoDup (List.map MName (m :: ms)) -> Disjoint (get_module_Exports m) (update_all (List.map get_module_Exports ms)).
+    Proof using Type.
       induction ms; simpl; intros.
       unfold update_all; simpl.
       eapply Disjoint_empty.
@@ -120,6 +122,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Compat_exports_many_exports : forall ms m, List.In m ms -> incl ms modules -> List.NoDup (List.map MName ms) -> Compat (get_module_Exports m) (update_all (List.map get_module_Exports ms)).
+    Proof using Type.
       induction ms; simpl; intros.
       intuition.
       openhyp.
@@ -141,6 +144,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Compat_exports_foreign_imports : forall m, List.In m modules -> Compat (get_module_Exports m) foreign_imports.
+    Proof using NoSelfImport.
       intros.
       eapply Disjoint_Compat.
       eapply Disjoint_exports_foreign_imports; eauto.
@@ -149,6 +153,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Notation get_module_impl_Imports := module_impl_exports.
 
     Lemma Disjoint_exports_impl_imports : forall m1 m2, List.In m1 modules -> List.In m2 modules -> Disjoint (get_module_Exports m1) (get_module_impl_Imports m2).
+    Proof using Type.
       intros.
       unfold get_module_impl_Imports.
       unfold Disjoint.
@@ -171,12 +176,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Compat_exports_impl_imports : forall m1 m2, List.In m1 modules -> List.In m2 modules -> Compat (get_module_Exports m1) (get_module_impl_Imports m2).
+    Proof using Type.
       intros.
       eapply Disjoint_Compat.
       eapply Disjoint_exports_impl_imports; eauto.
     Qed.
 
     Lemma Disjoint_impl_imports_foreign_imports : forall m, List.In m modules -> Disjoint (get_module_impl_Imports m) foreign_imports.
+    Proof using (ImportsGoodModuleName modules).
       intros.
       unfold get_module_impl_Imports.
       unfold Disjoint.
@@ -202,12 +209,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Compat_impl_imports_foreign_imports : forall m, List.In m modules -> Compat (get_module_impl_Imports m) foreign_imports.
+    Proof using (ImportsGoodModuleName modules).
       intros.
       eapply Disjoint_Compat.
       eapply Disjoint_impl_imports_foreign_imports; eauto.
     Qed.
 
     Lemma In_impl_imports_module_name : forall k m, In k (get_module_impl_Imports m) -> fst k = impl_module_name (MName m).
+    Proof using .
       unfold get_module_impl_Imports.
       intros.
       eapply In_to_map in H.
@@ -222,12 +231,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma impl_module_name_is_injection : forall s1 s2, impl_module_name s1 = impl_module_name s2 -> s1 = s2.
+    Proof using .
       intros.
       unfold impl_module_name in *.
       eapply append_inj_2; eauto.
     Qed.
 
     Lemma Disjoint_impl_imports_impl_imports : forall m1 m2, List.In m1 modules -> List.In m2 modules -> MName m1 <> MName m2 -> Disjoint (get_module_impl_Imports m1) (get_module_impl_Imports m2).
+    Proof using Type.
       intros.
       unfold Disjoint.
       intros.
@@ -240,6 +251,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Compat_impl_imports_impl_imports : forall m1 m2, List.In m1 modules -> List.In m2 modules -> MName m1 <> MName m2 -> Compat (get_module_impl_Imports m1) (get_module_impl_Imports m2).
+    Proof using Type.
       intros.
       eapply Disjoint_Compat.
       eapply Disjoint_impl_imports_impl_imports; eauto.
@@ -247,6 +259,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Existing Instance Disjoint_rel_Symmetric.
 
     Lemma Disjoint_exports_imports : forall m, List.In m modules -> Disjoint (get_module_Exports m) (get_module_Imports m).
+    Proof using Type.
       intros.
       unfold StubMake.get_module_Imports.
       symmetry.
@@ -254,6 +267,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Compat_exports_total_exports : forall m, List.In m modules -> Compat (get_module_Exports m) total_exports.
+    Proof using (NoDupModuleNames imports).
       intros.
       eapply Compat_exports_many_exports; eauto.
       intuition.
@@ -261,6 +275,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Existing Instance Compat_rel_Symmetric.
 
     Lemma Compat_many_exports_total_exports : forall ms, incl ms modules -> Compat (update_all (List.map get_module_Exports ms)) total_exports.
+    Proof using (NoDupModuleNames imports).
       intros.
       symmetry.
       eapply Compat_update_all.
@@ -274,6 +289,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Disjoint_many_exports_impl_imports : forall ms m, incl (m :: ms) modules -> Disjoint (update_all (List.map get_module_Exports ms)) (get_module_impl_Imports m).
+    Proof using Type.
       intros.
       symmetry.
       eapply Disjoint_update_all.
@@ -287,12 +303,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Compat_many_exports_impl_imports : forall ms m, incl (m :: ms) modules -> Compat (update_all (List.map get_module_Exports ms)) (get_module_impl_Imports m).
+    Proof using Type.
       intros.
       eapply Disjoint_Compat.
       eapply Disjoint_many_exports_impl_imports; eauto.
     Qed.
 
     Lemma Compat_exports_imports : forall m1 m2, List.In m1 modules -> List.In m2 modules -> MName m1 <> MName m2 -> Compat (get_module_Exports m1) (get_module_Imports m2).
+    Proof using (NoDupModuleNames NoSelfImport).
       intros.
       unfold StubMake.get_module_Imports.
       symmetry.
@@ -305,21 +323,25 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Disjoint_total_exports_foreign_imports : Disjoint total_exports foreign_imports.
+    Proof using NoSelfImport.
       eapply Disjoint_many_exports_foreign_imports; intuition.
     Qed.
 
     Lemma Disjoint_total_exports_impl_imports : forall m, List.In m modules -> Disjoint total_exports (get_module_impl_Imports m).
+    Proof using Type.
       intros.
       eapply Disjoint_many_exports_impl_imports; intuition.
     Qed.
 
     Lemma Compat_total_exports_impl_imports : forall m, List.In m modules -> Compat total_exports (get_module_impl_Imports m).
+    Proof using Type.
       intros.
       eapply Compat_many_exports_impl_imports; intuition.
     Qed.
     Existing Instance Compat_rel_Reflexive.
 
     Lemma Compat_imports_imports : forall m1 m2, List.In m1 modules -> List.In m2 modules -> MName m1 <> MName m2 -> Compat (get_module_Imports m1) (get_module_Imports m2).
+    Proof using -(NoDupModuleNames imports modules).
       intros.
       unfold StubMake.get_module_Imports.
       eapply Compat_diff.
@@ -338,6 +360,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma compat_imports_exports : forall ms m, incl (m :: ms) modules -> List.NoDup (List.map MName (m :: ms)) -> Compat (get_module_Imports m) (update_all (List.map get_module_Exports ms)).
+    Proof using (NoDupModuleNames NoSelfImport).
       intros.
       unfold StubMake.get_module_Imports.
       eapply Compat_diff.
@@ -353,6 +376,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma compat_exports_imports : forall m ms, incl (m :: ms) modules -> List.NoDup (List.map MName (m :: ms)) -> Compat (get_module_Exports m) (update_all (List.map get_module_Imports ms) - update_all (List.map get_module_Exports ms)).
+    Proof using (NoDupModuleNames NoSelfImport).
       intros.
       symmetry.
       eapply Compat_diff.
@@ -372,6 +396,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma compat_imports_many_imports : forall m ms, incl (m :: ms) modules -> List.NoDup (List.map MName (m :: ms)) -> Compat (get_module_Imports m) (update_all (List.map get_module_Imports ms)).
+    Proof using -(NoDupModuleNames imports modules).
       intros.
       eapply Compat_update_all.
       eapply Forall_forall.
@@ -388,6 +413,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma compat_imports_imports : forall m ms, incl (m :: ms) modules -> List.NoDup (List.map MName (m :: ms)) -> Compat (get_module_Imports m) (update_all (List.map get_module_Imports ms) - update_all (List.map get_module_Exports ms)).
+    Proof using -(NoDupModuleNames imports modules).
       intros.
       symmetry.
       eapply Compat_diff.
@@ -405,6 +431,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         get_module_Imports a +
         update_all (List.map get_module_Imports ms) -
         (get_module_Exports a + update_all (List.map get_module_Exports ms)).
+    Proof using -(NoDupModuleNames imports modules).
       intros.
       rewrite Disjoint_diff_update_comm.
       rewrite update_diff_same.
@@ -426,10 +453,12 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Definition final_imports := foreign_imports + total_impls.
 
     Lemma not_nil_cons : forall A ls, ls <> @nil A -> exists x xs, ls = x :: xs.
+    Proof using .
       destruct ls; intuition eauto.
     Qed.
 
     Lemma foreign_imports_Disjoint_total_impls : Disjoint foreign_imports total_impls.
+    Proof using (ImportsGoodModuleName modules).
       eapply Disjoint_update_all.
       eapply Forall_forall.
       intros.
@@ -441,10 +470,12 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma neq_sym : forall A (a b : A), a <> b -> b <> a.
+    Proof using ModulesNotEmpty.
       intuition.
     Qed.
 
     Lemma AllCompat_many_impls : forall ms, incl ms modules -> List.NoDup (List.map MName ms) -> AllCompat (List.map get_module_impl_Imports ms).
+    Proof using ModulesNotEmpty.
       induction ms; simpl; intros.
       econstructor.
       econstructor.
@@ -464,11 +495,13 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma AllCompat_impls : AllCompat (List.map get_module_impl_Imports modules).
+    Proof using -(imports modules).
       eapply AllCompat_many_impls; eauto.
       intuition.
     Qed.
 
     Lemma AllCompat_many_imports : forall ms, incl ms modules -> List.NoDup (List.map MName ms) -> AllCompat (List.map get_module_Imports ms).
+    Proof using -(NoDupModuleNames imports modules).
       induction ms; simpl; intros.
       econstructor.
       econstructor.
@@ -488,11 +521,13 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma AllCompat_imports : AllCompat (List.map get_module_Imports modules).
+    Proof using All.
       eapply AllCompat_many_imports; eauto.
       intuition.
     Qed.
 
     Lemma final_imports_correct : update_all (List.map get_module_Imports modules) - total_exports == final_imports.
+    Proof using All.
       unfold Equal; intros.
       eapply option_univalence; split; intros.
       eapply find_2 in H.
@@ -607,7 +642,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         SS.Equal (Modules linked) linked_module_names /\
         Exports linked === linked_exports /\
         Imports linked === linked_imports.
-    Proof.
+    Proof using All.
       Opaque make_module.
       unfold link_all.
       induction ms; simpl; intros.
@@ -713,12 +748,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     (* Interface *)
 
     Theorem module_ok : moduleOk m.
+    Proof using All.
       unfold m.
       unfold ms.
       eapply link_all_ok; intuition.
     Qed.
 
     Theorem module_imports : Imports m === final_imports.
+    Proof using All.
       edestruct link_all_ok; eauto.
       intuition.
       openhyp.
@@ -729,6 +766,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem module_exports : Exports m === total_exports.
+    Proof using All.
       edestruct link_all_ok; eauto.
       intuition.
       openhyp.
@@ -739,6 +777,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem module_module_names : SS.Equal (Modules m) (to_set module_names).
+    Proof using All.
       edestruct link_all_ok; eauto.
       intuition.
       openhyp.

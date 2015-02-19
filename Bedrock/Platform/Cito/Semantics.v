@@ -266,6 +266,7 @@ Section ADTValue.
         end.
 
       Theorem Safe_coind : forall c v, R c v -> Safe c v.
+      Proof using All.
         cofix; unfold State; intros; break_pair; destruct c.
 
         eauto.

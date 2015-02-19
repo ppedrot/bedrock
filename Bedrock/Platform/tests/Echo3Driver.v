@@ -48,6 +48,7 @@ Section boot.
   Ltac t := unfold globalSched, localsInvariantMain, M'.globalSock, M'.globalSched; genesis.
 
   Theorem ok0 : moduleOk boot.
+  Proof using .
     vcgen; abstract t.
   Qed.
 
@@ -55,10 +56,12 @@ Section boot.
   Definition m := link E.m m1.
 
   Lemma ok1 : moduleOk m1.
+  Proof using .
     link ok0 E.T.ok.
   Qed.
 
   Theorem ok : moduleOk m.
+  Proof using .
     link E.ok ok1.
   Qed.
 
@@ -91,6 +94,7 @@ Section boot.
   Hypothesis mem_high : forall w, $ (size * 4) <= w -> st.(Mem) w = None.
 
   Theorem safe : sys_safe stn prog (w, st).
+  Proof using .
     safety ok.
   Qed.
 End boot.

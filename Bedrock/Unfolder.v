@@ -96,6 +96,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Variable U : nat. (** **)
 
       Definition ERROR : expr types.
+      Proof using Type.
       refine (Var 0).
       Qed.
 
@@ -178,13 +179,13 @@ Module Make (SH : SepHeap) (U : SynUnifier).
     }.
 
     Theorem hintsSoundness_default : hintsSoundness default_hintsPayload.
-    Proof.
+    Proof using Type.
       econstructor; constructor.
     Qed.
 
     Theorem hintsSoundness_composite l r (L : hintsSoundness l) (R : hintsSoundness r)
       : hintsSoundness (composite_hintsPayload l r).
-    Proof.
+    Proof using Type.
       econstructor; simpl; eapply Folds.Forall_app; solve [ eapply ForwardOk; auto | eapply BackwardOk; auto ].
     Qed.
 
@@ -202,7 +203,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
     Lemma findOk : forall A B (f : A -> option B) ls res,
       find f ls = Some res ->
       exists a, In a ls /\ f a = Some res.
-    Proof.
+    Proof using .
       clear. induction ls; intros; simpl in *; try congruence.
       revert H. consider (f a); intros. inversion H0; subst; exists a; intuition.
       eapply IHls in H0. destruct H0; intuition. eauto.
@@ -220,7 +221,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
     Lemma findWithRest'Ok : forall A B (f : A -> list A -> option B) ls acc res,
       findWithRest' f ls acc = Some res ->
       exists xs x xs', ls = xs ++ x :: xs' /\ f x (rev acc ++ xs ++ xs') = Some res.
-    Proof.
+    Proof using .
       clear.
       induction ls; intros; simpl in *; try congruence.
       revert H; consider (f a (rev_append acc ls)); intros.
@@ -235,7 +236,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
     Lemma findWithRestOk : forall A B (f : A -> list A -> option B) ls res,
       findWithRest f ls = Some res ->
       exists xs x xs', ls = xs ++ x :: xs' /\ f x (xs ++ xs') = Some res.
-    Proof.
+    Proof using .
       clear. unfold findWithRest; simpl. intros. eapply findWithRest'Ok in H. eauto.
     Qed.
 
@@ -417,7 +418,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma Subst_to_env_env : forall U G S' TS cur e0,
         Subst_to_env U G S' TS cur = Some e0 ->
         map (@projT1 _ _) e0 = TS.
-      Proof.
+      Proof using Type.
         induction TS; simpl; intros;
           repeat match goal with
                    | [ H : Some _ = Some _ |- _ ] => inversion H; clear H; subst
@@ -434,7 +435,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         nth_error F x = Some v ->
         exists e, U.Subst_lookup (CUR + x) sub = Some e /\
           exprD funcs U G e (projT1 v) = Some (projT2 v).
-      Proof.
+      Proof using Type.
         induction F; simpl; intros; think.
         { destruct x; simpl in *; unfold error in *; congruence. }
         { destruct a; simpl in *. think. apply inj_pair2 in H5. subst.
@@ -445,7 +446,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma Subst_to_env_typeof_env : forall U G sub ts CUR F,
         Subst_to_env U G sub ts CUR = Some F ->
         ts = typeof_env F.
-      Proof.
+      Proof using Type.
         induction ts; simpl; intros.
         { think. reflexivity. }
         { consider (Subst_to_env U G sub ts (S CUR)). intros. eapply IHts in H. think. simpl. auto.
@@ -456,14 +457,14 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         nth_error (typeof_funcs funcs) f = Some t ->
         nth_error funcs f = Some s ->
         TRange t = Range s /\ TDomain t = Domain s.
-      Proof.
+      Proof using Type.
         unfold typeof_funcs. intros. erewrite map_nth_error in H by eauto. think. unfold typeof_sig; intuition.
       Qed.
 
       Theorem openForUnification_spec : forall F U G e t ,
         is_well_typed (typeof_funcs funcs) nil (typeof_env F) e t = true ->
         exprD funcs nil F e t = exprD funcs (U ++ F) G (openForUnification (length U) e) t.
-      Proof.
+      Proof using Type.
         induction e; simpl; unfold lookupAs; intros; think;
           repeat match goal with
                    | [ H : nth_error _ _ = Some _ |- _ ] =>
@@ -487,7 +488,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Theorem openForUnification_typed : forall F U G e t ,
         is_well_typed (typeof_funcs funcs) nil F e t = true ->
         is_well_typed (typeof_funcs funcs) (U ++ F) G (openForUnification (length U) e) t = true.
-      Proof.
+      Proof using Type.
         induction e; simpl; unfold lookupAs; intros; think;
           repeat match goal with
                    | [ H : nth_error _ _ = Some _ |- _ ] =>
@@ -513,7 +514,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
           Subst_to_env U G sub ts (length U) = Some F ->
           exprD funcs nil (G' ++ F) e t =
           exprD funcs (quant U_or_G U G') (quant (negb U_or_G) G G') (liftInstantiate U_or_G (length U) (length G) (length G') sub e) t.
-      Proof.
+      Proof using Type.
         induction e; repeat progress (simpl in *; unfold lookupAs in *; intros;
           repeat match goal with
                    | [ H : nth_error _ _ = Some _ |- _ ] =>
@@ -550,7 +551,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma checkAllInstantiated_app : forall sub ts ts' from,
         checkAllInstantiated from (ts ++ ts') sub =
         checkAllInstantiated from ts sub && checkAllInstantiated (length ts + from) ts' sub.
-      Proof.
+      Proof using Type.
         clear. induction ts; simpl; intros; think; eauto; simpl.
         consider (U.Subst_lookup from sub); intros; auto.
         f_equal. rewrite Plus.plus_comm. simpl. rewrite Plus.plus_comm. reflexivity.
@@ -564,7 +565,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
           is_well_typed tfuncs (tU ++ ts) tG e t = true ->
           U.Subst_lookup n sub = Some e ->
           is_well_typed tfuncs tU tG e t = true.
-      Proof.
+      Proof using Type.
         clear. induction ts using rev_ind; simpl; intros; think; eauto.
         rewrite app_nil_r in *. auto.
         rewrite checkAllInstantiated_app in H. simpl in *; think.
@@ -577,7 +578,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma checkAllInstantiated_domain : forall sub F cU,
         checkAllInstantiated cU F sub = true ->
         forall u, cU <= u -> u < cU + length F -> U.Subst_lookup u sub <> None.
-      Proof.
+      Proof using Type.
         clear. induction F; simpl in *; intros; think. exfalso. omega.
         consider (EqNat.beq_nat cU u); intros. subst.
         intro. congruence. eapply IHF; eauto. omega. omega.
@@ -590,7 +591,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         checkAllInstantiated (length U) F sub = true ->
         is_well_typed (typeof_funcs funcs) (quant U_or_G U G') (quant (negb U_or_G) G G')
           (liftInstantiate U_or_G (length U) (length G) (length G') sub e) t = true.
-      Proof.
+      Proof using Type.
         clear. induction e; repeat progress (simpl in *; unfold lookupAs in *; intros;
           repeat match goal with
                    | [ H : nth_error _ _ = Some _ |- _ ] =>
@@ -631,7 +632,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
 
       Lemma openForUnification_liftInstantiate : forall quant sub U G e,
         U.exprInstantiate sub (openForUnification U e) = liftInstantiate quant U G 0 sub e.
-      Proof.
+      Proof using Type.
         induction e; simpl; intros; think;
           repeat (rewrite U.exprInstantiate_Const ||
                   rewrite U.exprInstantiate_Equal ||
@@ -647,7 +648,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma typeof_funcs_WellTyped_funcs_eq : forall tfuncs funcs,
         WellTyped_funcs (types := types) tfuncs funcs ->
         tfuncs = typeof_funcs funcs.
-      Proof.
+      Proof using Type.
         clear. induction 1; auto. simpl. f_equal; auto. unfold WellTyped_sig, typeof_sig in *.
         destruct r; destruct l; intuition; f_equal; auto.
       Qed.
@@ -658,7 +659,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
           | Some l , Some r => Some (l ++ r)
           | _ , _ => None
         end.
-      Proof.
+      Proof using Type.
         induction ts; intros; simpl; think; auto.
         destruct (Subst_to_env U G sub ts' from); auto.
         cutrewrite (S (length ts + from) = length ts + S from); [ | omega ].
@@ -679,7 +680,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
           checkAllInstantiated (length tU) (ts ++ ts') sub = true ->
           U.Subst_WellTyped tfuncs (tU ++ ts ++ ts') tG sub ->
           exists env, Subst_to_env U G sub ts (length tU) = Some env.
-      Proof.
+      Proof using Type.
         clear; induction ts using rev_ind; simpl; intros; think; eauto.
         { rewrite app_ass in *. simpl in *. generalize H2. eapply IHts in H2. 2: eauto.
           destruct H2. rewrite Subst_to_env_app. rewrite H2. simpl.
@@ -704,7 +705,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         U.Subst_WellTyped (typeof_funcs funcs) tU tG sub' /\
         U.Subst_Extends sub' sub /\
         map (U.exprInstantiate sub') args = map (U.exprInstantiate sub') args'.
-      Proof.
+      Proof using Type.
         clear. induction ts; destruct args; destruct args'; intros; simpl in *; think;
         try (congruence || solve [ intuition (eauto; reflexivity) ]).
         do 2 generalize H2. apply U.exprUnify_sound in H2. intro. eapply U.exprUnify_Extends in H6.
@@ -717,7 +718,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma exprD_weaken_quant : forall U U' G G' ug ug' a t v,
         exprD funcs U G a t = Some v ->
         exprD funcs (quant ug U U') (quant ug' G G') a t = Some v.
-      Proof.
+      Proof using Type.
         clear; destruct ug; destruct ug'; simpl; intros;
           [ | rewrite <- app_nil_r with (l := G) | rewrite <- app_nil_r with (l := U) | auto ];
           apply exprD_weaken; auto.
@@ -729,7 +730,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         implyEach funcs (map (liftInstantiate U_or_G (length U) (length G) 0 sub) (Hyps lem)) U G
         (forall specs : PropX.codeSpec (tvarD types pcType) (tvarD types stateType),
           himp funcs preds nil env specs (Lhs lem) (Rhs lem)).
-      Proof.
+      Proof using Type.
         clear. destruct 2; simpl in *. eapply forallEachR_sem in H1; eauto using Subst_to_env_env.
         eapply implyEach_sem. intros. eapply implyEach_sem in H1; eauto.
 
@@ -749,7 +750,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         allb (fun x => is_well_typed (typeof_funcs funcs) (typeof_env U) (typeof_env G) x tvProp) hyps = true ->
         allb (Prove prover facts) hyps = true ->
         AllProvable funcs U G hyps.
-      Proof.
+      Proof using Type.
         clear. induction hyps; simpl; intros; think; auto.
         intuition; eauto. eapply Prove_correct; eauto. unfold ValidProp.
         eapply is_well_typed_correct; eauto using typeof_env_WellTyped_env, typeof_funcs_WellTyped_funcs.
@@ -757,7 +758,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma himp_existsEach_ST_EXT_existsEach : forall cs U P vars G,
         ST.heq cs (sexprD funcs preds U G (SE.existsEach vars P))
         (ST_EXT.existsEach vars (fun env => sexprD funcs preds U (rev env ++ G) P)).
-      Proof.
+      Proof using Type.
         Opaque ST_EXT.existsEach.
         induction vars; simpl; intros. rewrite ST_EXT.existsEach_nil. simpl. reflexivity.
         change (a :: vars) with ((a :: nil) ++ vars). rewrite ST_EXT.existsEach_app.
@@ -767,7 +768,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma exprInstantiate_noop : forall sub (e : expr types),
         (forall u, mentionsU u e = true -> U.Subst_lookup u sub = None) ->
         U.exprInstantiate sub e = e.
-      Proof.
+      Proof using Type.
         clear; induction e; simpl in *; intros;
           repeat (rewrite U.exprInstantiate_Const ||
             rewrite U.exprInstantiate_Equal ||
@@ -788,20 +789,20 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         end.
 
       Lemma fromTo_length : forall b a, length (fromTo a b) = b.
-      Proof.
+      Proof using .
         clear; induction b; simpl; intros; eauto.
       Qed.
 
       Lemma fromTo_none_less : forall b a c,
         c < a -> ~In c (fromTo a b).
-      Proof.
+      Proof using .
         clear; induction b; simpl; intros; auto. intro. destruct H0. omega. eapply IHb. 2: eauto. omega.
       Qed.
 
       Lemma checkAllInstantiated_perm : forall sub F cU,
         checkAllInstantiated cU F sub = true ->
         exists p, Permutation.Permutation (fromTo cU (length F) ++ p) (U.Subst_domain sub).
-      Proof.
+      Proof using Type.
         clear. induction F; simpl in *; eauto; intros.
         consider (U.Subst_lookup cU sub); auto; intros. cut (In cU (U.Subst_domain sub)); intros.
         eapply IHF in H0. destruct H0.
@@ -824,7 +825,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         beq_nat (U.Subst_size sub) (length F) = true ->
         checkAllInstantiated cU F sub = true ->
         forall u, u < cU -> U.Subst_lookup u sub = None.
-      Proof.
+      Proof using Type.
         clear. intros. symmetry in H. apply beq_nat_eq in H.
         rewrite U.Subst_size_cardinal in H. cut (~In u (U.Subst_domain sub)).
         intros. consider (U.Subst_lookup u sub); auto. intros. exfalso. apply H2. eapply U.Subst_domain_iff. eauto.
@@ -839,7 +840,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma is_well_typed_mentionsU : forall U G (e : expr types) t,
         is_well_typed (typeof_funcs funcs) U G e t = true ->
         forall u, mentionsU u e = true -> u < length U.
-      Proof.
+      Proof using Type.
         clear. induction e; simpl; intros; try solve [ think; auto ].
         think. apply nth_error_Some_length in H. auto.
         { consider (nth_error (typeof_funcs funcs) f). intros. consider (equiv_dec t (TRange t0)); think; intros.
@@ -867,7 +868,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
 *)
 
       Lemma quant_nil : forall T ug U, quant (T := T) ug U nil = U.
-      Proof.
+      Proof using .
         clear; destruct ug; simpl; intros; try reflexivity. rewrite app_nil_r; auto.
       Qed.
 
@@ -914,7 +915,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         /\ WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds)
               (quant U_or_G (typeof_env U) (rev rq)) (quant (negb U_or_G) (typeof_env G) (rev rq))
                 (applySHeap (liftInstantiate U_or_G (length U) (length G) (length rq) sub) rh) = true.
-      Proof.
+      Proof using Type. (* ? - manually done - broken proof *)
         unfold applicable; intros.
         repeat match goal with
                  | [ H : match ?X with _ => _ end = _ |- _ ] =>
@@ -1010,7 +1011,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         /\ WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds)
              (quant U_or_G tU (rev rq)) (quant (negb U_or_G) tG (rev rq))
                 (applySHeap (liftInstantiate U_or_G (length tU) (length tG) (length rq) sub) rh) = true.
-      Proof.
+      Proof using Type.
         unfold applicable; intros.
         repeat match goal with
                  | [ H : match ?X with _ => _ end = _ |- _ ] =>
@@ -1050,13 +1051,13 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         heq funcs preds U G cs P Q ->
         ST.himp cs (sexprD funcs preds U G Q) S ->
         ST.himp cs (sexprD funcs preds U G P) S.
-      Proof.
+      Proof using Type.
         clear. intros. rewrite H. auto.
       Qed.
 
       Lemma Equal_remove_add_remove : forall T k (v : T) m,
         FM.Equal (FM.remove k (FM.add k v m)) (FM.remove k m).
-      Proof.
+      Proof using .
         clear. intros. red. intros.
         repeat (rewrite MM.FACTS.add_o || rewrite MM.FACTS.remove_o).
         consider (MF.FACTS.eq_dec k y); auto.
@@ -1065,7 +1066,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma unfoldForward_vars : forall unify_bound facts P Q,
         unfoldForward unify_bound prover facts (Forward hs) P = Some Q ->
         exists vars_ext, Vars Q = Vars P ++ vars_ext /\ UVars Q = UVars P.
-      Proof.
+      Proof using Type.
         unfold unfoldForward. intros.
         repeat match goal with
                  | [ H : _ = Some _ |- _ ] => eapply findOk in H || eapply findWithRestOk in H
@@ -1079,7 +1080,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
 
       Lemma hintSideD_In : forall hs,
         hintSideD hs -> forall x, In x hs -> lemmaD funcs preds nil nil x.
-      Proof.
+      Proof using Type.
         clear. induction 1. inversion 1.
         intros. inversion H1; subst; auto.
       Qed.
@@ -1120,7 +1121,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
               | None => False
             end
         end.
-      Proof.
+      Proof using Type.
         clear. intros.
         rewrite WellTyped_impures_eq in H. specialize (H _ _ H0).
         destruct x0; simpl in *; destruct (nth_error tpreds k); think; auto. destruct x2; auto. contradiction.
@@ -1131,13 +1132,13 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         (R -> P) ->
         R /\ Q ->
         P /\ Q.
-      Proof. clear. firstorder. Qed.
+      Proof using . clear. firstorder. Qed.
 
       Lemma unfoldForward_WellTyped : forall facts P Q,
         unfoldForward unify_bound prover facts (Forward hs) P = Some Q ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars P) (Vars P) (Heap P) = true ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars Q) (Vars Q) (Heap Q) = true.
-      Proof.
+      Proof using (hsOk prover).
         unfold unfoldForward; intros.
         repeat match goal with
                  | [ H : _ = Some _ |- _ ] => eapply findOk in H || eapply findWithRestOk in H
@@ -1197,7 +1198,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
                      (fun vars_ext : list {t : tvar & tvarD types t} =>
                        sexprD funcs preds meta_env (vars_env ++ vars_ext) (sheapD (Heap Q))))
         /\ WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars Q) (Vars Q) (Heap Q) = true.
-      Proof.
+      Proof using (PC hsOk).
         unfold unfoldForward. intros.
         repeat match goal with
                  | [ H : _ = Some _ |- _ ] => eapply findOk in H || eapply findWithRestOk in H
@@ -1298,7 +1299,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         heq funcs preds U G cs P Q ->
         ST.himp cs S (sexprD funcs preds U G Q) ->
         ST.himp cs S (sexprD funcs preds U G P).
-      Proof.
+      Proof using Type.
         clear. intros. rewrite H0. rewrite H. reflexivity.
       Qed.
 
@@ -1306,7 +1307,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         unfoldBackward unify_bound prover facts (Backward hs) P = Some Q ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars P) (Vars P) (Heap P) = true ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars Q) (Vars Q) (Heap Q) = true.
-      Proof.
+      Proof using (hsOk prover).
         unfold unfoldBackward; intros.
         repeat match goal with
                  | [ H : _ = Some _ |- _ ] => eapply findOk in H || eapply findWithRestOk in H
@@ -1365,7 +1366,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
                        sexprD funcs preds (meta_env ++ meta_ext) vars_env (sheapD (Heap Q))))
                    (sexprD funcs preds meta_env vars_env (sheapD (Heap P)))
         /\ WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars Q) (Vars Q) (Heap Q) = true.
-      Proof.
+      Proof using (PC hsOk).
         unfold unfoldBackward. intros.
         repeat match goal with
                  | [ H : _ = Some _ |- _ ] => eapply findOk in H || eapply findWithRestOk in H
@@ -1464,7 +1465,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         exists vars_ext (* meta_ext *),
           Vars Q = Vars P ++ vars_ext /\
           UVars Q = UVars P (* ++ meta_ext *).
-      Proof.
+      Proof using Type.
         clear. induction bound; intros; simpl in *; eauto.
         { inversion H; clear H; subst; exists nil; repeat rewrite app_nil_r; auto. }
         { consider (unfoldForward unify_bound prover facts (Forward hs) P); intros.
@@ -1480,7 +1481,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
       Lemma unfoldBackward_vars : forall unify_bound facts P Q,
         unfoldBackward unify_bound prover facts (Backward hs) P = Some Q ->
         exists meta_ext, Vars Q = Vars P /\ UVars Q = UVars P ++ meta_ext.
-      Proof.
+      Proof using Type.
         unfold unfoldBackward. intros.
         repeat match goal with
                  | [ H : _ = Some _ |- _ ] => eapply findOk in H || eapply findWithRestOk in H
@@ -1497,7 +1498,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         exists meta_ext,
           Vars Q = Vars P /\
           UVars Q = UVars P ++ meta_ext.
-      Proof.
+      Proof using Type.
         clear. induction bound; intros; simpl in *; eauto.
         { inversion H; clear H; subst; exists nil; repeat rewrite app_nil_r; auto. }
         { consider (unfoldBackward unify_bound prover facts (Backward hs) P); intros.
@@ -1514,7 +1515,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         forward bound facts P = (Q,r) ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars P) (Vars P) (Heap P) = true ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars Q) (Vars Q) (Heap Q) = true.
-      Proof.
+      Proof using (hsOk prover).
         induction bound; simpl; intros; try subst; auto;
           repeat match goal with
                    | [ H : (_,_) = (_,_) |- _ ] => inversion H; clear H; subst
@@ -1534,7 +1535,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         ST.himp cs (sexprD funcs preds meta_env vars_env (sheapD (Heap P)))
                    (ST_EXT.existsEach (skipn (length vars_env) Q.(Vars)) (fun vars_ext : list { t : tvar & tvarD types t } =>
                      (sexprD funcs preds meta_env (vars_env ++ vars_ext) (sheapD (Heap Q))))).
-      Proof.
+      Proof using (PC hsOk).
         induction bound; simpl; intros.
         { inversion H; clear H; subst; repeat split; try reflexivity.
           cutrewrite (skipn (length vars_env) (Vars Q) = nil).
@@ -1581,7 +1582,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         backward bound facts P = (Q,r) ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars P) (Vars P) (Heap P) = true ->
         WellTyped_sheap (typeof_funcs funcs) (typeof_preds preds) (UVars Q) (Vars Q) (Heap Q) = true.
-      Proof.
+      Proof using (hsOk prover).
         induction bound; simpl; intros; try subst; auto;
           repeat match goal with
                    | [ H : (_,_) = (_,_) |- _ ] => inversion H; clear H; subst
@@ -1600,7 +1601,7 @@ Module Make (SH : SepHeap) (U : SynUnifier).
         ST.himp cs (ST_EXT.existsEach (skipn (length meta_env) Q.(UVars)) (fun meta_ext : env types =>
                       (sexprD funcs preds (meta_env ++ meta_ext) vars_env (sheapD (Heap Q)))))
                    (sexprD funcs preds meta_env vars_env (sheapD (Heap P))).
-      Proof.
+      Proof using (PC hsOk).
         induction bound; simpl; intros.
         { inversion H; clear H; subst. cutrewrite (skipn (length meta_env) (UVars Q) = nil). rewrite ST_EXT.existsEach_nil.
           rewrite app_nil_r. reflexivity. rewrite H0. rewrite <- typeof_env_length. eauto with list_length. }

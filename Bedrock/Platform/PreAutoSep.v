@@ -81,6 +81,7 @@ Section SomethingStar.
       LabelMap.MapsTo (mn, Global f) pre imps
       -> exists w : W, Labels stn (mn, Global f) = Some w /\ specs w = Some pre)
     -> augment specs stn ls.
+  Proof using Type.
     induction ls; simpl; intuition.
     case_eq (LabelMap.find (a0, Global b) imps); intuition.
     apply LabelMap.find_2 in H1; eauto.

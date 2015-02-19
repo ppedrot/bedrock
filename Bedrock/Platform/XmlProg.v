@@ -14,11 +14,13 @@ End HIDE.
 Module Hide : HIDE.
   Definition heapSize4 n := (n * 4)%N.
   Theorem heapSize4_eq : forall n, heapSize4 n = (n * 4)%N.
+  Proof using .
     auto.
   Qed.
 
   Definition to_nat := N.to_nat.
   Theorem to_nat_eq : to_nat = N.to_nat.
+  Proof using .
     auto.
   Qed.
 End Hide.
@@ -79,11 +81,13 @@ Module MyM.
   Definition buf_size := outbuf_size.
 
   Theorem buf_size_lower : (nat_of_N buf_size >= 2)%nat.
+  Proof using .
     generalize (Outbuf_size_lower _ _ _ _ M.Wf).
     unfold buf_size; intros; nomega.
   Qed.
 
   Theorem buf_size_upper : goodSize (4 * nat_of_N buf_size).
+  Proof using .
     Transparent goodSize.
     unfold goodSize.
     rewrite Nat2N.inj_mul.
@@ -95,6 +99,7 @@ Module MyM.
 
   Theorem globalInv_monotone : forall fs fs', fs %<= fs'
     -> globalInv fs ===> globalInv fs'.
+  Proof using .
     unfold globalInv, M'''.globalInv; sepLemma.
   Qed.
 End MyM.
@@ -344,6 +349,7 @@ Section boot.
   Hypothesis heapSizeLowerBound : (3 <= heapSize)%N.
 
   Let heapSizeLowerBound' : (3 <= heapSize')%nat.
+  Proof using All.
     intros; unfold heapSize'; rewrite Hide.to_nat_eq.
     assert (heapSize >= 3)%N by (apply N.le_ge; apply heapSizeLowerBound); nomega.
   Qed.
@@ -353,10 +359,12 @@ Section boot.
   Hypothesis mem_size : goodSize (size * 4)%nat.
 
   Let heapSizeUpperBound : goodSize (heapSize' * 4).
+  Proof using mem_size.
     goodSize.
   Qed.
 
   Lemma heapSizeLowerBound'' : natToW 3 <= NToW heapSize.
+  Proof using .
     hnf; intros.
     red in H.
     pre_nomega.
@@ -406,12 +414,14 @@ Section boot.
     -> sp = (heapSize' * 4)%nat
     -> goodSize (heapSize' * 4)
     -> False.
+  Proof using .
     intros; eapply bootstrap_Sp_nonzero; try eassumption; eauto.
   Qed.
 
   Lemma bootstrap_Sp_freeable : forall sp : W,
     sp = (heapSize' * 4)%nat
     -> freeable sp 50.
+  Proof using .
     intros; eapply bootstrap_Sp_freeable; try eassumption; eauto.
     instantiate (1 := 2).
     unfold size in mem_size.
@@ -420,6 +430,7 @@ Section boot.
   Qed.
 
   Lemma noWrap : noWrapAround 4 (wordToNat (NToW heapSize) - 1).
+  Proof using .
     intros.
     unfold NToW; rewrite NToWord_nat by auto.
     unfold heapSize' in *; rewrite Hide.to_nat_eq in *.
@@ -434,6 +445,7 @@ Section boot.
   Local Hint Immediate bootstrap_Sp_nonzero bootstrap_Sp_freeable noWrap.
 
   Lemma break : NToW ((heapSize + 50) * 4)%N = ((heapSize' + 50) * 4)%nat.
+  Proof using .
     intros.
     unfold NToW; rewrite NToWord_nat by auto.
     unfold heapSize'; rewrite N2Nat.inj_mul; auto.
@@ -441,6 +453,7 @@ Section boot.
   Qed.
 
   Lemma times4 : (Hide.heapSize4 heapSize : W) = (heapSize' * 4)%nat.
+  Proof using .
     rewrite Hide.heapSize4_eq; intros.
     unfold NToW; rewrite NToWord_nat by auto.
     unfold heapSize'; rewrite N2Nat.inj_mul; auto.
@@ -448,6 +461,7 @@ Section boot.
   Qed.
 
   Lemma wordToNat_heapSize : wordToNat (NToW heapSize) = heapSize'.
+  Proof using .
     unfold heapSize'; rewrite Hide.to_nat_eq.
     unfold NToW.
     rewrite NToWord_nat.
@@ -462,6 +476,7 @@ Section boot.
 
   Lemma globalSched_plus4 :
     Locations.globalSched ^+ natToW 4 = natToW ((heapSize' + 50) * 4 + 4).
+  Proof using .
     unfold Locations.globalSched, heapSize'.
     rewrite wplus_alt; unfold wplusN, wordBinN.
     unfold NToW; rewrite NToWord_nat by auto.
@@ -484,6 +499,7 @@ Section boot.
     genesis; rewrite natToW_plus; reflexivity.
 
   Theorem okb : moduleOk boot.
+  Proof using .
     unfold boot; rewrite <- Hide.heapSize4_eq; vcgen; abstract t.
   Qed.
 
@@ -491,6 +507,7 @@ Section boot.
   Hint Rewrite N2Nat.inj_mul : N.
 
   Lemma buf_size_upper' : goodSize (4 * wordToNat (NToWord 32 buf_size)).
+  Proof using .
     red.
     rewrite Nat2N.inj_mul.
     rewrite NToWord_nat.
@@ -520,42 +537,52 @@ Section boot.
     (GoodSchema _ _ _ _ Wf)) m9.
 
   Lemma ok1 : moduleOk m1.
+  Proof using .
     link okb ok0.
   Qed.
 
   Lemma ok2 : moduleOk m2.
+  Proof using .
     link Buffers.ok ok1.
   Qed.
 
   Lemma ok3 : moduleOk m3.
+  Proof using .
     link XmlLex.ok ok2.
   Qed.
 
   Lemma ok4 : moduleOk m4.
+  Proof using .
     link ArrayOps.ok ok3.
   Qed.
 
   Lemma ok5 : moduleOk m5.
+  Proof using .
     link NumOps.ok ok4.
   Qed.
 
   Lemma ok6 : moduleOk m6.
+  Proof using .
     link MyIo.ok ok5.
   Qed.
 
   Lemma ok7 : moduleOk m7.
+  Proof using .
     link MyHttp.ok ok6.
   Qed.
 
   Lemma ok8 : moduleOk m8.
+  Proof using .
     link MyHttpQ.ok ok7.
   Qed.
 
   Lemma ok9 : moduleOk m9.
+  Proof using .
     link T.ok ok8.
   Qed.
 
   Lemma ok : moduleOk m.
+  Proof using .
     link (XmlLang.ok _ httpq buf_size_lower' buf_size_upper' (WellFormed _ _ _ _ Wf)) ok9;
     apply (UF _ _ _ _ Wf).
   Qed.
@@ -590,6 +617,7 @@ Section boot.
   Import Safety.
 
   Theorem safe : sys_safe stn prog (w, st).
+  Proof using .
     eapply safety; try eassumption; [
       link_simp; unfold labelSys, labelSys'; simpl; tauto
       | apply ok

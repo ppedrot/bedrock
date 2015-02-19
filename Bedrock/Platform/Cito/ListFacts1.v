@@ -37,6 +37,7 @@ Section TopSection.
   Require Import Bedrock.Platform.Cito.GeneralTactics.
 
   Lemma find_spec : forall (f : t -> bool) ls a, find f ls = Some a -> f a = true /\ In a ls.
+  Proof using Type.
     induction ls; simpl; intuition; try discriminate;
     (destruct (sumbool_of_bool (f a));
      [rewrite e in H; injection H; intros; subst; eauto |
@@ -44,6 +45,7 @@ Section TopSection.
   Qed.
 
   Lemma find_spec_None : forall (f : t -> bool) ls, List.find f ls = None -> ~ exists a, List.In a ls /\ f a = true.
+  Proof using Type.
     induction ls; simpl; intuition.
     openhyp; intuition.
     openhyp.
@@ -60,6 +62,7 @@ Section TopSection.
   Qed.
 
   Lemma In_app_all_intro : forall lsls ls e, In e ls -> In ls lsls -> In e (app_all lsls).
+  Proof using Type.
     induction lsls; simpl; intros.
     eauto.
     openhyp.
@@ -72,6 +75,7 @@ Section TopSection.
   Qed.
 
   Lemma In_app_all_elim : forall lsls x, In x (app_all lsls) -> exists ls, In x ls /\ In ls lsls.
+  Proof using Type.
     induction lsls; simpl; intros.
     intuition.
     eapply in_app_or in H.
@@ -84,14 +88,17 @@ Section TopSection.
   Qed.
 
   Lemma Disjoint_symm : forall ls1 ls2, Disjoint ls1 ls2 -> Disjoint ls2 ls1.
+  Proof using Type.
     unfold Disjoint; intros; firstorder.
   Qed.
 
   Lemma Disjoint_incl : forall ls1 ls2 ls1' ls2', Disjoint ls1 ls2 -> incl ls1' ls1 -> incl ls2' ls2 -> Disjoint ls1' ls2'.
+  Proof using Type.
     unfold Disjoint, incl; intros; firstorder.
   Qed.
 
   Lemma incl_map : forall f ls1 ls2, incl ls1 ls2 -> incl (map f ls1) (map f ls2).
+  Proof using Type.
     unfold incl.
     intros.
     eapply in_map_iff in H0.
@@ -104,6 +111,7 @@ Section TopSection.
   Qed.
 
   Lemma Disjoint_map : forall f ls1 ls2, Disjoint (map f ls1) (map f ls2) -> Disjoint ls1 ls2.
+  Proof using Type.
     unfold Disjoint; intros.
     intuition.
     eapply H.
@@ -111,6 +119,7 @@ Section TopSection.
   Qed.
 
   Lemma Injection_NoDup : forall f ls, IsInjection f -> NoDup ls -> NoDup (map f ls).
+  Proof using Type.
     unfold IsInjection.
     induction ls; simpl; intros.
     econstructor.
@@ -132,6 +141,7 @@ Section TopSection.
   Qed.
 
   Lemma NoDup_app : forall ls1 ls2, NoDup ls1 -> NoDup ls2 -> Disjoint ls1 ls2 -> NoDup (ls1 ++ ls2).
+  Proof using Type.
     unfold Disjoint.
     induction ls1; simpl; intros.
     eauto.

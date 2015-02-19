@@ -26,15 +26,18 @@ Definition m2 := bimport [[ "1"!"f" @ [spec1] ]]
   }}.
 
 Theorem ok1 : moduleOk m1.
+Proof using .
   vcgen; sep_auto.
 Qed.
 
 Theorem ok2 : moduleOk m2.
+Proof using .
   vcgen; sep_auto; words.
 Qed.
 
 Definition m := link m1 m2.
 
 Theorem ok : moduleOk m.
+Proof using .
   link ok1 ok2.
 Qed.

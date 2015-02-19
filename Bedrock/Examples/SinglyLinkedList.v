@@ -34,26 +34,31 @@ Module SinglyLinkedList : SINGLY_LINKED_LIST.
     end.
 
   Theorem sll_extensional : forall ls (p : W), HProp_extensional (sll ls p).
+  Proof using .
     destruct ls; reflexivity.
   Qed.
 
   Theorem nil_fwd : forall ls (p : W), p = 0
     -> sll ls p ===> [| ls = nil |].
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem nil_bwd : forall ls (p : W), p = 0
     -> [| ls = nil |] ===> sll ls p.
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem cons_fwd : forall ls (p : W), p <> 0
     -> sll ls p ===> Ex x, Ex ls', [| ls = x :: ls' |] * Ex p', (p ==*> x, p') * sll ls' p'.
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem cons_bwd : forall ls (p : W), p <> 0
     -> (Ex x, Ex ls', [| ls = x :: ls' |] * Ex p', (p ==*> x, p') * sll ls' p') ===> sll ls p.
+  Proof using .
     destruct ls; sepLemma;
       match goal with
         | [ H : _ :: _ = _ :: _ |- _ ] => injection H; sepLemma
@@ -170,6 +175,7 @@ Ltac finish := repeat match goal with
                congruence || W_eq || reflexivity || tauto || eauto.
 
 Theorem sllMOk : moduleOk sllM.
+Proof using .
 (*TIME idtac "sll:verify". Time *)
   vcgen; abstract (sep hints; finish).
 (*TIME Time *)

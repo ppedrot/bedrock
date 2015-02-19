@@ -18,6 +18,7 @@ Section ADTValue.
     WordMap.Equal h1 h2
     -> Semantics.separated (ADTValue := ADTValue) h1 a b
     -> Semantics.separated h2 a b.
+  Proof using Type.
     unfold Semantics.separated; intuition.
     right; intro; apply H1.
     eapply In_m; eauto.
@@ -29,6 +30,7 @@ Section ADTValue.
     WordMap.Equal (elt := A) h1 h2
     -> Semantics.good_inputs h1 pairs
     -> Semantics.good_inputs h2 pairs.
+  Proof using .
     unfold Semantics.good_inputs; intuition.
     eapply Forall_weaken; [ | eassumption ].
     unfold Semantics.word_adt_match; intros.
@@ -44,6 +46,7 @@ Section ADTValue.
     -> WordMap.Equal
     (fold_left (Semantics.store_out (ADTValue:=ADTValue)) triples h1)
     (fold_left (Semantics.store_out (ADTValue:=ADTValue)) triples h2).
+  Proof using Type.
     induction triples; simpl; intuition.
     apply IHtriples.
     unfold Semantics.store_out.
@@ -59,6 +62,7 @@ Section ADTValue.
   Lemma heap_upd_option_Equal : forall h1 h2 a b,
     WordMap.Equal h1 h2
     -> WordMap.Equal (heap_upd_option h1 a b) (heap_upd_option h2 a b).
+  Proof using Type.
     unfold Semantics.heap_upd_option; intros.
     destruct b; auto.
     apply add_m; auto.
@@ -79,6 +83,7 @@ Section ADTValue.
     -> forall h, WordMap.Equal (snd st) h
       -> exists h', WordMap.Equal (snd st') h'
         /\ Semantics.RunsTo (ADTValue := ADTValue) env s (fst st, h) (fst st', h').
+  Proof using Type.
     induction 1; intuition eauto.
 
     t.
@@ -118,6 +123,7 @@ Section ADTValue.
     Semantics.Safe (ADTValue := ADTValue) env s (vs, h)
     -> WordMap.Equal h h'
     -> Semantics.Safe env s (vs, h').
+  Proof using Type.
     intros.
     apply (Safe_coind (fun s st =>
       exists h, WordMap.Equal h (snd st)
@@ -179,6 +185,7 @@ Section ADTValue.
     WordMap.MapsTo k v (fold_left store_out ls h1)
     -> (forall k' v', WordMap.MapsTo k' v' h1 -> WordMap.MapsTo k' v' h2)
     -> WordMap.MapsTo k v (fold_left store_out ls h2).
+  Proof using Type.
     induction ls; simpl; intuition.
     eapply IHls; eauto.
     unfold Semantics.store_out; intros.
@@ -200,6 +207,7 @@ Section ADTValue.
     WordMap.MapsTo k v (fold_left store_pair ls h)
     -> WordMap.MapsTo k v h
     \/ List.In (k, ADT v) ls.
+  Proof using Type.
     induction ls; simpl; intuition.
     apply IHls in H; intuition.
     unfold SemanticsUtil.store_pair in H0; simpl in H0.
@@ -211,6 +219,7 @@ Section ADTValue.
   Lemma foldp_bwd : forall k ls h,
     WordMap.In k h \/ (exists v, List.In (k, ADT v) ls)
     -> WordMap.In k (fold_left store_pair ls h).
+  Proof using Type.
     induction ls; simpl; intuition; try destruct b; intuition.
     firstorder.
     Focus 2.
@@ -236,6 +245,7 @@ Section ADTValue.
   Lemma foldp_fwd : forall k ls h,
     WordMap.In k (fold_left store_pair ls h)
     -> WordMap.In k h \/ (exists v, List.In (k, ADT v) ls).
+  Proof using Type.
     induction ls; simpl; intuition.
     apply IHls in H; clear IHls; intuition.
     unfold SemanticsUtil.store_pair in H0; simpl in H0.
@@ -253,6 +263,7 @@ Section ADTValue.
     WordMap.MapsTo k v (fold_left store_out ls h)
     -> (WordMap.MapsTo k v h /\ forall a o, ~List.In {| Word := k; ADTIn := ADT a; ADTOut := o |} ls)
     \/ exists a, List.In {| Word := k; ADTIn := ADT a; ADTOut := Some v |} ls.
+  Proof using Type.
     induction ls; simpl; intuition.
     apply IHls in H; intuition.
 
@@ -280,6 +291,7 @@ Section ADTValue.
   Lemma In_make_heap' : forall k pairs h,
     WordMap.In (elt:=ADTValue) k (fold_left store_pair pairs h)
     -> WordMap.In k h \/ exists a, List.In (k, ADT a) pairs.
+  Proof using Type.
     induction pairs; simpl; intuition.
     apply IHpairs in H; intuition.
     unfold SemanticsUtil.store_pair in H0; simpl in H0.
@@ -293,6 +305,7 @@ Section ADTValue.
   Lemma In_make_heap : forall k pairs,
     WordMap.In (elt:=ADTValue) k (make_heap pairs)
     -> exists a, List.In (k, ADT a) pairs.
+  Proof using Type.
     intros.
     apply In_make_heap' in H; intuition eauto.
     apply empty_in_iff in H0; tauto.
@@ -302,6 +315,7 @@ Section ADTValue.
     ~WordMap.In k (make_heap pairs)
     -> WordMap.MapsTo k e h
     -> WordMap.MapsTo k e (fold_left store_out (make_triples pairs outs) h).
+  Proof using Type.
     induction pairs; destruct outs; simpl; intuition.
     apply IHpairs; clear IHpairs; intros.
     apply H.
@@ -329,6 +343,7 @@ Section ADTValue.
     Semantics.disjoint_ptrs pairs
     -> List.In {| Word := k; ADTIn := ADT x; ADTOut := Some e |} (make_triples pairs outs)
     -> WordMap.MapsTo k e (fold_left store_out (make_triples pairs outs) h).
+  Proof using Type.
     induction pairs; destruct outs; simpl; intuition.
     simpl in *; intuition.
     injection H1; clear H1; intros; subst.
@@ -372,6 +387,7 @@ Section ADTValue.
     -> WordMap.MapsTo k e h
     -> (forall a o, ~List.In {| Word := k; ADTIn := ADT a; ADTOut := o |} (make_triples pairs outs))
     -> WordMap.MapsTo k e (fold_left store_out (make_triples pairs outs) h).
+  Proof using Type.
     induction pairs; destruct outs; simpl; intuition.
     apply IHpairs.
     hnf in H.
@@ -394,6 +410,7 @@ Section ADTValue.
     List.In (k, ADT x) pairs
     -> Semantics.disjoint_ptrs pairs
     -> WordMap.MapsTo k x (fold_left store_pair pairs h).
+  Proof using Type.
     induction pairs; simpl; intuition; try destruct b; intuition.
     injection H1; clear H1; intros; subst.
     hnf in H0.
@@ -422,6 +439,7 @@ Section ADTValue.
     (forall a o, ~List.In {| Word := k; ADTIn := ADT a; ADTOut := o |} ls)
     -> WordMap.In k (fold_left store_out ls h)
     -> WordMap.In k h.
+  Proof using Type.
     induction ls; simpl; intuition.
     apply IHls in H0; eauto.
     unfold Semantics.store_out in H0.
@@ -440,6 +458,7 @@ Section ADTValue.
       let triples := make_triples pairs outs in
       WordMap.Equal (update (diff h h1) (fold_left store_out triples h1))
       (fold_left store_out triples h).
+  Proof using Type.
     simpl; intros.
     apply Equal_mapsto_iff; intuition.
 
@@ -502,11 +521,13 @@ Section ADTValue.
 
   Theorem In_InA : forall A x ls,
                      List.In x ls -> SetoidList.InA (WordMap.eq_key (elt:=A)) x ls.
+  Proof using .
     induction ls; simpl; intuition.
   Qed.
 
   Theorem NoDupA_NoDup : forall A ls,
                            SetoidList.NoDupA (WordMap.eq_key (elt:=A)) ls -> NoDup ls.
+  Proof using .
     induction 1; eauto.
     constructor; auto.
     intro; apply H.
@@ -515,12 +536,14 @@ Section ADTValue.
 
   Theorem In_InA' : forall A x ls,
                       List.In x ls -> SetoidList.InA (WordMap.eq_key_elt (elt:=A)) x ls.
+  Proof using .
     induction ls; simpl; intuition.
     subst; constructor; hnf; auto.
   Qed.
 
   Theorem InA_In : forall A x ls,
                      SetoidList.InA (WordMap.eq_key_elt (elt:=A)) x ls -> List.In x ls.
+  Proof using .
     induction 1; simpl; intuition idtac.
     destruct x, y; simpl in *.
     hnf in H; simpl in *; intuition subst.
@@ -535,6 +558,7 @@ Section ADTValue.
     -> NoDup (List.map fst (List.filter (fun p => is_adt (snd p)) pairs))
     -> WordMap.MapsTo k v h
     -> WordMap.MapsTo k v (fold_left store_pair pairs h).
+  Proof using Type.
     induction pairs; simpl in *; intuition.
     destruct b as [w | a]; simpl in *.
     inversion_clear H; simpl in *.
@@ -571,6 +595,7 @@ Section ADTValue.
           | SCA _ => false
           | ADT _ => true
         end) pairs)).
+  Proof using Type.
     induction pairs; simpl; intuition (subst; simpl in *); intuition idtac.
     destruct b; simpl in *; intuition.
   Qed.
@@ -578,6 +603,7 @@ Section ADTValue.
   Lemma store_keys : forall k v pairs h,
     WordMap.MapsTo k v (fold_left store_pair pairs h)
     -> List.In (k, ADT v) pairs \/ WordMap.MapsTo k v h.
+  Proof using Type.
     induction pairs; simpl; intuition idtac.
     apply IHpairs in H; intuition idtac.
     unfold SemanticsUtil.store_pair in H0; simpl in H0.
@@ -589,6 +615,7 @@ Section ADTValue.
     WordMap.MapsTo k v h
     -> ~ List.In k (List.map fst (List.filter (fun p => is_adt (snd p)) pairs))
     -> WordMap.MapsTo k v (fold_left store_pair pairs h).
+  Proof using Type.
     induction pairs; simpl; intuition (try discriminate; eauto);
       unfold is_adt in *; simpl in *.
 
@@ -603,6 +630,7 @@ Section ADTValue.
     List.In (k, ADT v) pairs
     -> NoDup (List.map fst (List.filter (fun p => is_adt (snd p)) pairs))
     -> WordMap.MapsTo k v (fold_left store_pair pairs h).
+  Proof using Type.
     induction pairs; simpl; intuition (try discriminate; eauto); destruct b; intuition (try discriminate; eauto);
       unfold is_adt in *; simpl in *.
 

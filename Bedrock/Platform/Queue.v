@@ -97,50 +97,59 @@ Module Queue : QUEUE.
     Ex fr, Ex ba, Ex n, [| freeable p 2 |] * (p ==*> fr, ba) * llist b n fr ba.
 
   Theorem llist_extensional : forall b n fr ba, HProp_extensional (llist b n fr ba).
+  Proof using .
     destruct n; reflexivity.
   Qed.
 
   Theorem lseg_extensional : forall b n fr ba, HProp_extensional (lseg b n fr ba).
+  Proof using .
     destruct n; reflexivity.
   Qed.
 
   Theorem queue_extensional : forall b p, HProp_extensional (queue b p).
+  Proof using .
     reflexivity.
   Qed.
 
   Theorem lseg_extensional' : forall ba n b b' fr,
     b %= b'
     -> lseg b n fr ba ===> lseg b' n fr ba.
+  Proof using .
     induction n; sepLemma.
   Qed.
 
   Theorem llist_extensional' : forall ba n b b' fr,
     b %= b'
     -> llist b n fr ba ===> llist b' n fr ba.
+  Proof using .
     induction n; sepLemma.
   Qed.
 
   Theorem queue_fwd : forall b p,
     queue b p
     ===> Ex fr, Ex ba, Ex n, [| freeable p 2 |] * (p ==*> fr, ba) * llist b n fr ba.
+  Proof using .
     unfold queue; sepLemma.
   Qed.
 
   Theorem queue_bwd : forall b p,
     (Ex fr, Ex ba, Ex n, [| freeable p 2 |] * (p ==*> fr, ba) * llist b n fr ba)
     ===> queue b p.
+  Proof using .
     unfold queue; sepLemma.
   Qed.
 
   Theorem llist_empty_fwd : forall b n (fr : W) ba,
     fr = 0
     -> llist b n fr ba ===> [| b %= empty |] * [| n = O |].
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem llist_empty_bwd : forall b n (fr : W) ba,
     fr = 0
     -> [| b %= empty |] * [| n = O |] ===> llist b n fr ba.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -148,6 +157,7 @@ Module Queue : QUEUE.
     fr <> 0
     -> focusOnFront
     -> llist b n fr ba ===> Ex n', Ex v1, Ex v2, Ex p, [| n = S n' |] * [| (v1, v2) %in b |] * [| freeable fr 3 |] * (fr ==*> v1, v2, p) * [| ifZero n' fr ba |] * llist (b %- (v1, v2)) n' p ba.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -155,6 +165,7 @@ Module Queue : QUEUE.
     fr <> 0
     -> focusOnBack
     -> llist b n fr ba ===> Ex n', Ex v1, Ex v2, [| n = S n' |] * [| (v1, v2) %in b |] * lseg (b %- (v1, v2)) n' fr ba * [| ba <> 0 |] * [| freeable ba 3 |] * (ba ==*> v1, v2, $0).
+  Proof using .
     induction n.
 
     sepLemma.
@@ -184,6 +195,7 @@ Module Queue : QUEUE.
     -> focusOnFront
     -> llist b n fr ba ===> [| fr <> 0 |] * Ex n', Ex v1, Ex v2, Ex p, [| n = S n' |] * [| (v1, v2) %in b |]
       * (fr ==*> v1, v2, p) * [| freeable fr 3 |] * [| ifZero n' fr ba |] * llist (b %- (v1, v2)) n' p ba.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -192,6 +204,7 @@ Module Queue : QUEUE.
     -> focusOnFront
     -> (Ex n', Ex v1, Ex v2, Ex p, [| n = S n' |] * [| (v1, v2) %in b |]
       * (fr ==*> v1, v2, p) * [| freeable fr 3 |] * [| ifZero n' fr ba |] * llist (b %- (v1, v2)) n' p ba) ===> llist b n fr ba.
+  Proof using .
     destruct n; sepLemma; match goal with
                             | [ H : S _ = S _ |- _ ] => injection H; intros; subst
                           end; auto; sepLemma.
@@ -204,6 +217,7 @@ Module Queue : QUEUE.
       * [| p <> 0 |] * [| freeable p 3 |] * (p ==*> v1, v2, ba)
       * [| ba <> 0 |] * [| freeable ba 3 |] * (ba ==*> v1', v2', $0))
     ===> llist b n fr ba.
+  Proof using .
     induction n.
 
     sepLemma.
@@ -238,6 +252,7 @@ Module Queue : QUEUE.
       * [| p <> 0 |] * [| freeable p 3 |] * (p ==*> v1, v2, ba)
       * [| ba <> 0 |] * [| freeable ba 3 |] * (ba ==*> v1', v2', $0))
     ===> llist b n fr ba.
+  Proof using .
     intros; apply llist_end_bwd'.
   Qed.
 End Queue.
@@ -343,5 +358,6 @@ Local Hint Extern 1 (himp _ (lseg _ _ _ _) (lseg _ _ _ _)) => apply lseg_extensi
 Local Hint Extern 1 (himp _ (llist _ _ _ _) (llist _ _ _ _)) => apply llist_extensional'.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep hints; auto).
 Qed.

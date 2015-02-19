@@ -109,6 +109,7 @@ Definition m := bimport [[ "buffers"!"bmalloc" @ [bmallocS],
 Lemma le_bsize : forall w : W,
   w <= natToW bsize
   -> (wordToNat w <= bsize)%nat.
+Proof using .
   intros; pre_nomega;
     rewrite wordToNat_natToWord_idempotent in * by apply inbuf_size_upper; assumption.
 Qed.
@@ -116,11 +117,13 @@ Qed.
 Local Hint Immediate le_bsize.
 
 Lemma inbuf_size_small : (N.of_nat inbuf_size < Npow2 32)%N.
+Proof using .
   specialize inbuf_size_upper;  generalize (Npow2 32); intros; nomega.
 Qed.
 
 Hint Rewrite Nat2N.inj_mul N2Nat.inj_mul : N.
 Lemma le_inbuf_size : natToW 2 <= natToW inbuf_size.
+Proof using .
   pre_nomega; rewrite wordToNat_natToWord_idempotent by apply inbuf_size_small;
     rewrite wordToNat_natToWord_idempotent by reflexivity; apply inbuf_size_lower.
 Qed.
@@ -128,16 +131,19 @@ Qed.
 Local Hint Immediate le_inbuf_size.
 
 Lemma roundTrip_inbuf_size : wordToNat (natToW inbuf_size) = inbuf_size.
+Proof using .
   rewrite wordToNat_natToWord_idempotent by apply inbuf_size_small; auto.
 Qed.
 
 Lemma roundTrip_bsize : wordToNat (natToW bsize) = bsize.
+Proof using .
   rewrite wordToNat_natToWord_idempotent by apply inbuf_size_upper; auto.
 Qed.
 
 Hint Rewrite roundTrip_inbuf_size roundTrip_bsize : sepFormula.
 
 Theorem goodSize_bsize : goodSize bsize.
+Proof using .
   apply inbuf_size_upper.
 Qed.
 
@@ -148,6 +154,7 @@ Ltac t := try solve [ sep unf hints; auto ];
     try match_locals; sep unf hints; auto.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

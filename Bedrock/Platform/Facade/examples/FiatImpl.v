@@ -23,6 +23,7 @@ Import LinkMake.StubsMake.StubMake.CompileFuncSpecMake.InvMake.
 Lemma is_heap_eat : forall w v,
   is_heap heap_empty
   ===> is_heap (WordMap.remove w (heap_upd heap_empty w v)).
+Proof using .
   intros; apply is_heap_Equal.
   apply Properties.F.Equal_mapsto_iff; intuition.
   apply Properties.F.empty_mapsto_iff in H; tauto.
@@ -35,6 +36,7 @@ Require Import Bedrock.Platform.Cito.LayoutHintsUtil.
 Lemma readd_FEnsemble : forall c rv rv',
   lset rv' c * is_heap heap_empty
   ===> is_heap (WordMap.add c (FEnsemble rv') (heap_upd heap_empty c (FEnsemble rv))).
+Proof using .
   intros.
   unfold is_heap at 2.
   assert (List.In (c, FEnsemble rv') (heap_elements (WordMap.add c (FEnsemble rv') (heap_upd heap_empty c (FEnsemble rv))))).
@@ -62,6 +64,7 @@ Import LayoutHintsUtil.
 Lemma readd_List : forall c rv rv',
   lseq rv' c * is_heap heap_empty
   ===> is_heap (WordMap.add c (List rv') (heap_upd heap_empty c (List rv))).
+Proof using .
   intros.
   unfold is_heap at 2.
   assert (List.In (c, List rv') (heap_elements (WordMap.add c (List rv') (heap_upd heap_empty c (List rv))))).
@@ -88,6 +91,7 @@ Qed.
 Lemma get_rval : forall specs st P (Q : Prop) R S T Z,
   (Q -> interp specs (![P * R * S * T] st ---> Z)%PropX)
   -> interp specs (![P * (([|Q|] * R) * S) * T] st ---> Z)%PropX.
+Proof using .
   intros.
   apply Imply_trans with (![[|Q|] * (P * R * S * T)]st)%PropX.
   assert (P * ([|Q|] * R * S) * T ===> [|Q|] * (P * R * S * T)).
@@ -113,6 +117,7 @@ Qed.
 Lemma get_rval' : forall specs st P (Q : Prop) R S T Z,
   (Q -> interp specs (![P * R * S * T] st ---> Z)%PropX)
   -> interp specs (![P * ((R * [|Q|]) * S) * T] st ---> Z)%PropX.
+Proof using .
   intros.
   apply Imply_trans with (![[|Q|] * (P * R * S * T)]st)%PropX.
   assert (P * (R * [|Q|] * S) * T ===> [|Q|] * (P * R * S * T)).
@@ -138,6 +143,7 @@ Qed.
 Lemma get_rval'' : forall specs st P (Q : Prop) R S Z,
   (Q -> interp specs (![P * R * S] st ---> Z)%PropX)
   -> interp specs (![P * ([|Q|] * R) * S] st ---> Z)%PropX.
+Proof using .
   intros.
   apply Imply_trans with (![[|Q|] * (P * R * S)]st)%PropX.
   assert (P * ([|Q|] * R) * S ===> [|Q|] * (P * R * S)).
@@ -206,6 +212,7 @@ Definition m0 := bimport [[ "sys"!"abort" @ [abortS],
   }}.
 
 Theorem ok0 : moduleOk m0.
+Proof using .
   vcgen.
 
 
@@ -525,13 +532,16 @@ Definition m2 := link ListSeqF.m m1.
 Definition m := link Malloc.m m2.
 
 Theorem ok1 : moduleOk m1.
+Proof using .
   link ListSetF.ok ok0.
 Qed.
 
 Theorem ok2 : moduleOk m2.
+Proof using .
   link ListSeqF.ok ok1.
 Qed.
 
 Theorem ok : moduleOk m.
+Proof using .
   link Malloc.ok ok2.
 Qed.

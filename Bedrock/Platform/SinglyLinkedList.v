@@ -34,26 +34,31 @@ Module SinglyLinkedList : SINGLY_LINKED_LIST.
     end.
 
   Theorem sll_extensional : forall ls (p : W), HProp_extensional (sll ls p).
+  Proof using .
     destruct ls; reflexivity.
   Qed.
 
   Theorem nil_fwd : forall ls (p : W), p = 0
     -> sll ls p ===> [| ls = nil |].
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem nil_bwd : forall ls (p : W), p = 0
     -> [| ls = nil |] ===> sll ls p.
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem cons_fwd : forall ls (p : W), p <> 0
     -> sll ls p ===> [| freeable p 2 |] * Ex x, Ex ls', [| ls = x :: ls' |] * Ex p', (p ==*> x, p') * sll ls' p'.
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem cons_bwd : forall ls (p : W), p <> 0
     -> ([| freeable p 2 |] * Ex x, Ex ls', [| ls = x :: ls' |] * Ex p', (p ==*> x, p') * sll ls' p') ===> sll ls p.
+  Proof using .
     destruct ls; sepLemma;
       match goal with
         | [ H : _ :: _ = _ :: _ |- _ ] => injection H; sepLemma

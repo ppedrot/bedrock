@@ -272,6 +272,7 @@ Section Delete.
     -> List.Forall R ls
     -> (forall x : A, P x -> Q x -> R x -> S x)
     -> List.Forall S ls.
+  Proof using .
     induction 1; inversion 1; inversion 1; auto.
   Qed.
 
@@ -283,6 +284,7 @@ Section Delete.
     -> rw <> "len"
     -> data <> "len"
     -> inputOk V' es.
+  Proof using Type.
     intros; eapply Forall_impl3; [ apply H | apply H0 | apply H1 | ].
     intro e; destruct e; simpl; intuition idtac.
     repeat rewrite <- H2 by (simpl; congruence); assumption.
@@ -293,6 +295,7 @@ Section Delete.
 
   Lemma finish_rows : forall P sch head ls head',
     P * (rows sch head ls * rows sch head nil) ===> P * rows sch head' ls.
+  Proof using .
     sepLemma.
   Qed.
 
@@ -305,6 +308,7 @@ Section Delete.
     -> (forall x, x <> rw -> x <> "res" -> x <> "matched" -> x <> "tmp" -> sel V x = sel V' x)
     -> rw <> "len"
     -> inputOk V' es.
+  Proof using .
     induction 1; do 2 inversion_clear 1; subst; simpl; intuition; constructor; auto.
     destruct x; simpl in *; intuition idtac.
     repeat rewrite <- H1 by congruence; assumption.
@@ -317,6 +321,7 @@ Section Delete.
     c = a
     -> c = 4 * b
     -> a = b * 4.
+  Proof using .
     intros; omega.
   Qed.
 
@@ -325,6 +330,7 @@ Section Delete.
   Lemma derows : forall P Q P' sch head,
     P ===> P'
     -> P * Q ===> Q * (P' * rows sch head nil).
+  Proof using .
     sepLemma.
   Qed.
   Require Import Coq.Arith.Arith.
@@ -332,6 +338,7 @@ Section Delete.
   Lemma row_free' : forall p n m,
     (p ^+ natToW 8) =?> n * (p ^+ natToW 8 ^+ natToW (n * 4)) =?> m
     ===> allocated p 8 (n + m).
+  Proof using .
     sepLemma.
     eapply Himp_trans; [ | apply allocated_join ].
     apply Himp_star_frame; apply allocated_shift_base; eauto.
@@ -350,12 +357,14 @@ Section Delete.
     (Ex ls1, Ex ls2, array ls1 (p ^+ natToW 8) * [| length ls1 = n |]
       * array ls2 (p ^+ natToW 8 ^+ natToW (n * 4)) * [| length ls2 = m |])
     ===> allocated p 8 (n + m).
+  Proof using .
     intros; eapply Himp_trans; [ | apply row_free' ].
     sepLemma; apply Himp_star_frame;
       (eapply Himp_trans; [ | apply MoreArrays.free_array' ]; sepLemma).
   Qed.
 
   Lemma rhints : TacPackage.
+  Proof using .
     admit; prepare tt row_free.
   Defined.
 
@@ -368,6 +377,7 @@ Section Delete.
     -> m = wordToNat w
     -> m = 4 * r
     -> inBounds (natToW (r * 4)) ls.
+  Proof using .
     intros; subst.
     rewrite mult_comm in H1.
     apply (f_equal natToW) in H1.
@@ -381,6 +391,7 @@ Section Delete.
     n = wordToNat w
     -> n = 4 * wordToNat r
     -> w = r ^* natToW 4.
+  Proof using .
     intros; subst.
     match goal with
       | [ |- ?x = ?y ] => assert (wordToNat x = wordToNat y)
@@ -405,6 +416,7 @@ Section Delete.
     -> vcs (DeleteVcs im ns res)
     -> interp specs (Postcondition (toCmd Delete' mn H ns res pre) st)
     -> interp specs (dinvar true (fun x : W => x) ns res st).
+  Proof using .
     simpl; wrap0; t.
   Qed.
 
@@ -414,6 +426,7 @@ Section Delete.
       -> interp specs (dinvar true (fun x : W => x) ns res st))
     -> vcs (DeleteVcs im ns res)
     -> vcs (VerifCond (toCmd Delete' mn H ns res pre)).
+  Proof using .
     intros.
     cbv beta in H1.
     repeat match goal with

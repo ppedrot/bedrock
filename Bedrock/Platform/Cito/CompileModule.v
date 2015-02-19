@@ -41,16 +41,19 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Definition compiled_funcs := map compile_func (Functions module).
 
     Lemma good_vcs : forall ls, vcs (makeVcs imports compiled_funcs (map compile_func ls)).
+    Proof using Type.
       induction ls; simpl; eauto; destruct a; simpl; unfold CompileFuncSpecMake.imply; wrap0.
     Qed.
 
     Definition compile := StructuredModule.bmodule_ imports compiled_funcs.
 
     Lemma module_name_not_in_imports : NameNotInImports mod_name imports.
+    Proof using Type.
       unfold NameNotInImports; eauto.
     Qed.
 
     Lemma no_dup_func_names : NoDupFuncNames compiled_funcs.
+    Proof using Type.
       eapply NoDup_NoDupFuncNames.
       unfold compiled_funcs.
       erewrite map_map.
@@ -62,6 +65,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem compileOk : XCAP.moduleOk compile.
+    Proof using Type.
       eapply bmoduleOk.
       eapply module_name_not_in_imports.
       eapply no_dup_func_names.

@@ -71,10 +71,12 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Open Scope nat.
 
     Lemma replace1 : forall a b c d e : W, a ^+ b ^+ c ^+ d ^+ e = a ^+ (b ^+ c ^+ d ^+ e).
+    Proof using .
       intros; repeat rewrite wplus_assoc in *; eauto.
     Qed.
 
     Lemma replace_it3 : forall a b, 2 <= a -> b <= a - 2 -> $ (a) ^- $ (S (S b)) = natToW (a - 2 - b).
+    Proof using .
       intros; replace (a - 2 - b) with (a - (2 + b)) by omega; rewrite natToW_minus; eauto.
     Qed.
 
@@ -107,6 +109,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       end.
 
     Lemma fold_2S_length : forall A (ls : list A), S (S (length ls)) = 2 + length ls.
+    Proof using .
       eauto.
     Qed.
 
@@ -126,6 +129,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Lemma firstn_length : forall A B (l : list A) (l' : list B),
       length l <= length l'
       -> length l = length (firstn (length l) l').
+    Proof using .
       induction l; destruct l'; simpl; intuition.
     Qed.
 
@@ -148,6 +152,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Opaque funcs_ok.
     Require Import Bedrock.Platform.Cito.SemanticsUtil.
     Lemma forall_word_adt_match_good_scalars : forall h pairs, List.Forall (word_adt_match h) pairs -> List.Forall (@word_scalar_match ADTValue) pairs.
+    Proof using rv_postcond.
       intros.
       eapply Forall_weaken.
       2 : eassumption.
@@ -167,7 +172,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         vcs (verifCond vars temp_size s k rv_postcond pre) ->
         vcs
           (VerifCond (do_compile s k pre)).
-    Proof.
+    Proof using Type.
 
       unfold verifCond, imply.
 

@@ -218,6 +218,7 @@ Section correctness.
       exprD funcs uvars vars base wordT = Some wb
       /\ exprD funcs uvars vars offset wordT = Some wo
       /\ w = wb ^+ wo.
+  Proof using Type.
     destruct e; simpl; intuition; try discriminate.
     repeat (deconstruct' ltac:(simpl in *); []).
     eauto.
@@ -227,6 +228,7 @@ Section correctness.
     (i < length bs)%nat
     -> interp specs (array8 bs p stn sm)
     -> smem_get (p ^+ $ (i)) sm = Some (selN bs i).
+  Proof using .
     induction bs.
 
     simpl length; inversion 1.
@@ -259,6 +261,7 @@ Section correctness.
     -> base ^+ $ (i) = base
     -> interp cs (array8 bs base stn m)
     -> False.
+  Proof using .
     destruct bs; simpl length; intros.
 
     elimtype False; omega.
@@ -281,6 +284,7 @@ Section correctness.
   Lemma natToWord_pow2_alt : forall sz tht,
     tht = sz
     -> natToWord sz (pow2 tht) = $ (0).
+  Proof using .
     intros; subst; apply natToWord_pow2.
   Qed.
 
@@ -288,6 +292,7 @@ Section correctness.
     interp cs (array8 bs base stn m)
     -> tht = 32
     -> (length bs <= pow2 tht)%nat.
+  Proof using .
     intros.
     destruct (le_lt_dec (length bs) (pow2 tht)); auto.
     eapply array8_bound' in H; try tauto.
@@ -305,6 +310,7 @@ Section correctness.
   Lemma array8_bound : forall cs bs base stn m,
     interp cs (array8 bs base stn m)
     -> (length bs <= pow2 32)%nat.
+  Proof using .
     intros; eapply array_boundAlt; eauto.
   Qed.
 
@@ -312,6 +318,7 @@ Section correctness.
     (m <= pow2 sz)%nat
     -> (n < wordToNat (natToWord sz m))%nat
     -> (n < m)%nat.
+  Proof using .
     intros; destruct (eq_nat_dec m (pow2 sz)); subst.
     rewrite natToWord_pow2 in H0.
     rewrite roundTrip_0 in H0.
@@ -326,6 +333,7 @@ Section correctness.
     i < natToW (length bs)
     -> interp specs (array8 bs p stn sm)
     -> smem_get (p ^+ i) sm = Some (sel bs i).
+  Proof using .
     intros.
     eapply sym_read_correct'' in H0.
     Focus 2.
@@ -356,7 +364,7 @@ Section correctness.
         | Some b => exprD funcs uvars vars ve wordT = Some (BtoW b)
         | _ => False
       end.
-  Proof.
+  Proof using Type.
     simpl; intuition.
     do 3 (destruct args; simpl in *; intuition; try discriminate).
     generalize (deref_correct uvars vars pe); destr ltac:(simpl in *) (deref pe); intro Hderef.
@@ -397,6 +405,7 @@ Section correctness.
     -> interp specs (array8 bs p stn st)
     -> exists st', smem_set (p ^+ $ (i)) v st = Some st'
       /\ ST.satisfies specs (array8 (updN bs i v) p) stn st'.
+  Proof using .
     induction bs.
 
     inversion 1.
@@ -452,6 +461,7 @@ Section correctness.
     -> interp specs (array8 bs p stn st)
     -> exists st', smem_set (p ^+ i) v st = Some st'
       /\ ST.satisfies specs (array8 (upd bs i v) p) stn st'.
+  Proof using .
     intros.
     eapply sym_write_correct'' in H0.
     Focus 2.
@@ -488,7 +498,7 @@ Section correctness.
             | Some sm' => ST.satisfies cs pr stn sm'
           end
       end.
-  Proof.
+  Proof using Type.
     simpl; intuition.
     do 3 (destruct args; simpl in *; intuition; try discriminate).
     generalize (deref_correct uvars vars pe); destr ltac:(simpl in *) (deref pe); intro Hderef.

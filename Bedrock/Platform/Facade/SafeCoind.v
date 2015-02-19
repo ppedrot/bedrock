@@ -70,6 +70,7 @@ Section ADTValue.
     Require Import Bedrock.Platform.Cito.GeneralTactics.
 
     Theorem Safe_coind : forall c st, R c st -> Safe env c st.
+    Proof using All.
       cofix; intros; destruct c.
       - eauto.
       - eapply SeqCase in H; openhyp; eapply SafeSeq; eauto.

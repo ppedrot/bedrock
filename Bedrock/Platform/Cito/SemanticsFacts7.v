@@ -13,7 +13,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics4.
 
   Lemma split_triples : forall triples words_cinput coutput, words_cinput = List.map (fun x => (Word x, ADTIn x)) triples -> coutput = List.map (@ADTOut _) triples -> triples = make_triples words_cinput coutput.
-  Proof.
+  Proof using Type.
     induction triples; destruct words_cinput; destruct coutput; simpl in *; intros; try discriminate.
     eauto.
     destruct a; inject H; inject H0.
@@ -21,7 +21,7 @@ Section ADTValue.
   Qed.
 
   Lemma split_triples' : forall triples words cinput coutput, words = List.map (@Word _) triples -> cinput = List.map (@ADTIn _) triples -> coutput = List.map (@ADTOut _) triples -> triples = make_triples (combine words cinput) coutput.
-  Proof.
+  Proof using Type.
     induction triples; destruct words; destruct cinput; destruct coutput; simpl in *; intros; try discriminate.
     eauto.
     destruct a; inject H; inject H0; inject H1.
@@ -29,14 +29,14 @@ Section ADTValue.
   Qed.
 
   Lemma nth_error_make_triples_intro words_cinput : forall coutput i p a a', nth_error words_cinput i = Some (p, a) -> nth_error coutput i = Some a' -> nth_error (make_triples words_cinput coutput) i = Some {| Word := p; ADTIn := a; ADTOut := a'|}.
-  Proof.
+  Proof using Type.
     induction words_cinput; destruct coutput; destruct i; simpl in *; intros; try discriminate.
     destruct a; inject H; inject H0; eauto.
     eauto.
   Qed.
 
   Lemma nth_error_make_triples_elim wis : forall os i p a a', nth_error (make_triples wis os) i = Some {| Word := p; ADTIn := a; ADTOut := a' |} -> nth_error wis i = Some (p, a) /\ nth_error os i = Some a'.
-  Proof.
+  Proof using Type.
     induction wis; destruct os; destruct i; simpl in *; intros; try discriminate.
     destruct a; inject H; eauto.
     eauto.
@@ -46,11 +46,13 @@ Section ADTValue.
   Arguments ADTOut {_} _.
 
   Lemma make_triples_Word_ADTIn : forall pairs outs, length outs = length pairs -> List.map (fun x => (Word x, ADTIn x)) (make_triples pairs outs) = pairs.
+  Proof using Type.
     induction pairs; destruct outs; simpl; intuition.
     f_equal; auto.
   Qed.
 
   Lemma make_triples_ADTOut : forall pairs outs, length outs = length pairs -> List.map ADTOut (make_triples pairs outs) = outs.
+  Proof using Type.
     induction pairs; destruct outs; simpl; intuition.
     f_equal; auto.
   Qed.
@@ -59,7 +61,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.ListFacts4.
 
   Lemma make_triples_ADTIn_ADTOut : forall pairs outs, length outs = length pairs -> List.map (fun x => (ADTIn x, ADTOut x)) (@make_triples pairs outs) = List.combine (List.map snd pairs) outs.
-  Proof.
+  Proof using Type.
     intros.
     erewrite <- combine_map.
     rewrite make_triples_ADTIn by eauto.

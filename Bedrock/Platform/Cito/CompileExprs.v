@@ -111,6 +111,7 @@ Section TopLevel.
   Lemma array_out : forall a p,
     length a > 0
     -> array a p ===> p =*> Array.selN a 0 * array (tl a) (p ^+ $4).
+  Proof using .
     clear_fancy; destruct a; unfold array; simpl; intros.
     inversion H.
     destruct a.
@@ -125,6 +126,7 @@ Section TopLevel.
     interp specs (![P] st)
     -> P ===> Q
     -> interp specs (![Q] st).
+  Proof using .
     intros.
     eapply Imply_sound.
     rewrite sepFormula_eq.
@@ -135,6 +137,7 @@ Section TopLevel.
   Lemma array_in : forall a p,
     length a > 0
     -> p =*> Array.selN a 0 * array (tl a) (p ^+ $4) ===> array a p.
+  Proof using .
     clear_fancy; destruct a; unfold array; simpl; intros.
     inversion H.
     destruct a.
@@ -149,6 +152,7 @@ Section TopLevel.
   Lemma In_union_list : forall x exprs0,
     In x (fold_right union empty (map free_vars exprs0))
     -> In x (fold_right union empty (map free_vars exprs0)).
+  Proof using .
     induction exprs0; simpl; intuition.
   Qed.
 
@@ -168,6 +172,7 @@ Section TopLevel.
           exists changed,
             interp specs (![is_state (Regs (snd x) Sp) vs (upd_sublist temps base changed) dst (map (eval vs) exprs) * other ] (fst x, snd x)) /\
             length changed <= depth.
+  Proof using .
     induction exprs0; post.
 
     clear_fancy.
@@ -343,6 +348,7 @@ Section TopLevel.
         length exprs = length dst_buf |])
     -> syn_req exprs base
     -> vcs (VerifCond (Seq (do_compile exprs base dst) pre)).
+  Proof using .
     induction exprs0; wrap0.
 
     Transparent evalInstrs.

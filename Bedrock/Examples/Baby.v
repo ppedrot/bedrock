@@ -13,6 +13,7 @@ Definition diverger := bmodule "diverger" {{
 (* Eval compute in compile diverger. *)
 
 Theorem divergerOk : moduleOk diverger.
+Proof using .
   vcgen; sep_auto.
 Qed.
 
@@ -31,6 +32,7 @@ Definition seven := bmodule "seven" {{
 }}.
 
 Theorem sevenOk : moduleOk seven.
+Proof using .
   vcgen; sep_auto.
 Qed.
 
@@ -48,6 +50,7 @@ Definition triple := bmodule "triple" {{
 }}.
 
 Theorem tripleOk : moduleOk triple.
+Proof using .
   vcgen; (sep_auto; words).
 Qed.
 
@@ -67,6 +70,7 @@ Definition immed := bmodule "immed" {{
 (* Eval compute in compile immed. *)
 
 Theorem immedOk : moduleOk immed.
+Proof using .
   vcgen; sep_auto.
 Qed.
 
@@ -87,6 +91,7 @@ Definition immedTest := bimport [[ "immed"!"immed" @ [immedS] ]]
 (* Eval compute in compile immedTest. *)
 
 Theorem immedTestOk : moduleOk immedTest.
+Proof using .
   vcgen; (sep_auto; words).
 Qed.
 
@@ -97,6 +102,7 @@ Definition immedProg := link immed immedTest.
 (* Eval compute in compile immedProg. *)
 
 Theorem immedProgOk : moduleOk immedProg.
+Proof using .
   link immedOk immedTestOk.
 Qed.
 
@@ -119,6 +125,7 @@ Definition immedTestBig := bimport [[ "immed"!"immed" @ [immedS] ]]
 (* Eval compute in compile immedTest. *)
 
 Theorem immedTestBigOk : moduleOk immedTestBig.
+Proof using .
   vcgen; (sep_auto; words).
 Qed.
 
@@ -138,6 +145,7 @@ Definition inc := bmodule "inc" {{
 (* Eval compute in compile inc. *)
 
 Theorem incOk : moduleOk inc.
+Proof using .
   vcgen; sep_auto.
 Qed.
 
@@ -155,6 +163,7 @@ Definition incTest := bimport [[ "inc"!"inc" @ [incS] ]]
   }}.
 
 Theorem incTestOk : moduleOk incTest.
+Proof using .
   vcgen; (sep_auto; words).
 Qed.
 
@@ -179,5 +188,6 @@ Definition always0 := bmodule "always0" {{
 (* Eval compute in compile always0. *)
 
 Theorem always0Ok : moduleOk always0.
+Proof using .
   vcgen; sep_auto.
 Qed.

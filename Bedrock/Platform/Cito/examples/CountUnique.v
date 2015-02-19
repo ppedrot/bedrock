@@ -139,6 +139,7 @@ Require Import Bedrock.Platform.Cito.GoodModuleDec.
 Require Import Bedrock.Platform.Cito.GoodModuleDecFacts.
 
 Lemma good : IsGoodModule m.
+Proof using .
   eapply is_good_module_sound.
   reflexivity.
 Qed.
@@ -275,26 +276,31 @@ Import WordMap.
 Require Import Bedrock.Platform.Cito.GeneralTactics2.
 
 Lemma empty_mapsto_elim : forall P elt k v, MapsTo k v (empty elt) -> P.
+Proof using .
   intros.
   eapply empty_mapsto_iff in H; intuition.
 Qed.
 Hint Extern 0 => (eapply empty_mapsto_elim; eassumption).
 Lemma empty_in_elim : forall P elt k, In k (empty elt) -> P.
+Proof using .
   intros.
   eapply empty_in_iff in H; intuition.
 Qed.
 Hint Extern 0 => (eapply empty_in_elim; eassumption).
 Lemma singleton_mapsto_iff : forall elt k v k' v', @MapsTo elt k' v' (k --> v) <-> k' = k /\ v' = v.
+Proof using .
   split; intros.
   eapply add_mapsto_iff in H; openhyp; eauto.
   openhyp; eapply add_mapsto_iff; eauto.
 Qed.
 Lemma singleton_in_iff : forall elt k k' v, @In elt k' (k --> v) <-> k' = k.
+Proof using .
   split; intros.
   eapply add_in_iff in H; openhyp; eauto.
   openhyp; eapply add_in_iff; eauto.
 Qed.
 Lemma update_add : forall elt k v h, @update elt h (k --> v) == add k v h.
+Proof using .
   intros.
   unfold Equal; intros.
   eapply option_univalence.
@@ -331,6 +337,7 @@ Lemma update_add : forall elt k v h, @update elt h (k --> v) == add k v h.
   eapply singleton_in_iff in H1; eauto.
 Qed.
 Lemma singleton_disj : forall elt k v h, ~ @In elt k h <-> Disjoint h (k --> v).
+Proof using .
   unfold Disjoint; split; intros.
   not_not; openhyp.
   eapply singleton_in_iff in H0; subst; eauto.
@@ -342,6 +349,7 @@ Lemma singleton_disj : forall elt k v h, ~ @In elt k h <-> Disjoint h (k --> v).
   eapply singleton_in_iff; eauto.
 Qed.
 Lemma separated_star : forall elt h k (v : elt), separated h k (Some v) -> add k v h === h ** k --> v.
+Proof using .
   intros.
   unfold separated, Semantics.separated in *.
   openhyp.
@@ -358,6 +366,7 @@ Qed.
 
 Require Import Bedrock.Platform.Cito.BedrockTactics.
 Lemma map_fst_combine : forall A B (a : list A) (b : list B), length a = length b -> a = List.map fst (List.combine a b).
+Proof using .
   induction a; destruct b; simpl; intuition.
   f_equal; eauto.
 Qed.
@@ -368,12 +377,14 @@ Ltac eapply_in_any t :=
   end.
 
 Lemma map_add_same_key : forall elt m k v1 v2, @add elt k v2 (add k v1 m) == add k v2 m.
+Proof using .
   unfold WordMap.Equal; intros.
   repeat rewrite add_o.
   destruct (UWFacts.WFacts.P.F.eq_dec k y); intuition.
 Qed.
 
 Lemma not_in_add_remove : forall elt m k v, ~ @In elt k m -> WordMap.remove k (add k v m) == m.
+Proof using .
   unfold WordMap.Equal; intros.
   rewrite remove_o.
   rewrite add_o.
@@ -390,11 +401,13 @@ Fixpoint same_keys_ls elt (hs1 hs2 : list (t elt)) :=
   end.
 Require Import Bedrock.Platform.Cito.GeneralTactics3.
 Lemma same_keys_in_iff : forall elt (m1 m2 : t elt), keys m1 = keys m2 -> forall k, In k m1 <-> In k m2.
+Proof using .
   split; intros.
   eapply In_In_keys; rewrite <- H; eapply In_In_keys; eauto.
   eapply In_In_keys; rewrite H; eapply In_In_keys; eauto.
 Qed.
 Lemma same_keys_disj : forall elt (a b a' b' : t elt), Disjoint a b -> keys a = keys a' -> keys b = keys b' -> Disjoint a' b'.
+Proof using .
   unfold Disjoint; intros.
   specialize (same_keys_in_iff _ _ H0); intros.
   specialize (same_keys_in_iff _ _ H1); intros.
@@ -404,6 +417,7 @@ Lemma same_keys_disj : forall elt (a b a' b' : t elt), Disjoint a b -> keys a = 
   eapply H3; eauto.
 Qed.
 Lemma same_keys_forall_disj : forall elt hs1 hs2 h1 h2, List.Forall (@Disjoint elt h1) hs1 -> same_keys_ls hs1 hs2 -> keys h1 = keys h2 -> List.Forall (Disjoint h2) hs2.
+Proof using .
   induction hs1; destruct hs2; simpl; intuition.
   inv_clear H.
   econstructor; eauto.
@@ -411,6 +425,7 @@ Lemma same_keys_forall_disj : forall elt hs1 hs2 h1 h2, List.Forall (@Disjoint e
 Qed.
 
 Lemma same_keys_all_disj : forall elt hs1 hs2, @AllDisjoint elt hs1 -> same_keys_ls hs1 hs2 -> AllDisjoint hs2.
+Proof using .
   unfold AllDisjoint; induction hs1; destruct hs2; simpl; intuition.
   inv_clear H.
   econstructor; eauto.
@@ -418,6 +433,7 @@ Lemma same_keys_all_disj : forall elt hs1 hs2, @AllDisjoint elt hs1 -> same_keys
 Qed.
 
 Lemma add_o_eq : forall elt k v v' m, @find elt k (add k v m) = Some v' -> v = v'.
+Proof using .
   intros.
   rewrite add_o in H.
   destruct (eq_dec _ _); [ | intuition].
@@ -456,6 +472,7 @@ Qed.
 Require Import Bedrock.Platform.Cito.WordFacts Bedrock.Platform.Cito.WordFacts2 Bedrock.Platform.Cito.WordFacts3 Bedrock.Platform.Cito.WordFacts4 Bedrock.Platform.Cito.WordFacts5.
 Import Transit.
 Lemma in_alldisj_neq : forall elt k1 k2 v2 h, @In elt k1 h -> AllDisjoint [[h, k2 --> v2]] -> k2 <> k1.
+Proof using .
   intuition; subst.
   inv_clear H0.
   inversion_Forall.
@@ -466,6 +483,7 @@ Qed.
 Theorem lt_true : forall (a b : string) env vs h vs' h',
                     @is_true ADTValue (a < b)%expr env (vs, h) (vs', h')
                     -> (sel vs' a < sel vs' b)%word.
+Proof using .
   intros.
   hnf in H.
   simpl in H.
@@ -476,6 +494,7 @@ Qed.
 Theorem lt_false : forall (a b : string) env vs h vs' h',
                      @is_false ADTValue (a < b)%expr env (vs, h) (vs', h')
                      -> (sel vs' a >= sel vs' b)%word.
+Proof using .
   intros.
   hnf in H.
   simpl in H.
@@ -486,11 +505,13 @@ Qed.
 
 Hint Resolve lt_false lt_true.
 Lemma add_swap : forall elt k1 v1 k2 v2 h, @find elt k1 h = Some v1 -> k2 <> k1 -> add k1 v1 (add k2 v2 h) == add k2 v2 h.
+Proof using .
   intros; unfold Equal; intros.
   repeat rewrite add_o.
   destruct (eq_dec k1 y); destruct (eq_dec k2 y); subst; intuition eauto.
 Qed.
 Lemma firstn_plus_1 : forall ls n, n < length ls -> firstn (1 + n) ls = firstn n ls ++ selN ls n :: nil.
+Proof using .
   induction ls; destruct n; simpl; intuition.
   f_equal.
   eapply IHls.
@@ -502,17 +523,20 @@ Lemma fold_firstn :
       | [[]] => [[]]
       | a :: l => a :: firstn n l
     end = firstn (1 + n) ls.
+Proof using .
   eauto.
 Qed.
 Import WordSet.
 Import WordSetFacts.
 Import FM.
 Lemma union_empty_right : forall s, union s empty =s= s.
+Proof using .
   intros.
   rewrite empty_union_2; eauto.
   reflexivity.
 Qed.
 Lemma of_list_union : forall ls1 ls2, to_set (ls1 ++ ls2) =s= union (to_set ls1) (to_set ls2).
+Proof using .
   induction ls1; destruct ls2; simpl; intuition.
   rewrite IHls1.
   simpl.
@@ -524,11 +548,13 @@ Lemma of_list_union : forall ls1 ls2, to_set (ls1 ++ ls2) =s= union (to_set ls1)
   reflexivity.
 Qed.
 Lemma firstn_whole : forall A (ls : list A) n, length ls <= n -> firstn n ls = ls.
+Proof using .
   induction ls; destruct n; simpl; intuition.
   f_equal; eauto.
 Qed.
 
 Lemma count_vcs_good : and_all (vc count_body count_pre) specs.
+Proof using .
   unfold count_pre, count_body; simpl; unfold imply_close, and_lift; simpl; split_all.
   {
     (* vc1 *)
@@ -965,10 +991,12 @@ Definition output_gen (h : Heap ADTValue) w (i : Value ADTValue) :=
 Require Import ListFacts4.
 Import Transit.
 Lemma combine_fst_snd : forall A B (ls : list (A * B)), List.combine (List.map fst ls) (List.map snd ls) = ls.
+Proof using .
   induction ls; simpl; intuition.
   simpl; f_equal; eauto.
 Qed.
 Lemma combine_fst_snd' : forall A B (ls : list (A * B)) a b, a = List.map fst ls -> List.map snd ls = b -> ls = List.combine a b.
+Proof using .
   intros.
   specialize (combine_fst_snd ls); intros.
   rewrite H0 in H1.
@@ -978,6 +1006,7 @@ Qed.
 Arguments uncurry {_ _ _} _ _ / .
 Import WordMap.
 Lemma add_no_effect : forall elt k v h, @find elt k h = Some v -> add k v h == h.
+Proof using .
   unfold Equal; intros.
   repeat rewrite add_o.
   destruct (eq_dec k y); subst; intuition.
@@ -987,6 +1016,7 @@ Arguments uncurry {_ _ _} _ _ / .
 Arguments uncurry {_ _ _} _ _ / .
 
 Lemma count_strengthen : forall env_ax, specs_env_agree specs env_ax -> strengthen_op_ax count count_spec env_ax.
+Proof using .
   intros.
   unfold strengthen_op_ax, strengthen_op_ax'.
 
@@ -1101,6 +1131,7 @@ Import Transit.
 Opaque natToWord.
 
 Lemma main_vcs_good : and_all (vc main_body empty_precond) specs.
+Proof using .
   unfold empty_precond, main_body; simpl; unfold imply_close, and_lift; simpl; split_all.
   {
     (* vc1 *)
@@ -1521,6 +1552,7 @@ Local Hint Immediate main_vcs_good.
 Import Transit.
 
 Lemma main_strengthen : forall env_ax, specs_env_agree specs env_ax -> strengthen_op_ax main main_spec env_ax.
+Proof using .
   intros.
   unfold strengthen_op_ax, strengthen_op_ax'.
   exists (fun words inputs h => List.map (uncurry (output_gen h)) (List.combine words inputs)).
@@ -1558,6 +1590,7 @@ Lemma main_strengthen : forall env_ax, specs_env_agree specs env_ax -> strengthe
 Qed.
 
 Lemma specs_strengthen_diff : forall env_ax, specs_env_agree specs env_ax -> strengthen_diff specs_op specs_change_table env_ax.
+Proof using .
   intros.
   unfold strengthen_diff.
   rewrite GLabelMap.fold_1.
@@ -1587,6 +1620,7 @@ Import GLabelMapFacts.
 Import LinkSpecMake.
 
 Lemma specs_op_equal : specs_equal specs_op modules imports.
+Proof using .
   split; intros.
   unfold specs_equal, specs_op in *; simpl in *.
   eapply find_mapsto_iff in H; eapply add_mapsto_iff in H; openhyp.
@@ -1639,12 +1673,14 @@ Lemma specs_op_equal : specs_equal specs_op modules imports.
 Qed.
 
 Lemma specs_equal_domain : equal_domain specs specs_op.
+Proof using .
   eapply equal_domain_dec_sound; reflexivity.
 Qed.
 
 Hint Resolve specs_op_equal specs_equal_domain.
 
 Lemma new_env_strengthen : forall stn fs, env_good_to_use modules imports stn fs -> strengthen (from_bedrock_label_map (Labels stn), fs stn) (change_env specs (from_bedrock_label_map (Labels stn), fs stn)).
+Proof using .
   intros.
   eapply strengthen_diff_strenghthen.
   Focus 2.
@@ -1657,11 +1693,13 @@ Lemma new_env_strengthen : forall stn fs, env_good_to_use modules imports stn fs
 Qed.
 
 Lemma main_safe' : forall stn fs v, env_good_to_use modules imports stn fs -> Safe (change_env specs (from_bedrock_label_map (Labels stn), fs stn)) (Body main) v.
+Proof using .
   cito_safe main empty_precond main_vcs_good.
   eapply change_env_agree; eauto; eapply specs_equal_agree; eauto.
 Qed.
 
 Lemma main_safe : forall stn fs v, env_good_to_use modules imports stn fs -> Safe (from_bedrock_label_map (Labels stn), fs stn) (Body main) v.
+Proof using .
   intros.
   eapply strengthen_safe with (env_ax := change_env specs (from_bedrock_label_map (Labels stn), fs stn)).
   eapply main_safe'; eauto.
@@ -1669,6 +1707,7 @@ Lemma main_safe : forall stn fs v, env_good_to_use modules imports stn fs -> Saf
 Qed.
 
 Lemma main_runsto : forall stn fs v v', env_good_to_use modules imports stn fs -> RunsTo (from_bedrock_label_map (Labels stn), fs stn) (Body main) v v' -> sel (fst v') (RetVar f) = 2 /\ snd v' == snd v.
+Proof using .
   intros.
   eapply strengthen_runsto with (env_ax := change_env specs (from_bedrock_label_map (Labels stn), fs stn)) in H0.
   cito_runsto main empty_precond main_vcs_good.
@@ -1686,6 +1725,7 @@ Import Made.
 Import LinkSpecMake2.CompileFuncSpecMake.InvMake.SemanticsMake.
 
 Theorem top_ok : moduleOk top.
+Proof using .
   vcgen.
 
   sep_auto.
@@ -1740,5 +1780,6 @@ Qed.
 Definition all := link top (compile_to_bedrock modules imports).
 
 Theorem all_ok : moduleOk all.
+Proof using .
   link0 top_ok.
 Qed.

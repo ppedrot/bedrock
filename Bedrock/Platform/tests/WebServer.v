@@ -29,16 +29,19 @@ Section strings.
 
   Theorem strings_fwd : forall n p,
     strings n p ===> Ex len, p =*> len * strings' n p len.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem strings_bwd : forall n p,
     Ex len, p =*> len * strings' n p len ===> strings n p.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem strings'_fwd_zero : forall n p (len : W), len = 0
     -> strings' n p len ===> Emp.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -46,6 +49,7 @@ Section strings.
     -> strings' n p len ===> Ex n', [| n = S n' |] * [| len <> 0 |] * (p ^+ $4) =?>8 wordToNat len
     * Ex len', (p ^+ $4 ^+ len) =*> len' * (p ^+ $4 ^+ len ^+ $4) =?>8 wordToNat len'
     * strings n' (p ^+ $4 ^+ len ^+ $4 ^+ len').
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -54,12 +58,14 @@ Section strings.
     * [| p = q ^+ $4 ^+ len |] * Ex len', p =*> len' * (p ^+ $4) =?>8 wordToNat len').
 
   Theorem keyValues_empty_bwd : Emp ===> keyValues empty.
+  Proof using .
     apply starB_empty_bwd.
   Qed.
 
   Theorem keyValues_add_bwd : forall b p, keyValues b * (Ex q, Ex len, q =*> len * (q ^+ $4) =?>8 wordToNat len
     * [| p = q ^+ $4 ^+ len |] * Ex len', p =*> len' * (p ^+ $4) =?>8 wordToNat len')
     ===> keyValues (b %+ p).
+  Proof using .
     apply starB_add_bwd.
   Qed.
 
@@ -74,6 +80,7 @@ Section strings.
     -> keyValues_pick p b ===> keyValues (b %- p)
     * (Ex q, Ex len, q =*> len * (q ^+ $4) =?>8 wordToNat len
       * [| p = q ^+ $4 ^+ len |] * Ex len', p =*> len' * (p ^+ $4) =?>8 wordToNat len').
+  Proof using .
     intros; eapply Himp_trans; [ apply starB_del_fwd | ]; keyValues.
   Qed.
 
@@ -81,6 +88,7 @@ Section strings.
     -> keyValues (b %- p)
     * (Ex q, Ex len, q =*> len * (q ^+ $4) =?>8 wordToNat len
       * [| p = q ^+ $4 ^+ len |] * Ex len', p =*> len' * (p ^+ $4) =?>8 wordToNat len') ===> keyValues_pick p b.
+  Proof using .
     intros; eapply Himp_trans; [ | apply starB_del_bwd ]; eauto; keyValues.
   Qed.
 End strings.
@@ -391,6 +399,7 @@ Definition m := bimport [[ "stringdb"!"new" @ [StringDb.newS], "stringdb"!"looku
 Lemma le_bsize : forall w : W,
   w <= natToW bsize
   -> (wordToNat w <= bsize)%nat.
+Proof using .
   intros; pre_nomega;
     rewrite wordToNat_natToWord_idempotent in * by apply inbuf_size_upper; assumption.
 Qed.
@@ -398,11 +407,13 @@ Qed.
 Local Hint Immediate le_bsize.
 
 Lemma inbuf_size_small : (N.of_nat inbuf_size < Npow2 32)%N.
+Proof using .
   specialize inbuf_size_upper;  generalize (Npow2 32); intros; nomega.
 Qed.
 
 Hint Rewrite Nat2N.inj_mul N2Nat.inj_mul : N.
 Lemma le_inbuf_size : natToW 2 <= natToW inbuf_size.
+Proof using .
   pre_nomega; rewrite wordToNat_natToWord_idempotent by apply inbuf_size_small;
     rewrite wordToNat_natToWord_idempotent by reflexivity; apply inbuf_size_lower.
 Qed.
@@ -410,10 +421,12 @@ Qed.
 Local Hint Immediate le_inbuf_size.
 
 Lemma roundTrip_inbuf_size : wordToNat (natToW inbuf_size) = inbuf_size.
+Proof using .
   rewrite wordToNat_natToWord_idempotent by apply inbuf_size_small; auto.
 Qed.
 
 Lemma roundTrip_bsize : wordToNat (natToW bsize) = bsize.
+Proof using .
   rewrite wordToNat_natToWord_idempotent by apply inbuf_size_upper; auto.
 Qed.
 
@@ -421,6 +434,7 @@ Hint Rewrite roundTrip_inbuf_size roundTrip_bsize : sepFormula.
 
 Lemma four_in : forall len, len < NToW (Npow2 30)
   -> (wordToNat len * 4)%nat = wordToNat (len ^* $4).
+Proof using .
   Transparent goodSize.
   intros; rewrite wordToNat_wmult.
   reflexivity.
@@ -444,6 +458,7 @@ Hint Rewrite four_in using assumption : sepFormula.
 Lemma convert_le : forall u v : W,
   u <= v ^* natToW 4
   -> (wordToNat u <= wordToNat (v ^* natToW 4))%nat.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -451,6 +466,7 @@ Local Hint Immediate convert_le.
 
 Lemma four_le : forall w : W, (4 <= wordToNat w)%nat
   -> natToW 4 <= w.
+Proof using .
   intros; pre_nomega; auto.
 Qed.
 
@@ -460,6 +476,7 @@ Hint Rewrite wordToNat_wminus using solve [ auto ] : sepFormula.
 
 Lemma wlt_le : forall u v : W, u < v
   -> (wordToNat u <= wordToNat v)%nat.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -477,6 +494,7 @@ Ltac t :=
 Ltac u := solve [ t ].
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

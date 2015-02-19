@@ -82,7 +82,7 @@ Section env.
     end.
 
   Global Instance SemiReflect_Eqb (t : type) (x y : Impl t) : SemiReflect (Eqb _ x y) (x = y).
-  Proof.
+  Proof using .
     consider (Eqb t x y); intros; constructor.
     apply Eqb_correct; auto.
   Qed.
@@ -97,7 +97,7 @@ Section env.
   Defined.
 
   Global Instance SemiReflect_tvar_val_seqb t x y : SemiReflect (tvar_val_seqb t x y) (x = y).
-  Proof.
+  Proof using Type.
     revert x y. destruct t; simpl; intros; try constructor.
     destruct (nth_error types n); simpl.
     consider (Eqb t x y); intros; constructor. auto.
@@ -195,14 +195,14 @@ Section env.
   Defined.
 
   Global Instance Reflect_tvar_seqb a b : Reflect (tvar_seqb a b) (a = b) (a <> b).
-  Proof.
+  Proof using .
     destruct a; destruct b; try constructor; auto; try congruence.
       simpl. consider (EqNat.beq_nat n n0); constructor; auto.
       congruence.
   Qed.
 
   Lemma tvar_seqb_refl : forall a, tvar_seqb a a = true.
-  Proof. intros; consider (tvar_seqb a a); auto. Qed.
+  Proof using . intros; consider (tvar_seqb a a); auto. Qed.
 
   Definition env : Type := list (sigT tvarD).
 
@@ -226,6 +226,7 @@ Section env.
     lookupAs v t1 x <> None
     -> lookupAs v t2 x <> None
     -> t1 = t2.
+  Proof using Type.
     unfold lookupAs. clear.
     induction v; destruct x; simpl; intros; try congruence.
       destruct a; simpl in *.
@@ -300,7 +301,7 @@ Section env.
   Theorem exprD_det : forall e t1 t2, exprD e t1 <> None
     -> exprD e t2 <> None
     -> t1 = t2.
-  Proof.
+  Proof using Type.
     induction e; simpl; intros; try solve [ eapply lookupAs_det; eauto ];
       repeat match goal with
                | [ H : context [ match ?Y with
@@ -359,35 +360,35 @@ Section env.
 
     Theorem typeof_env_WellTyped_env : forall g,
       WellTyped_env (typeof_env g) g.
-    Proof.
+    Proof using Type.
       clear. intros. reflexivity.
     Qed.
     Theorem typeof_sig_WellTyped_sig : forall f,
       WellTyped_sig (typeof_sig f) f.
-    Proof.
+    Proof using Type.
       clear. unfold WellTyped_sig; intuition.
     Qed.
     Theorem typeof_funcs_WellTyped_funcs : forall f,
       WellTyped_funcs (typeof_funcs f) f.
-    Proof.
+    Proof using Type.
       clear; induction f; simpl; intros; econstructor; auto using typeof_sig_WellTyped_sig.
     Qed.
 
     Lemma typeof_env_length : forall g,
       length (typeof_env g) = length g.
-    Proof.
+    Proof using Type.
       intros. apply map_length.
     Qed.
 
     Lemma typeof_env_app : forall a b,
       typeof_env (a ++ b) = typeof_env a ++ typeof_env b.
-    Proof.
+    Proof using Type.
       clear. unfold typeof_env. intros. rewrite map_app. reflexivity.
     Qed.
 
     Lemma typeof_env_rev : forall g,
       typeof_env (rev g) = rev (typeof_env g).
-    Proof.
+    Proof using Type.
       clear. induction g; simpl; auto. rewrite typeof_env_app. simpl. rewrite IHg. auto.
     Qed.
 
@@ -451,7 +452,7 @@ Section env.
       WellTyped_env t g ->
       nth_error t n = Some T ->
       exists v, nth_error g n = Some (@existT _ _ T v).
-    Proof.
+    Proof using Type.
       clear. induction g; destruct t; destruct n; simpl; unfold WellTyped_env, error, value in *; simpl; intros; try congruence.
       inversion H0; clear H0; subst. inversion H; subst.
       exists (projT2 a). destruct a; auto.
@@ -462,7 +463,7 @@ Section env.
       WellTyped_env t g ->
       nth_error t n = None ->
       nth_error g n = None.
-    Proof.
+    Proof using Type.
       clear. induction g; destruct t; destruct n; simpl; unfold WellTyped_env, error, value in *; simpl; intros; try congruence.
       inversion H. eapply IHg; eauto.
     Qed.
@@ -473,7 +474,7 @@ Section env.
         nth_error l n = Some L ->
         nth_error r n = Some R ->
         P L R.
-    Proof.
+    Proof using .
       clear; induction 1; destruct n; simpl; unfold value, error; intros; try congruence; eauto.
     Qed.
     Lemma Forall2_nth_error_L_None : forall T U (P : T -> U -> Prop) l r,
@@ -481,7 +482,7 @@ Section env.
       forall n,
         nth_error l n = None ->
         nth_error r n = None.
-    Proof.
+    Proof using .
       clear; induction 1; destruct n; simpl; unfold value, error; intros; try congruence; eauto.
     Qed.
 
@@ -491,7 +492,7 @@ Section env.
         nth_error l n = Some L ->
         exists R,
           nth_error r n = Some R /\ P L R.
-    Proof.
+    Proof using .
       clear; induction 1; destruct n; simpl; unfold value, error; intros; try congruence; eauto.
       inversion H1; subst; eauto.
     Qed.
@@ -502,7 +503,7 @@ Section env.
            | None => False
            | Some t' => exprD e t' <> None
          end.
-    Proof.
+    Proof using (WT_funcs WT_meta WT_vars).
       induction e; simpl; unfold lookupAs; intros;
         try solve [ repeat (simpl in *; try congruence;
           match goal with
@@ -552,7 +553,7 @@ Section env.
   Lemma exprD_typeof : forall a1 t D,
     exprD a1 t = Some D ->
     typeof a1 = Some t.
-  Proof.
+  Proof using (WT_funcs WT_meta WT_vars).
     intros.
     assert (exprD a1 t <> None); try congruence.
     apply exprD_principal in H0.
@@ -569,7 +570,7 @@ Section env.
   Theorem is_well_typed_correct : forall e t,
     is_well_typed e t = true ->
     exists v, exprD e t = Some v.
-  Proof.
+  Proof using (WT_funcs WT_meta WT_vars).
     induction e; simpl; intros;
     repeat match goal with
              | [ H : context [ equiv_dec ?X ?Y ] |- _ ] =>
@@ -603,7 +604,7 @@ Section env.
     WellTyped_env t g ->
     nth_error g n = Some V ->
     nth_error t n = Some (projT1 V).
-  Proof.
+  Proof using Type.
     clear. induction g; destruct t; destruct n; simpl; unfold WellTyped_env, error, value in *; simpl; intros; try congruence.
     inversion H0; clear H0; subst. inversion H; subst. auto.
   Qed.
@@ -612,7 +613,7 @@ Section env.
     WellTyped_env t g ->
     nth_error g n = None ->
     nth_error t n = None.
-  Proof.
+  Proof using Type.
     clear. induction g; destruct t; destruct n; simpl; unfold WellTyped_env, error, value in *; simpl; intros; try congruence.
     inversion H. eapply IHg; eauto.
   Qed.
@@ -622,7 +623,7 @@ Section env.
       nth_error r n = Some R ->
       exists L,
         nth_error l n = Some L /\ P L R.
-  Proof.
+  Proof using .
     clear; induction 1; destruct n; simpl; unfold value, error; intros; try congruence; eauto.
     inversion H1; subst; eauto.
   Qed.
@@ -630,7 +631,7 @@ Section env.
   Theorem is_well_typed_correct_only : forall e t v,
     exprD e t = Some v ->
     is_well_typed e t = true.
-  Proof.
+  Proof using (WT_funcs WT_meta WT_vars).
     induction e; simpl; intros;
     repeat match goal with
              | [ H : @equiv _ _ _ _ _ |- _ ] => unfold equiv in H; subst
@@ -657,7 +658,7 @@ Section env.
 
   Theorem is_well_typed_typeof : forall e t,
     is_well_typed e t = true -> typeof e = Some t.
-  Proof.
+  Proof using Type.
     induction e; simpl; intros;
       repeat (progress (unfold equiv in *; subst) ||
         match goal with
@@ -673,7 +674,7 @@ Section env.
     is_well_typed e t = true ->
     t <> t' ->
     is_well_typed e t' = false.
-  Proof.
+  Proof using Type.
     intros. consider (is_well_typed e t'); auto; intros.
     apply is_well_typed_typeof in H.
     apply is_well_typed_typeof in H1; congruence.
@@ -686,12 +687,12 @@ Section env.
     -> e1 = e2
     -> f1 = f2
     -> Equal t1 e1 f1 = Equal t2 e2 f2.
-  Proof. congruence. Qed.
+  Proof using Type. congruence. Qed.
 
   Lemma expr_seq_dec_Not : forall e1 e2,
     e1 = e2
     -> Not e1 = Not e2.
-  Proof. congruence. Qed.
+  Proof using Type. congruence. Qed.
 
   Definition get_Eq (t : tvar) : forall x y : tvarD t, bool :=
     match t as t return forall x y : tvarD t, bool with
@@ -730,7 +731,7 @@ Section env.
       match pf in _ = t return tvarD t with
         | refl_equal => c
       end = c').
-  Proof.
+  Proof using Type.
     unfold const_seqb.
     repeat match goal with
              | [ |- SemiReflect (match ?X with | _ => _ end _ _) _ ] =>
@@ -789,7 +790,7 @@ Section env.
     end.
 
   Lemma expr_seq_dec_correct : forall (a b : expr),  expr_seq_dec a b = true -> a = b.
-  Proof.
+  Proof using Type.
     induction a; destruct b; simpl; try congruence;
       repeat match goal with
                | [ |- context [ EqNat.beq_nat ?X ?Y ] ] =>
@@ -806,7 +807,7 @@ Section env.
   Qed.
 
   Global Instance SemiReflect_expr_seq_dec a b : SemiReflect (expr_seq_dec a b) (a = b).
-  Proof.
+  Proof using Type.
     apply impl_to_semireflect; exact expr_seq_dec_correct.
   Qed.
 
@@ -832,7 +833,7 @@ Section env.
       end.
 
     Lemma liftExpr_0 : ub = 0 -> b = 0 -> forall e, liftExpr e = e.
-    Proof.
+    Proof using Type.
       induction e; simpl; intros; think; simpl; auto;
         try match goal with
               | [ |- context [ if ?X then _ else _ ] ] => destruct X
@@ -843,7 +844,7 @@ Section env.
 
   Lemma liftExpr_combine : forall ua ub uc a b c e,
     liftExpr ua ub a b (liftExpr ua uc a c e) = liftExpr ua (uc + ub) a (c + b) e.
-  Proof.
+  Proof using Type.
     induction e; simpl; intros; think; auto; f_equal; unfold var, uvar in *;
       repeat match goal with
                | [ |- context [ if ?X then _ else _ ] ] => consider X; intros
@@ -875,7 +876,7 @@ Section env.
   Lemma nth_error_app_L : forall T (A B : list T) n,
     (n < length A)%nat ->
     nth_error (A ++ B) n = nth_error A n.
-  Proof.
+  Proof using .
     induction A; destruct n; simpl; intros; try omega; auto.
     eapply IHA. omega.
   Qed.
@@ -883,7 +884,7 @@ Section env.
   Lemma nth_error_app_R : forall T (A B : list T) n,
     (length A <= n)%nat ->
     nth_error (A ++ B) n = nth_error B (n - length A).
-  Proof.
+  Proof using .
     induction A; destruct n; simpl; intros; try omega; auto.
     apply IHA. omega.
   Qed.
@@ -891,14 +892,14 @@ Section env.
   Lemma nth_error_weaken : forall T ls' (ls : list T) n v,
     nth_error ls n = Some v ->
     nth_error (ls ++ ls') n = Some v.
-  Proof.
+  Proof using .
     clear. induction ls; destruct n; simpl; intros; unfold value, error in *; try congruence; auto.
   Qed.
 
   Lemma nth_error_past_end : forall T (ls : list T) n,
     (n >= length ls)%nat ->
     nth_error ls n = None.
-  Proof.
+  Proof using .
     clear. induction ls; destruct n; simpl; intros; auto.
     exfalso; omega. rewrite IHls; auto. omega.
   Qed.
@@ -906,7 +907,7 @@ Section env.
   Lemma exprSubstU_wt : forall tf tu tg tg' tg'' s t,
     is_well_typed tf tu (tg ++ tg' ++ tg'') s t =
     is_well_typed tf (tu ++ tg') (tg ++ tg'') (exprSubstU (length tg) (length tg' + length tg) (length tu) s) t.
-  Proof.
+  Proof using Type.
     induction s; simpl; intros; think; auto.
     { consider (PeanoNat.Nat.ltb x (length tg)); intros; simpl.
       repeat rewrite nth_error_app_L in * by omega. reflexivity.
@@ -931,7 +932,7 @@ Section env.
 
   Lemma nth_error_length : forall T (ls ls' : list T) n,
     nth_error (ls ++ ls') (n + length ls) = nth_error ls' n.
-  Proof.
+  Proof using .
     induction ls; simpl; intros.
     rewrite Plus.plus_0_r. auto.
     cutrewrite (n + S (length ls) = S n + length ls); [ | omega ]. simpl. auto.
@@ -949,7 +950,7 @@ Section env.
 
   Theorem forallEach_sem : forall ls P,
     forallEach ls P <-> (forall env, typeof_env env = ls -> P env).
-  Proof.
+  Proof using Type.
     induction ls; simpl; split; intros.
       destruct env0; auto. simpl in *; congruence.
       eapply H; reflexivity.
@@ -972,7 +973,7 @@ Section env.
 
   Theorem existsEach_sem : forall ls P,
     existsEach ls P <-> (exists env, typeof_env env = ls /\ P env).
-  Proof.
+  Proof using Type.
     induction ls; simpl; split; intros.
       exists nil; auto.
       destruct H. destruct x; intuition (simpl in *; eauto; congruence).
@@ -988,7 +989,7 @@ Section env.
   Lemma existsEach_ext : forall vs (F G : env.env -> Prop),
     (forall ls, F ls -> G ls) ->
     existsEach vs F -> existsEach vs G.
-  Proof.
+  Proof using Type.
     clear. induction vs; simpl; intros; auto.
     destruct H0. exists x. eapply IHvs. 2: eassumption.
     intros. simpl in *. auto.
@@ -997,7 +998,7 @@ Section env.
   Lemma existsEach_projT1_env' : forall (F : env.env -> Prop) vars r,
     F (r ++ vars) ->
     existsEach (typeof_env vars) (fun x => F (r ++ x)).
-  Proof.
+  Proof using Type.
     clear. induction vars; simpl; intros; auto.
     exists (projT2 a). specialize (IHl (r ++ a :: nil)). destruct a; simpl in *.
     repeat rewrite app_ass in *. simpl in *.
@@ -1009,7 +1010,7 @@ Section env.
   Lemma existsEach_projT1_env : forall (F : env.env -> Prop) vars,
     F vars ->
     existsEach (typeof_env vars) F.
-  Proof.
+  Proof using Type.
     clear. intros. generalize (existsEach_projT1_env' F vars nil H). intros.
     eapply existsEach_ext; try eassumption. simpl. auto.
   Qed.
@@ -1017,7 +1018,7 @@ Section env.
   Lemma existsEach_app : forall (P : env.env -> Prop) ls' ls,
     existsEach (ls ++ ls') P <->
     existsEach ls (fun e => existsEach ls' (fun e' => P (e ++ e'))).
-  Proof.
+  Proof using Type.
     clear. split; generalize dependent P; generalize dependent ls; induction ls; simpl; intros;
       try solve [ eapply existsEach_ext; eauto ].
 
@@ -1052,18 +1053,19 @@ Section env.
       AllProvable a ->
       AllProvable b ->
       AllProvable (a ++ b).
-    Proof.
+    Proof using Type.
       induction a; simpl; intuition auto.
     Qed.
 
     Lemma AllProvable_app' : forall b a,
       AllProvable (a ++ b) ->
       AllProvable a /\ AllProvable b.
-    Proof.
+    Proof using Type.
       induction a; simpl; try solve [ intuition auto ]; intros.
     Qed.
 
     Lemma Provable_ValidProp : forall goal, Provable goal -> ValidProp goal.
+    Proof using Type.
       unfold Provable, ValidProp in *; intros;
         repeat match goal with
                  | [ _ : match ?E with None => _ | Some _ => _ end |- _ ] =>
@@ -1194,7 +1196,7 @@ Section exists_subst.
       length A = c ->
       exprD funcs A (B ++ C ++ D) e t = Some v ->
       exprD funcs (A ++ C) (B ++ D) e' t = Some v.
-  Proof.
+  Proof using Type.
     intros.
     rewrite exprSubstU_exprD in H3. subst. rewrite Plus.plus_comm. auto.
   Qed.
@@ -1226,7 +1228,7 @@ Section exists_subst.
 Lemma exists_subst_exists : forall (B : list (tvar * option (expr types))) CU P,
   exists_subst CU B P ->
   exists C, P C.
-Proof.
+Proof using Type.
   clear. induction B; simpl; intros.
     destruct CU. eauto.
     contradiction.
@@ -1243,7 +1245,7 @@ Qed.
 Lemma nth_error_Some_length : forall T (ls : list T) n v,
   nth_error ls n = Some v ->
   (n < length ls)%nat.
-Proof.
+Proof using .
   clear; induction ls; destruct n; intros; simpl in *; unfold value, error in *; try (congruence || omega).
   eapply IHls in H. omega.
 Qed.
@@ -1252,7 +1254,7 @@ Definition is_well_typed_not_mentionsU_last : forall tfuncs tU tG t (e : expr ty
   is_well_typed tfuncs (tU ++ t :: nil) tG e t' = true ->
   mentionsU (length tU) e = false ->
   is_well_typed tfuncs tU tG e t' = true.
-Proof.
+Proof using Type.
   clear; induction e; intros; simpl in *; auto;
     repeat match goal with
              | [ H : context [ match ?X with _ => _ end ] |- _ ] =>
@@ -1274,7 +1276,7 @@ Qed.
 Lemma is_well_typed_weaken : forall tf tu tg u' g' (e : expr types) t,
   is_well_typed tf tu tg e t = true ->
   is_well_typed tf (tu ++ u') (tg ++ g') e t = true.
-Proof.
+Proof using Type.
   clear; induction e; simpl in *; intros; think; auto.
   { erewrite nth_error_weaken by eauto. consider (tvar_seqb t0 t0); auto. }
   { erewrite nth_error_weaken by eauto. consider (tvar_seqb t0 t0); auto. }
@@ -1285,7 +1287,7 @@ Lemma all2_is_well_typed_weaken : forall tf tU tG es ts,
   all2 (is_well_typed (types := types) tf tU tG) es ts = true ->
   forall u g,
     all2 (is_well_typed tf (tU ++ u) (tG ++ g)) es ts = true.
-Proof.
+Proof using Type.
   clear. intros. eapply all2_impl; eauto using is_well_typed_weaken.
 Qed.
 

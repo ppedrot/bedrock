@@ -56,7 +56,7 @@ Section unfolder_learnhook.
   Lemma stateD_WellTyped_sheap : forall uvars vars cs stn_st s SymRegs SymPures,
     stateD funcs preds uvars vars cs stn_st {| SymMem := Some s; SymRegs := SymRegs; SymPures := SymPures |} ->
     SH.WellTyped_sheap (typeof_funcs funcs) (UNF.SE.typeof_preds preds) (typeof_env uvars) (typeof_env vars) s = true.
-  Proof.
+  Proof using Type.
     clear. intros. unfold stateD in H.
     destruct stn_st. destruct SymRegs. destruct p. intuition. generalize H. clear; intros.
     rewrite sepFormula_eq in H. unfold sepFormula_def in *. simpl in H.
@@ -67,7 +67,7 @@ Section unfolder_learnhook.
   Theorem unfolderLearnHook_correct
     : @MEVAL.LearnHook_correct (repr bedrock_types_r types) _ BedrockCoreEnv.pc BedrockCoreEnv.st (@unfolder_LearnHook)
     (@stateD _ funcs preds) funcs preds.
-  Proof.
+  Proof using All.
     Opaque repr UNF.forward.
     unfold unfolder_LearnHook. econstructor. intros. generalize dependent 10. intros.
 
@@ -131,21 +131,21 @@ Section stream_correctness.
   Lemma skipn_length : forall T (ls : list T) n,
     length ls = n ->
     skipn n ls = nil.
-  Proof.
+  Proof using .
     clear. intros; subst; induction ls; simpl; auto.
   Qed.
 
   Lemma skipn_app_first : forall T (ls ls' : list T) n,
     length ls = n ->
     skipn n (ls ++ ls') = ls'.
-  Proof.
+  Proof using .
     clear; intros; subst; induction ls; auto.
   Qed.
 
   Lemma interp_ex : forall cs T (P : T -> hprop _ _ _) stn_st,
     interp cs (![SEP.ST.ex P] stn_st) ->
     exists v, interp cs (![P v] stn_st).
-  Proof.
+  Proof using .
     clear. intros.
     rewrite sepFormula_eq in *. destruct stn_st. unfold sepFormula_def in *. simpl in *.
     unfold SEP.ST.ex in H. apply interp_sound in H. auto.
@@ -155,7 +155,7 @@ Section stream_correctness.
     interp cs (![SEP.sexprD funcs preds uvars vars (SEP.existsEach vars' P)] stn_st) ->
     exists env', map (@projT1 _ _) env' = vars' /\
       interp cs (![SEP.sexprD funcs preds uvars (rev env' ++ vars) P] stn_st).
-  Proof.
+  Proof using Type.
     clear.
     induction vars'; simpl; intros.
     exists nil; simpl; eauto.
@@ -179,7 +179,7 @@ Section stream_correctness.
            ; SymRegs := (sp, rp, rv)
            ; SymPures := pures
            |}.
-  Proof.
+  Proof using Type.
     Opaque repr.
     unfold qstateD. intros. simpl in *.
     repeat match goal with
@@ -205,7 +205,7 @@ Section stream_correctness.
                ; SymRegs := (sp, rp, rv)
                ; SymPures := pures
                |}.
-  Proof.
+  Proof using Type.
     unfold qstateD. intros. simpl.
     generalize (SH.hash_denote funcs preds uvars nil cs sh). rewrite H3. simpl in *.
     intro XX. rewrite XX in H4.
@@ -289,7 +289,7 @@ Section apply_stream_correctness.
       | Some m0 => SH.pures m0 ++ SymPures ss
       | None => SymPures ss
     end.
-  Proof.
+  Proof using Type.
     Opaque repr.
     clear. unfold stateD. destruct ss; simpl. destruct stn_st. destruct SymRegs. destruct p.
     intuition. destruct SymMem; auto. apply AllProvable_app' in H2; apply AllProvable_app; intuition.
@@ -313,7 +313,7 @@ Section apply_stream_correctness.
               stateD funcs preds meta_env vars_env cs (stn, st') ss' /\
               istreamD funcs meta_env vars_env is' stn st' sound_or_safe)
       end.
-  Proof.
+  Proof using All.
     intros. unfold sym_eval in *.
     assert (PC : ProverT_correct
               match ILAlgoTypes.Prover algos with
@@ -423,6 +423,6 @@ Section apply_stream_correctness.
               stateD funcs preds meta_env vars_env cs (stn, st') ss' /\
               istreamD funcs meta_env vars_env is' stn st' sound_or_safe)
       end.
-  Proof. intros. eapply Apply_sym_eval_with_eq; eauto. Qed.
+  Proof using All. intros. eapply Apply_sym_eval_with_eq; eauto. Qed.
 
 End apply_stream_correctness.

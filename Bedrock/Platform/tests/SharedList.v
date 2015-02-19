@@ -86,6 +86,7 @@ Definition m := bimport [[ "malloc"!"malloc" @ [mallocS], "malloc"!"free" @ [fre
   }}.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep; auto).
 Qed.
 

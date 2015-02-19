@@ -51,22 +51,26 @@ Module Adt : ADT.
 
   Theorem lset_fwd : forall s c, lset s c ===> [| c <> 0 |] * [| freeable c 2 |]
     * Ex p, Ex junk, (c ==*> p, junk) * Ex n, lset' s n p.
+  Proof using .
     unfold lset; sepLemma.
   Qed.
 
   Theorem lset_bwd : forall s (c : W), ([| c <> 0 |] * [| freeable c 2 |]
     * Ex p, Ex junk, (c ==*> p, junk) * Ex n, lset' s n p) ===> lset s c.
+  Proof using .
     unfold lset; sepLemma.
   Qed.
 
   Theorem lset'_empty_fwd : forall s n (c : W), c = 0
     -> lset' s n c
     ===> [| n = O |] * [| s === WordSet.empty |].
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem lset'_empty_bwd : forall s n (c : W), c = 0
     -> [| n = O |] * [| s === WordSet.empty |] ===> lset' s n c.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -74,18 +78,21 @@ Module Adt : ADT.
     -> lset' s n c
     ===> Ex n', [| n = S n' |] * [| freeable c 2 |] * Ex x, [| WordSet.In x s |] * Ex p', (c ==*> x, p')
         * lset' (WordSet.remove x s) n' p'.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem lset'_nonempty_bwd : forall s n (c : W), c <> 0
     -> (Ex n', [| n = S n' |] * [| freeable c 2 |] * Ex x, [| WordSet.In x s |] * Ex p', (c ==*> x, p')
         * lset' (WordSet.remove x s) n' p') ===> lset' s n c.
+  Proof using .
     destruct n; sepLemma.
     injection H0; sepLemma.
   Qed.
 
   Theorem lset'_monotone : forall n s s' p, s === s'
     -> lset' s n p ===> lset' s' n p.
+  Proof using .
     induction n; sepLemma.
     unfold WordSet.Equal in *; firstorder.
     apply H; auto.
@@ -214,6 +221,7 @@ Definition m := bimport [[ "malloc"!"malloc" @ [mallocS], "malloc"!"free" @ [fre
 Local Hint Extern 1 (@eq W _ _) => words.
 
 Lemma Equal_refl : forall s, s === s.
+Proof using .
   intros; hnf; tauto.
 Qed.
 
@@ -221,6 +229,7 @@ Local Hint Immediate Equal_refl.
 
 Lemma mem_false : forall w s, WordSet.mem w s = false
   -> ~WordSet.In w s.
+Proof using .
   intuition.
   apply WordSet.mem_spec in H0.
   congruence.
@@ -230,6 +239,7 @@ Lemma remove_preserves : forall x n s (w : W),
   x <> n
   -> w = WordSet.mem n (WordSet.remove x s)
   -> w = WordSet.mem n s.
+Proof using .
   intros; subst.
   case_eq (WordSet.mem n (WordSet.remove x s)); case_eq (WordSet.mem n s); intuition.
 
@@ -250,6 +260,7 @@ Lemma found_it : forall (w : W) n s,
   w = 1
   -> WordSet.In n s
   -> w = WordSet.mem n s.
+Proof using .
   intros; subst.
   case_eq (WordSet.mem n s); intuition.
   apply mem_false in H; tauto.
@@ -261,6 +272,7 @@ Lemma not_there : forall (w : W) n s,
   w = 0
   -> s === WordSet.empty
   -> w = WordSet.mem n s.
+Proof using .
   intros; subst.
   case_eq (WordSet.mem n s); intuition.
   apply WordSet.mem_spec in H.
@@ -274,6 +286,7 @@ Lemma add_idem : forall (w : W) n s,
   w = 1
   -> w = WordSet.mem n s
   -> s === WordSet.add n s.
+Proof using .
   intros; subst; hnf; intuition.
   apply WordSet.add_spec; auto.
   apply WordSet.add_spec in H; intuition subst.
@@ -290,6 +303,7 @@ Lemma really_not_there : forall (w : W) n s,
   w <> 1
   -> w = WordSet.mem n s
   -> ~WordSet.In n s.
+Proof using .
   intuition subst.
   apply WordSet.mem_spec in H1.
   case_eq (WordSet.mem n s); intros; rewrite H0 in *; try congruence; auto.
@@ -299,6 +313,7 @@ Local Hint Immediate really_not_there.
 
 Lemma In_add : forall n s,
   WordSet.In n (WordSet.add n s).
+Proof using .
   intros; apply WordSet.add_spec; auto.
 Qed.
 
@@ -307,6 +322,7 @@ Local Hint Immediate In_add.
 Lemma add_remove : forall s n,
   ~WordSet.In n s
   -> s === WordSet.remove n (WordSet.add n s).
+Proof using .
   intros; hnf; intuition.
   apply WordSet.remove_spec; intuition (try congruence).
   apply WordSet.add_spec; auto.
@@ -325,6 +341,7 @@ Lemma length_step : forall w s n acc,
   WordSet.In n s
   -> w = natToW (WordSet.cardinal (WordSet.remove n s)) ^+ (acc ^+ natToW 1)
   -> w = natToW (WordSet.cardinal s) ^+ acc.
+Proof using .
   intros; subst.
   replace (WordSet.cardinal s) with (S (WordSet.cardinal (WordSet.remove n s))).
   rewrite (natToW_S (WordSet.cardinal (WordSet.remove n s))); words.
@@ -337,6 +354,7 @@ Lemma length_done : forall w acc s,
   w = acc
   -> s === WordSet.empty
   -> w = natToW (WordSet.cardinal s) ^+ acc.
+Proof using .
   intros; subst.
   rewrite WordSet.cardinal_spec.
   specialize (WordSet.elements_spec1 s); intro.
@@ -354,5 +372,6 @@ Qed.
 Local Hint Immediate length_done.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep hints; eauto).
 Qed.

@@ -11,6 +11,7 @@ Lemma wplus_lt_lift : forall n m o : nat,
   -> goodSize o
   -> natToW n ^+ natToW m < natToW o
   -> (n + m < o)%nat.
+Proof using .
   unfold wlt; intros.
   rewrite <- natToWord_plus in H1.
   unfold wplusN, wordBinN in *.
@@ -28,12 +29,14 @@ Local Hint Extern 1 (_ <= _)%nat => match goal with
 Lemma goodSize_plus2 : forall n,
   goodSize (n + 2)
   -> goodSize n.
+Proof using .
   intros; eapply goodSize_plus_l; eauto.
 Qed.
 
 Lemma goodSize_diff : forall x y,
   goodSize (x + 2)
   -> goodSize (x - y - 2 + 2).
+Proof using .
   intros; eapply goodSize_weaken; eauto.
 Qed.
 
@@ -101,6 +104,7 @@ Module FreeList : FREE_LIST.
     (N.of_nat sz < q)%N
     -> (sz' <= sz)%nat
     -> (N.of_nat sz' < q)%N.
+  Proof using .
     intros; nomega.
   Qed.
 
@@ -108,6 +112,7 @@ Module FreeList : FREE_LIST.
     freeable a sz
     -> (sz' <= sz)%nat
     -> freeable a sz'.
+  Proof using .
     unfold freeable; intuition eauto.
     eapply goodSize_narrow; eauto.
 
@@ -119,6 +124,7 @@ Module FreeList : FREE_LIST.
   Lemma goodSize_freeable : forall p sz,
     freeable p sz
     -> goodSize sz.
+  Proof using .
     unfold freeable; tauto.
   Qed.
 
@@ -128,6 +134,7 @@ Module FreeList : FREE_LIST.
     -> natToW (b + 2) < natToW a
     -> goodSize (b + 2)
     -> x <> $0.
+  Proof using .
     intros.
     destruct H0.
     intro.
@@ -178,22 +185,27 @@ Module FreeList : FREE_LIST.
   Definition mallocHeap := Ex n, Ex p, 0 =*> p * freeList n p.
 
   Theorem freeList_extensional : forall n p, HProp_extensional (freeList n p).
+  Proof using .
     destruct n; reflexivity.
   Qed.
 
   Theorem mallocHeap_extensional : HProp_extensional mallocHeap.
+  Proof using .
     reflexivity.
   Qed.
 
   Theorem mallocHeap_fwd : mallocHeap ===> Ex n, Ex p, 0 =*> p * freeList n p.
+  Proof using .
     unfold mallocHeap; sepLemma.
   Qed.
 
   Theorem mallocHeap_bwd : (Ex n, Ex p, 0 =*> p * freeList n p) ===> mallocHeap.
+  Proof using .
     unfold mallocHeap; sepLemma.
   Qed.
 
   Theorem nil_bwd : forall n p, p = 0 -> [| n = 0 |] ===> freeList n p.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -201,6 +213,7 @@ Module FreeList : FREE_LIST.
     -> (Ex n', Ex sz, Ex p', [| n = S n' /\ freeable p (sz+2) |] * (p ==*> $ (sz), p')
       * (p ^+ $8) =?> sz * freeList n' p')
     ===> freeList n p.
+  Proof using .
     destruct n; sepLemma; match goal with
                             | [ H : S _ = S _ |- _ ] => injection H
                           end; sepLemma.
@@ -210,6 +223,7 @@ Module FreeList : FREE_LIST.
     -> freeList n p
     ===> Ex n', Ex sz, Ex p', [| n = S n' /\ freeable p (sz+2) |] * (p ==*> $ (sz), p')
     * (p ^+ $8) =?> sz * freeList n' p'.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 End FreeList.
@@ -226,6 +240,7 @@ Lemma malloc_split : forall cur full init,
   (init <= full)%nat
   -> splitMe cur full init ===> cur =?> init
   * (cur ^+ $ (init * 4)) =?> (full - init).
+Proof using .
   intros; eapply Himp_trans; [
     eapply allocated_split; eauto
     | sepLemma; apply allocated_shift_base; [
@@ -315,12 +330,14 @@ Definition mallocM := bmodule "malloc" {{
 }}.
 
 Lemma four_neq_zero : natToW 4 <> natToW 0.
+Proof using .
   discriminate.
 Qed.
 
 Lemma cancel8 : forall x y z,
   (z + 2 <= y)%nat
   -> x ^+ $8 ^+ ($ (y) ^- $ (z + 2)) ^* $4 = x ^+ $4 ^* ($ (y) ^- natToW z).
+Proof using .
   intros.
   autorewrite with sepFormula.
   rewrite natToW_plus.
@@ -376,6 +393,7 @@ Section mallocOk.
     end.
 
   Theorem mallocMOk : moduleOk mallocM.
+  Proof using .
 (*TIME idtac "malloc:verify". Time *)
     vcgen; abstract combined.
 (*TIME Time *)Qed.

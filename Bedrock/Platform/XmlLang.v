@@ -530,11 +530,13 @@ Section compileProgram.
 
   Lemma string_eq_true : forall s1 s2,
     string_eq s1 s2 = false -> s1 <> s2.
+  Proof using .
     intros; intro; subst; rewrite string_eq_true in *; discriminate.
   Qed.
 
   Lemma member_means : forall x ls,
     if member x ls then In x ls else ~In x ls.
+  Proof using .
     induction ls; simpl; intuition.
     generalize (@string_eq_false x a), (@string_eq_true x a).
     destruct (string_eq x a); simpl; intuition.
@@ -549,6 +551,7 @@ Section compileProgram.
 
   Lemma NoDup_addTo : forall ls1 ls2, NoDup ls2
     -> NoDup (addTo ls1 ls2).
+  Proof using .
     induction ls1; simpl; intuition.
     generalize (member_means a ls2); destruct (member a ls2); intuition.
   Qed.
@@ -557,6 +560,7 @@ Section compileProgram.
 
   Lemma cdatas_distinct : forall ts, wf ts pr
     -> NoDup (cdatasOf pr).
+  Proof using Type.
     induction pr; simpl in *; intuition
       eauto using allCdatas_NoDup, wf_NoDup, NoDup_addTo.
   Qed.
@@ -564,6 +568,7 @@ Section compileProgram.
   Lemma In_addTo_or : forall x ls1 ls2,
     In x (addTo ls1 ls2)
     -> In x ls1 \/ In x ls2.
+  Proof using .
     clear; induction ls1; simpl; intuition.
     generalize (member_means a ls2); destruct (member a ls2); intuition;
       destruct (IHls1 _ H); simpl in *; intuition.
@@ -574,6 +579,7 @@ Section compileProgram.
     -> underscore_free tab0
     -> (tab0 ++ String "_" suff)%string = (tab ++ String "_" suff')%string
     -> tab0 = tab.
+  Proof using .
     induction tab; destruct tab0; simpl; intuition.
     injection H1; clear H1; intros; subst.
     f_equal; eauto.
@@ -582,6 +588,7 @@ Section compileProgram.
   Lemma Forall_removeTable : forall P tab ts,
     List.Forall P ts
     -> List.Forall P (removeTable tab ts).
+  Proof using .
     induction 1; simpl; intuition; ift.
   Qed.
 
@@ -596,6 +603,7 @@ Section compileProgram.
     -> In t ts
     -> Name t = tab
     -> NoDups (t :: avs) (removeTable tab ts).
+  Proof using .
     clear; unfold NoDups; simpl; intros; subst.
     constructor.
     intro.
@@ -614,6 +622,7 @@ Section compileProgram.
   Lemma Forall_removeTable' : forall P tab ts,
     List.Forall P ts
     -> List.Forall (fun t => Name t <> tab /\ P t) (removeTable tab ts).
+  Proof using .
     clear; induction 1; simpl; intuition; ift.
   Qed.
 
@@ -626,6 +635,7 @@ Section compileProgram.
       -> List.Forall (fun t => Name t <> tab /\ underscore_free (Name t))%type ts
       -> In (tab ++ String "_" suff)%string (allCursors_both' xm)
       -> False.
+  Proof using .
     clear; induction xm using xml_ind'; simpl; intuition.
     assert (~In (tab ++ String "_" suff)%string nil) by (simpl; tauto).
     generalize dependent (@nil string); induction H0; simpl in *; intuition.
@@ -658,6 +668,7 @@ Section compileProgram.
     -> NoDups avs ts
     -> List.Forall (fun t => underscore_free (Name t)) ts
     -> NoDup (allCursors_both' xm).
+  Proof using .
     clear; induction xm using xml_ind'; simpl; intuition.
     generalize (NoDup_nil string); generalize dependent (@nil string);
       induction H; simpl in *; intuition.
@@ -686,6 +697,7 @@ Section compileProgram.
     -> NoDups avs ts
     -> List.Forall (fun t => underscore_free (Name t)) ts
     -> NoDup (allCursors_both a).
+  Proof using .
     clear; induction a; try solve [ simpl; intuition eauto using NoDup_addTo ].
 
     simpl; intuition eauto using NoDup_addTo.
@@ -712,6 +724,7 @@ Section compileProgram.
     -> NoDup (Names ts)
     -> List.Forall (fun t => underscore_free (Name t)) ts
     -> NoDup (cursorsOf p).
+  Proof using .
     induction p; simpl; intuition eauto.
   Qed.
 
@@ -747,6 +760,7 @@ Section compileProgram.
   Definition cursors V avs := cursors V (avout avs).
 
   Lemma cursors_sel : forall V avs, cursors (sel V) avs = cursors V avs.
+  Proof using .
     auto.
   Qed.
 
@@ -885,18 +899,21 @@ Section compileProgram.
   Lemma freeVar_compile' : forall x p,
     freeVar p x
     -> In (x ++ "_start", x ++ "_len")%string (XmlSearch.allCdatas (compilePat p)).
+  Proof using .
     induction p; simpl; intuition.
   Qed.
 
   Lemma freeVar_start : forall x p,
     freeVar p x
     -> In (x ++ "_start")%string (allCdatas_both p).
+  Proof using .
     induction p; simpl; intuition.
   Qed.
 
   Lemma freeVar_len : forall x p,
     freeVar p x
     -> In (x ++ "_len")%string (allCdatas_both p).
+  Proof using .
     induction p; simpl; intuition.
   Qed.
 
@@ -920,6 +937,7 @@ Section compileProgram.
   Lemma xall_underscore : forall p,
     List.Forall (fun p => not (underscore_free (fst p)) /\ not (underscore_free (snd p)))
     (XmlSearch.allCdatas (compilePat p)).
+  Proof using .
     induction p; simpl; intuition eauto.
   Qed.
 
@@ -927,6 +945,7 @@ Section compileProgram.
     (forall x, x <> "overflowed" -> x <> "opos" -> sel V x = sel V' x)
     -> XmlSearch.inBounds (XmlSearch.allCdatas (compilePat p)) V
     -> XmlSearch.inBounds (XmlSearch.allCdatas (compilePat p)) V'.
+  Proof using .
     intros.
     rewrite <- inBounds_sel.
     rewrite <- inBounds_sel in H0.
@@ -945,12 +964,14 @@ Section compileProgram.
     -> ~underscore_free s1
     -> underscore_free s2
     -> False.
+  Proof using .
     intros; congruence.
   Qed.
 
   Lemma underscore_free_app_contra : forall s1 s2,
     underscore_free (s1 ++ String "_" s2)
     -> False.
+  Proof using .
     clear; induction s1; simpl; intuition eauto.
   Qed.
 
@@ -959,6 +980,7 @@ Section compileProgram.
     -> underscore_free s2'
     -> forall s1 s1', (s1 ++ String "_" s2)%string = (s1' ++ String "_" s2')%string
       -> s2 = s2'.
+  Proof using .
     clear; induction s1; destruct s1'; simpl; intuition;
       injection H1; clear H1; intros; subst; simpl in *; eauto;
         exfalso; eauto using underscore_free_app_contra.
@@ -967,6 +989,7 @@ Section compileProgram.
   Lemma Exists_map : forall A B (f : A -> B) (P : B -> Prop) ls,
     List.Exists P (map f ls)
     -> List.Exists (fun x => P (f x)) ls.
+  Proof using .
     induction ls; inversion 1; subst; auto.
   Qed.
 
@@ -974,6 +997,7 @@ Section compileProgram.
     List.Forall P ls
     -> List.Exists Q ls
     -> exists x, P x /\ Q x /\ In x ls.
+  Proof using .
     induction 1; inversion 1; subst; simpl; intuition eauto;
       match goal with
         | [ H : Logic.ex _ |- _ ] => destruct H; intuition eauto
@@ -984,6 +1008,7 @@ Section compileProgram.
     In x ls
     -> P x
     -> List.Exists P ls.
+  Proof using .
     induction ls; simpl; intuition.
   Qed.
 
@@ -992,6 +1017,7 @@ Section compileProgram.
     -> exists tab, xbindsRowVar xm tab
       /\ rw = (tab ++ "_row")%string
       /\ data = (tab ++ "_data")%string.
+  Proof using .
     induction xm using xml_ind'; simpl; intuition;
       try match goal with
             | [ H : (_, _) = (_, _) |- _ ] => injection H; clear H; intros; subst
@@ -1014,6 +1040,7 @@ Section compileProgram.
     underscore_free s
     -> (forall rw data, XmlOutput.bindsRowVar (compileXml xm) (rw, data)
       -> s <> rw /\ s <> data).
+  Proof using .
     intros;
       match goal with
         | [ H : _ |- _ ] =>
@@ -1046,6 +1073,7 @@ Section compileProgram.
   Ltac t := easy || prelude || prove_irrel || t'.
 
   Lemma stackOk_nil : forall len, stackOk nil len.
+  Proof using .
     constructor.
   Qed.
 
@@ -1054,6 +1082,7 @@ Section compileProgram.
   Lemma freeVar_all : forall x p,
     freeVar p x
     -> In x (allCdatas p).
+  Proof using .
     induction p; simpl; intuition.
   Qed.
 
@@ -1073,6 +1102,7 @@ Section compileProgram.
   Lemma Forall_map : forall A B (f : A -> B) (P : B -> Prop) ls,
     List.Forall (fun x => P (f x)) ls
     -> List.Forall P (map f ls).
+  Proof using .
     induction 1; simpl; auto.
   Qed.
 
@@ -1086,6 +1116,7 @@ Section compileProgram.
 
   Lemma dontTouch_cdataify : forall tab cds,
     dontTouch (tab ++ "_row") (tab ++ "_data") (cdataify cds).
+  Proof using .
     clear; induction cds; simpl; intuition;
       apply underscore_mid_discrim in H; intuition.
   Qed.
@@ -1096,6 +1127,7 @@ Section compileProgram.
     NoDups avs ts
     -> In x ts
     -> dontReuse (Name x ++ "_row") (Name x ++ "_data") (avout avs).
+  Proof using .
     clear; induction avs; simpl; intuition.
 
     apply append_inj' in H1.
@@ -1130,6 +1162,7 @@ Section compileProgram.
     -> (forall text, efreeVar e text
       -> In (text ++ "_len")%string ns)
     -> wfExp ns (compileExp e).
+  Proof using .
     destruct e; simpl; intuition eauto 4 using underscore_discrim.
   Qed.
 
@@ -1138,6 +1171,7 @@ Section compileProgram.
   Lemma allCdatas_start : forall x p,
     In x (allCdatas p)
     -> In (x ++ "_start")%string (allCdatas_both p).
+  Proof using .
     induction p; simpl; intuition;
       apply in_app_or in H; intuition.
   Qed.
@@ -1147,6 +1181,7 @@ Section compileProgram.
   Lemma In_addTo2 : forall x ls1 ls2,
     In x ls2
     -> In x (addTo ls1 ls2).
+  Proof using .
     induction ls1; simpl; intuition.
     destruct (member a ls2).
     eauto.
@@ -1157,6 +1192,7 @@ Section compileProgram.
   Lemma In_addTo1 : forall x ls1 ls2,
     In x ls1
     -> In x (addTo ls1 ls2).
+  Proof using .
     induction ls1; simpl; intuition.
     generalize (member_means a ls2); destruct (member a ls2); intuition.
     subst; eauto using In_addTo2.
@@ -1168,6 +1204,7 @@ Section compileProgram.
   Lemma cdatasOf'_start : forall x p,
     In x (cdatasOf' p)
     -> In (x ++ "_start")%string (cdatasOf p).
+  Proof using .
     induction p; simpl; eauto.
     intros.
     apply In_addTo_or in H; intuition.
@@ -1178,6 +1215,7 @@ Section compileProgram.
   Lemma allCdatas_len : forall x p,
     In x (allCdatas p)
     -> In (x ++ "_len")%string (allCdatas_both p).
+  Proof using .
     induction p; simpl; intuition;
       apply in_app_or in H; intuition.
   Qed.
@@ -1187,6 +1225,7 @@ Section compileProgram.
   Lemma cdatasOf'_len : forall x p,
     In x (cdatasOf' p)
     -> In (x ++ "_len")%string (cdatasOf p).
+  Proof using .
     induction p; simpl; eauto.
     intros.
     apply In_addTo_or in H; intuition.
@@ -1197,6 +1236,7 @@ Section compileProgram.
   Lemma In_cdataify : forall text cds,
     In text cds
     -> In ((text ++ "_start")%string, (text ++ "_len")%string) (cdataify cds).
+  Proof using .
     clear; induction cds; simpl; intuition.
   Qed.
 
@@ -1208,6 +1248,7 @@ Section compileProgram.
     -> (forall x, efreeVar e x -> In (x ++ "_len")%string ns)
     -> (forall x, efreeVar e x -> In (x ++ "_start", x ++ "_len")%string cds)
     -> XmlOutput.ewf ns cds (compileExp e).
+  Proof using .
     clear; destruct e; simpl; intuition (eauto 4 using underscore_discrim; eauto).
   Qed.
 
@@ -1217,6 +1258,7 @@ Section compileProgram.
     -> (forall y, efreeVar (snd x) y -> In (y ++ "_len")%string ns)
     -> (forall y, efreeVar (snd x) y -> In (y ++ "_start", y ++ "_len")%string cds)
     -> XmlOutput.eqwf ns sch cds (compileEquality x).
+  Proof using .
     intros; hnf in *; intuition; apply exp_wf; auto.
   Qed.
 
@@ -1229,6 +1271,7 @@ Section compileProgram.
     -> (forall x, List.Exists (fun e => efreeVar (snd e) x) cond
       -> In (x ++ "_start", x ++ "_len")%string cds)
     -> XmlOutput.cwf ns sch cds (compileCondition cond).
+  Proof using .
     clear; unfold cwf, XmlOutput.cwf; induction 1; simpl; intuition.
   Qed.
 
@@ -1237,6 +1280,7 @@ Section compileProgram.
   Lemma In_removeTable' : forall x y ts,
     In x (removeTable y ts)
     -> In x ts.
+  Proof using .
     clear; induction ts; simpl; intuition.
     destruct (string_dec y (Name a)); subst; simpl in *; intuition.
   Qed.
@@ -1271,6 +1315,7 @@ Section compileProgram.
     -> (forall tab, xbindsRowVar xm tab -> In (tab ++ "_data")%string ns)
     -> (forall x, xfreeVar xm x -> In (x ++ "_start", x ++ "_len")%string (cdataify cds))
     -> XmlOutput.wf ns (cdataify cds) (avout avs) ts (compileXml xm).
+  Proof using .
     induction xm using xml_ind'; simpl; intuition idtac;
       try match goal with
             | [ H : _ |- _ ] => apply append_inj in H; discriminate
@@ -1500,6 +1545,7 @@ Section compileProgram.
       -> In x ts
       -> RelDb.table (Schema x) (Address x) * (db (removeTable (Name x) ts) * P)
       ===> P * db ts.
+    Proof using .
       sepLemma; etransitivity; [ | apply removeTable_bwd ]; eauto; sepLemma.
     Qed.
 
@@ -1508,6 +1554,7 @@ Section compileProgram.
       -> In x ts
       -> db ts * P
       ===> P * (RelDb.table (Schema x) (Address x) * db (removeTable (Name x) ts)).
+    Proof using .
       sepLemma; etransitivity; [ apply removeTable_fwd | ]; eauto; sepLemma.
     Qed.
 
@@ -1517,6 +1564,7 @@ Section compileProgram.
         (sel V (Name av ++ "_data"))
         * (cursors V avs * P))
       ===> P * (cursors V (av :: avs)).
+    Proof using .
       clear; sepLemma.
       unfold cursors; simpl; unfold cursor; simpl.
       repeat match goal with
@@ -1530,6 +1578,7 @@ Section compileProgram.
       ===> P * (inv (Address av) (Schema av) (sel V (Name av ++ "_row"))
         (sel V (Name av ++ "_data"))
         * (row (Schema av) (sel V (Name av ++ "_data")) * cursors V avs)).
+    Proof using .
       clear; sepLemma.
       unfold cursors; simpl; unfold cursor; simpl.
       repeat match goal with
@@ -1544,6 +1593,7 @@ Section compileProgram.
         -> x <> "opos" -> x <> "matched" -> x <> "res"
         -> sel V x = sel V' x)
       -> forall avs, cursors V avs ===> cursors V' avs.
+    Proof using .
       unfold cursors; clear; induction avs; simpl; intuition.
       sepLemma.
       apply Himp_star_frame; auto.
@@ -1580,6 +1630,7 @@ Section compileProgram.
         -> x <> "res" -> sel V x = sel V' x)
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V'.
+    Proof using .
       intros.
       rewrite <- inBounds_sel.
       rewrite <- inBounds_sel in H0.
@@ -1597,6 +1648,7 @@ Section compileProgram.
       XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p))
       (upd V "res" v).
+    Proof using .
       intros; eapply inBounds_swizzle'''; [ | eauto ]; descend.
     Qed.
 
@@ -1606,6 +1658,7 @@ Section compileProgram.
       (forall x, x <> "res" -> x <> "opos" -> sel V x = sel V' x)
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V'.
+    Proof using .
       intros.
       rewrite <- inBounds_sel.
       rewrite <- inBounds_sel in H0.
@@ -1621,6 +1674,7 @@ Section compileProgram.
       XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p))
       (upd (upd V "res" v) "opos" v').
+    Proof using .
       intros; eapply inBounds_swizzle_post; [ | eauto ]; descend.
     Qed.
 
@@ -1640,6 +1694,7 @@ Section compileProgram.
         -> forall specs st, interp specs (Postcondition (toCmd
           (compileAction' avs ts ts' a) mn H ns res pre) st)
         -> interp specs (ainv avs ts ts' true (fun x : W => x) ns res st).
+    Proof using .
       induction a.
 
       cap.
@@ -1656,6 +1711,7 @@ Section compileProgram.
       In x ls
       -> P x
       -> ExistsR P ls.
+    Proof using .
       induction ls; simpl; intuition.
     Qed.
 
@@ -1664,6 +1720,7 @@ Section compileProgram.
     Lemma compile_efreeVar' : forall e text,
       XmlOutput.efreeVar (compileExp e) (text ++ "_start", text ++ "_len")%string
       -> efreeVar e text.
+    Proof using .
       clear; destruct e; simpl; intuition.
       injection H; clear H; intros.
       apply append_inj' in H; tauto.
@@ -1673,6 +1730,7 @@ Section compileProgram.
       XmlOutput.efreeVar (compileExp e) (start, len)
       -> exists text, efreeVar e text /\ start = (text ++ "_start")%string
         /\ len = (text ++ "_len")%string.
+    Proof using .
       clear; destruct e; simpl; intuition.
       injection H; eauto.
     Qed.
@@ -1681,18 +1739,21 @@ Section compileProgram.
       List.Exists P ls
       -> (forall x, P x -> P' x)
       -> List.Exists P' ls.
+    Proof using .
       induction 1; simpl; intuition.
     Qed.
 
     Lemma Exists_exists : forall A B (P : A -> B -> Prop) ls,
       List.Exists (fun x => exists y, P x y) ls
       -> exists y, List.Exists (fun x => P x y) ls.
+    Proof using .
       clear; induction 1; simp; eauto.
     Qed.
 
     Lemma Exists_conj2 : forall A (P : A -> Prop) Q R ls,
       List.Exists (fun x => P x /\ Q /\ R) ls
       -> List.Exists P ls /\ Q /\ R.
+    Proof using .
       clear; induction 1; simp; eauto.
     Qed.
 
@@ -1701,6 +1762,7 @@ Section compileProgram.
       -> exists text, xfreeVar xm text
         /\ start = (text ++ "_start")%string
         /\ len = (text ++ "_len")%string.
+    Proof using .
       induction xm using xml_ind'; simpl; intuition;
         try match goal with
               | [ H : (_, _) = (_, _) |- _ ] => injection H; clear H; intros; subst
@@ -1725,6 +1787,7 @@ Section compileProgram.
 
     Lemma compilePat_cdatas : forall p0,
       cdatasGood (XmlSearch.allCdatas (compilePat p0)).
+    Proof using .
       unfold cdatasGood; induction p0; simpl; intuition.
       constructor; auto; simpl; intuition (eapply underscore_discrim; eauto).
       constructor; auto; simpl; intuition (eapply underscore_discrim; eauto).
@@ -1737,6 +1800,7 @@ Section compileProgram.
       -> (forall text, List.Exists (fun e => efreeVar e text) es
         -> In (text ++ "_start", text ++ "_len")%string cdatas)
       -> inputOk V (compileExps es).
+    Proof using .
       unfold inputOk, XmlOutput.inBounds; induction es; simpl; intuition.
       constructor; auto.
       destruct a; simpl; auto.
@@ -1753,6 +1817,7 @@ Section compileProgram.
         -> x <> "ilen" -> x <> "tmp" -> x <> "ipos" -> x <> "overflowed" -> sel V x = sel V' x)
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V'.
+    Proof using .
       intros.
       rewrite <- inBounds_sel.
       rewrite <- inBounds_sel in H0.
@@ -1770,6 +1835,7 @@ Section compileProgram.
       twfs ts
       -> In t ts
       -> goodSize (S (S (length (Schema t) + length (Schema t)))).
+    Proof using .
       intros; eapply Forall_forall in H; eauto; eassumption.
     Qed.
 
@@ -1780,6 +1846,7 @@ Section compileProgram.
       -> underscore_free s1
       -> ~underscore_free s2
       -> False.
+    Proof using .
       intros; congruence.
     Qed.
 
@@ -1790,12 +1857,14 @@ Section compileProgram.
       -> (forall text, List.Exists (fun e => efreeVar e text) es
         -> In (text ++ "_len")%string ns)
       -> wfExps ns (compileExps es).
+    Proof using .
       unfold wfExps; induction 1; simpl; intuition.
     Qed.
 
     Hint Immediate wfExps_compileExps.
 
     Lemma length_compileExps : forall es, length (compileExps es) = length es.
+    Proof using .
       intros; apply map_length.
     Qed.
 
@@ -1805,6 +1874,7 @@ Section compileProgram.
       twfs ts
       -> In t ts
       -> goodSize (length (Schema t)).
+    Proof using .
       intros; eapply goodSize_weaken; [ eapply goodSize_more | ]; eauto.
     Qed.
 
@@ -1820,6 +1890,7 @@ Section compileProgram.
       -> (forall text, List.Exists (fun e => efreeVar (snd e) text) cond
         -> In (text ++ "_start", text ++ "_len")%string cdatas)
       -> inputOk V (exps (compileCondition cond)).
+    Proof using .
       unfold inputOk, XmlOutput.inBounds; induction cond; simpl; intuition.
       constructor; auto.
       destruct a; simpl in *.
@@ -1839,6 +1910,7 @@ Section compileProgram.
         -> sel V x = sel V' x)
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V'.
+    Proof using .
       intros.
       rewrite <- inBounds_sel.
       rewrite <- inBounds_sel in H0.
@@ -1861,6 +1933,7 @@ Section compileProgram.
         List.Exists (fun e => efreeVar (snd e) text) cond ->
         In (text ++ "_len")%string ns)
       -> wfEqualities ns sch (compileCondition cond).
+    Proof using .
       unfold wfEqualities; induction 1; simpl; auto.
       constructor; auto.
       hnf; simpl.
@@ -1914,6 +1987,7 @@ Section compileProgram.
     Lemma xall_underscore' : forall p,
       List.Forall (fun p => exists tab, p = (tab ++ "_start", tab ++ "_len")%string)
       (XmlSearch.allCdatas (compilePat p)).
+    Proof using .
       clear; induction p; simpl; intuition eauto.
     Qed.
 
@@ -1924,6 +1998,7 @@ Section compileProgram.
         -> sel V x = sel V' x)
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V'.
+    Proof using .
       intros.
       rewrite <- inBounds_sel.
       rewrite <- inBounds_sel in H0.
@@ -1945,6 +2020,7 @@ Section compileProgram.
       -> forall ts avs, NoDups avs ts
         -> In t ts
         -> cursors V avs ===> cursors V' avs.
+    Proof using .
       unfold cursors; clear; induction avs; simpl; intuition.
       sepLemma.
 
@@ -1989,6 +2065,7 @@ Section compileProgram.
     Lemma noOverlapExps_compileCondition : forall tab cond,
       noOverlapExps (tab ++ "_row") (tab ++ "_data")
       (exps (compileCondition cond)).
+    Proof using .
       unfold noOverlapExps, noOverlapExp; induction cond; simpl; intuition.
       constructor; auto.
       destruct (snd a); simpl; auto.
@@ -1999,11 +2076,13 @@ Section compileProgram.
 
     Lemma cdataify_app : forall ls1 ls2,
       cdataify (ls1 ++ ls2) = cdataify ls1 ++ cdataify ls2.
+    Proof using .
       induction ls1; simpl; intuition.
     Qed.
 
     Lemma cdataify_pat : forall p,
       XmlSearch.allCdatas (compilePat p) = cdataify (allCdatas p).
+    Proof using .
       clear; induction p; simpl; intuition;
         rewrite cdataify_app; congruence.
     Qed.
@@ -2011,6 +2090,7 @@ Section compileProgram.
     Lemma allCdatas_cdataify : forall x p,
       In x (XmlSearch.allCdatas (compilePat p))
       -> In x (cdataify (allCdatas p)).
+    Proof using .
       clear; induction p; simpl; intuition; rewrite cdataify_app;
         apply in_app_or in H; intuition.
     Qed.
@@ -2027,6 +2107,7 @@ Section compileProgram.
       -> (forall x, xfreeVar xm x -> In (x ++ "_start", x ++ "_len")%string
         (XmlSearch.allCdatas (compilePat p)))
       -> XmlOutput.wf ns (XmlSearch.allCdatas (compilePat p)) (avout avs) ts (compileXml xm).
+    Proof using .
       intros; rewrite cdataify_pat; eauto using output_wf.
     Qed.
 
@@ -2035,6 +2116,7 @@ Section compileProgram.
     Lemma goodCursors_avout : forall avs,
       twfs avs
       -> goodCursors (avout avs).
+    Proof using .
       unfold goodCursors; clear; induction 1; simpl; intuition.
       constructor; simpl; auto.
       intuition (try discrim; eauto).
@@ -2044,12 +2126,14 @@ Section compileProgram.
 
     Lemma map_avout : forall avs,
       map (fun av => Name (Table av)) (avout avs) = Names avs.
+    Proof using .
       induction avs; simpl; intuition.
     Qed.
 
     Lemma NoDups_avout : forall avs ts,
       NoDups avs ts
       -> XmlOutput.NoDups (avout avs) ts.
+    Proof using .
       intros; hnf in *.
       eapply NoDup_app; try rewrite map_avout; eauto.
       eapply NoDups_unapp_cross; auto.
@@ -2061,6 +2145,7 @@ Section compileProgram.
       cwf sch cond
       -> inputOk V (exps (compileCondition cond))
       -> inputOk (upd V "res" k) (exps (compileCondition cond)).
+    Proof using .
       unfold inputOk; induction 1; simpl; inversion_clear 1; auto.
       constructor; auto.
       unfold inputOk1 in *; destruct x; simpl in *; intuition.
@@ -2080,6 +2165,7 @@ Section compileProgram.
         -> (forall text, List.Exists (fun e => efreeVar (snd e) text) cond
           -> In (text ++ "_start", text ++ "_len")%string cdatas)
         -> inputOk (upd V "res" 0) (exps (compileCondition cond)).
+    Proof using .
       intros; eapply inputOk_res_weaken; eauto.
     Qed.
 
@@ -2088,6 +2174,7 @@ Section compileProgram.
     Lemma inBounds_res : forall p V k,
       XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) (upd V "res" k).
+    Proof using .
       clear; intros; eapply Forall_impl2; [ apply xall_underscore | eassumption |  ].
       simpl; intuition.
       repeat match goal with
@@ -2106,6 +2193,7 @@ Section compileProgram.
       -> cursors V avs * (db ts * P)
       ===> P * (table (Schema t) (Address t)
         * (cursors (upd V "res" k) avs * db (removeTable (Name t) ts))).
+    Proof using .
       sepLemma.
 
       etransitivity; [ | apply himp_star_assoc ].
@@ -2123,6 +2211,7 @@ Section compileProgram.
         -> sel V x = sel V' x)
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V'.
+    Proof using .
       intros.
       rewrite <- inBounds_sel.
       rewrite <- inBounds_sel in H0.
@@ -2136,6 +2225,7 @@ Section compileProgram.
 
     Lemma cursors_bloop : forall P V avs k,
       cursors V avs * P ===> P * cursors (upd V "res" k) avs.
+    Proof using .
       sepLemma; apply Weaken_cursors; descend.
     Qed.
 
@@ -2143,6 +2233,7 @@ Section compileProgram.
 
     Lemma rdb_noOverlapExps : forall tab cond,
       RelDbSelect.noOverlapExps (tab ++ "_row") (tab ++ "_data") (exps (compileCondition cond)).
+    Proof using .
       clear; induction cond; simpl; intuition; constructor; auto.
       hnf; destruct (snd a); simpl; intuition discrim.
     Qed.
@@ -2154,6 +2245,7 @@ Section compileProgram.
       -> In av ts
       -> twfs ts
       -> twfs (av :: avs).
+    Proof using .
       clear; constructor; auto.
       eapply Forall_forall in H1; eauto.
     Qed.
@@ -2164,6 +2256,7 @@ Section compileProgram.
       XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p)) V
       -> XmlOutput.inBounds (XmlSearch.allCdatas (compilePat p))
       (upd V "opos" v).
+    Proof using .
       intros; eapply inBounds_swizzle; [ | eauto ]; descend.
     Qed.
 
@@ -2171,6 +2264,7 @@ Section compileProgram.
 
     Lemma cursors_bleep : forall P V avs k,
       cursors V avs * P ===> P * XmlOutput.cursors (upd V "opos" k) (avout avs).
+    Proof using .
       sepLemma.
       change (XmlOutput.cursors (upd V "opos" k) (avout avs)) with (cursors (upd V "opos" k) avs).
       apply Weaken_cursors; descend.
@@ -2180,6 +2274,7 @@ Section compileProgram.
 
     Lemma cursors_blop : forall P V avs k,
       P * XmlOutput.cursors V (avout avs) ===> cursors (upd V "res" k) avs * P.
+    Proof using .
       sepLemma.
       change (XmlOutput.cursors V (avout avs)) with (cursors V avs).
       apply Weaken_cursors; descend.
@@ -2231,6 +2326,7 @@ Section compileProgram.
         -> (forall t, In t avs -> In (Name t ++ "_row")%string ns)
         -> (forall t, In t avs -> In (Name t ++ "_data")%string ns)
         -> vcs (VerifCond (toCmd (compileAction' avs ts ts' a) mn H ns res pre)).
+    Proof using .
       induction a.
 
       step1.
@@ -2493,11 +2589,13 @@ Section compileProgram.
       -> forall specs st, interp specs (Postcondition
         (toCmd (compileProgram' pr0) mn H ns res pre) st)
       -> interp specs (cpinv true (fun x : W => x) ns res st).
+    Proof using .
       induction pr0; simpl; intros; repeat (invoke1; post); t.
     Qed.
 
     Lemma cursors_intro' : forall P V specs,
       himp specs P (P * cursors V nil)%Sep.
+    Proof using .
       sepLemma.
     Qed.
 
@@ -2506,6 +2604,7 @@ Section compileProgram.
     Lemma xbindsRowVar_row : forall tab xm,
       xbindsRowVar xm tab
       -> In (tab ++ "_row")%string (allCursors_both' xm).
+    Proof using .
       clear; induction xm using xml_ind'; simpl; intuition.
       generalize (@nil string).
       induction H; simpl in *; intuition.
@@ -2517,6 +2616,7 @@ Section compileProgram.
     Lemma xbindsRowVar_data : forall tab xm,
       xbindsRowVar xm tab
       -> In (tab ++ "_data")%string (allCursors_both' xm).
+    Proof using .
       clear; induction xm using xml_ind'; simpl; intuition.
       generalize (@nil string).
       induction H; simpl in *; intuition.
@@ -2530,6 +2630,7 @@ Section compileProgram.
     Lemma abindsRowVar_row : forall tab a,
       abindsRowVar a tab
       -> In (tab ++ "_row")%string (allCursors_both a).
+    Proof using .
       clear; induction a; try solve [ simpl; intuition ].
       unfold allCursors_both; fold allCursors_both; intros.
       simpl in H; destruct H as [ | [ | ] ]; subst.
@@ -2548,6 +2649,7 @@ Section compileProgram.
     Lemma abindsRowVar_data : forall tab a,
       abindsRowVar a tab
       -> In (tab ++ "_data")%string (allCursors_both a).
+    Proof using .
       clear; induction a; try solve [ simpl; intuition ].
       unfold allCursors_both; fold allCursors_both; intros.
       simpl in H; destruct H as [ | [ | ] ]; subst.
@@ -2609,6 +2711,7 @@ Section compileProgram.
         -> incl (cdatasOf pr0) ns
         -> incl (cursorsOf pr0) ns
         -> vcs (VerifCond (toCmd (compileProgram' pr0) mn H ns res pre)).
+    Proof using All.
       induction pr0; wrap0;
         repeat match goal with
                  | [ |- vcs (_ :: _) ] => wrap0
@@ -2767,6 +2870,7 @@ Section compileProgram.
     Lemma no_clash_cdatas : forall pr0,
       In s (cdatasOf pr0)
       -> False.
+    Proof using .
       induction pr0; simpl; intuition eauto.
       apply In_addTo_or in H; destruct H; auto.
     Qed.
@@ -2778,6 +2882,7 @@ Section compileProgram.
       -> forall ls, ~In s ls
         -> In s (fold_left (fun ls xm => addTo (allCursors_both' xm) ls) inner ls)
         -> False.
+    Proof using .
       clear; induction 1; simpl; intuition.
       apply IHForall in H2; auto.
       intros Hi; apply In_addTo_or in Hi; intuition.
@@ -2786,6 +2891,7 @@ Section compileProgram.
     Lemma no_clash_allCursors_both' : forall xm,
       In s (allCursors_both' xm)
       -> False.
+    Proof using .
       induction xm using xml_ind'; simpl; intuition (try discrim).
       eapply no_clash_allCursors_both''; try eassumption; simpl; tauto.
     Qed.
@@ -2795,6 +2901,7 @@ Section compileProgram.
     Lemma no_clash_allCursors_both : forall a,
       In s (allCursors_both a)
       -> False.
+    Proof using .
       induction a; try solve [ simpl; intuition (try match goal with
                                                        | [ H : _ |- _ ] =>
                                                          apply In_addTo_or in H; intuition idtac
@@ -2814,6 +2921,7 @@ Section compileProgram.
     Lemma no_clash_cursorsOf : forall pr0,
       In s (cursorsOf pr0)
       -> False.
+    Proof using .
       induction pr0; simpl; intuition eauto.
       apply In_addTo_or in H; destruct H; eauto.
     Qed.
@@ -2823,6 +2931,7 @@ Section compileProgram.
     Lemma no_clash_both' : forall pr0,
       In s (cdatasOf pr0 ++ cursorsOf pr0)
       -> False.
+    Proof using .
       clear; intros; apply in_app_or in H; destruct H; eauto.
     Qed.
   End no_clash.
@@ -2831,6 +2940,7 @@ Section compileProgram.
     In s (cdatasOf pr0 ++ cursorsOf pr0)
     -> underscore_free s
     -> False.
+  Proof using .
     eauto using no_clash_both'.
   Qed.
 
@@ -2840,6 +2950,7 @@ Section compileProgram.
     In x (allCdatas_both p)
     -> exists text, x = (text ++ "_start")%string
       \/ x = (text ++ "_len")%string.
+  Proof using .
     clear; induction p; simpl; intuition (subst; eauto);
       match goal with
         | [ H : _ |- _ ] => apply in_app_or in H; intuition
@@ -2852,6 +2963,7 @@ Section compileProgram.
     In x (cdatasOf pr0)
     -> exists text, x = (text ++ "_start")%string
       \/ x = (text ++ "_len")%string.
+  Proof using .
     clear; induction pr0; simpl; intuition eauto;
       match goal with
         | [ H : _ |- _ ] => apply In_addTo_or in H; intuition
@@ -2863,6 +2975,7 @@ Section compileProgram.
     -> forall ls, (In x ls -> P x)
       -> In x (fold_left (fun ls xm => addTo (allCursors_both' xm) ls) inner ls)
       -> P x.
+  Proof using .
     clear; induction 1; simpl; intuition.
     apply IHForall in H2; auto.
     intros Hi; apply In_addTo_or in Hi; intuition.
@@ -2872,6 +2985,7 @@ Section compileProgram.
     In x (allCursors_both' xm)
     -> exists text, x = (text ++ "_row")%string
       \/ x = (text ++ "_data")%string.
+  Proof using .
     clear; induction xm using xml_ind'; simpl; intuition eauto.
     eapply In_allCursors_both''; eauto; simpl; tauto.
   Qed.
@@ -2882,6 +2996,7 @@ Section compileProgram.
     In x (allCursors_both a)
     -> exists text, x = (text ++ "_row")%string
       \/ x = (text ++ "_data")%string.
+  Proof using .
     clear; induction a; try solve [ simpl; intuition eauto;
       match goal with
         | [ H : _ |- _ ] => apply In_addTo_or in H; intuition
@@ -2905,6 +3020,7 @@ Section compileProgram.
     In x (cursorsOf pr0)
     -> exists text, x = (text ++ "_row")%string
       \/ x = (text ++ "_data")%string.
+  Proof using .
     clear; induction pr0; simpl; intuition eauto;
       match goal with
         | [ H : _ |- _ ] => apply In_addTo_or in H; intuition
@@ -2915,6 +3031,7 @@ Section compileProgram.
   Hypothesis UF : uf ts.
 
   Lemma NoDup_both : NoDup (cdatasOf pr ++ cursorsOf pr).
+  Proof using .
     intros; apply NoDup_app; eauto using cdatas_distinct, cursorsOf_NoDup; intros.
     apply In_cdatasOf in H.
     apply In_cursorsOf in H0.
@@ -2926,6 +3043,7 @@ Section compileProgram.
   Ltac u := abstract t.
 
   Theorem ok : moduleOk m.
+  Proof using .
     vcgen;
       (intros; try match goal with
                      | [ H : importsGlobal _ |- _ ] => clear H

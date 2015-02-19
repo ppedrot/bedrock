@@ -28,7 +28,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.Option.
 
   Lemma strengthen_specs_strengthen : forall specs_op specs_ax env_op env_ax, strengthen_specs specs_op specs_ax env_ax -> specs_env_agree specs_op env_op -> specs_env_agree specs_ax env_ax -> (forall lbl, fst env_op lbl = fst env_ax lbl) -> strengthen env_op env_ax.
-  Proof.
+  Proof using Type.
     split; intros.
     eauto.
     destruct (option_dec (fs_op w)).
@@ -133,6 +133,7 @@ Section ADTValue.
   Qed.
 
   Lemma strengthen_diff_elim : forall specs_diff env_ax specs, strengthen_diff specs specs_diff env_ax -> forall lbl ax, find lbl specs_diff = Some ax -> find lbl specs = Some (Foreign ax) \/ exists op, find lbl specs = Some (Internal op) /\ strengthen_op_ax op ax env_ax.
+  Proof using Type.
     do 3 intro.
     eapply fold_rec_bis with (P := fun specs_diff (H : Prop) => H -> forall lbl ax, find lbl specs_diff = Some ax -> find lbl specs = Some (Foreign ax) \/ exists op, find lbl specs = Some (Internal op) /\ strengthen_op_ax op ax env_ax); simpl; intros.
     eapply H0; eauto.
@@ -152,6 +153,7 @@ Section ADTValue.
   Qed.
 
   Lemma strengthen_diff_strengthen_specs : forall specs specs_diff env_ax, strengthen_diff specs specs_diff env_ax -> strengthen_specs specs (apply_specs_diff specs specs_diff) env_ax.
+  Proof using Type.
     intros.
     unfold strengthen_specs.
     intros.
@@ -188,6 +190,7 @@ Section ADTValue.
   Qed.
 
   Lemma strengthen_diff_strenghthen : forall specs specs_diff env_op env_ax, strengthen_diff specs specs_diff env_ax -> specs_env_agree specs env_op -> specs_env_agree (apply_specs_diff specs specs_diff) env_ax -> (forall lbl, fst env_op lbl = fst env_ax lbl) -> strengthen env_op env_ax.
+  Proof using Type.
     intros.
     eapply strengthen_specs_strengthen; eauto.
     eapply strengthen_diff_strengthen_specs; eauto.
@@ -222,11 +225,13 @@ Section ADTValue.
   Notation specs_stn_injective := (@specs_stn_injective ADTValue).
 
   Lemma sub_domain_specs_stn_injective : forall specs1 specs2 stn, specs_stn_injective specs1 stn -> sub_domain specs2 specs1 -> specs_stn_injective specs2 stn.
+  Proof using Type.
     unfold ProgramLogic2.specs_stn_injective, sub_domain; intros.
     eapply H; eauto.
   Qed.
 
   Lemma add_specs_stn_injective : forall specs k v stn, specs_stn_injective (add k v specs) stn -> specs_stn_injective specs stn.
+  Proof using Type.
     intros.
     eapply sub_domain_specs_stn_injective; eauto.
     unfold sub_domain; intros.
@@ -234,6 +239,7 @@ Section ADTValue.
   Qed.
 
   Lemma is_pointer_of_label_intro_elim : forall specs stn w, (forall v, is_pointer_of_label specs stn w = Some v -> exists lbl, find lbl specs = Some v /\ stn lbl = Some w) /\ (forall v lbl, specs_stn_injective specs stn -> find lbl specs = Some v -> stn lbl = Some w -> is_pointer_of_label specs stn w = Some v).
+  Proof using Type.
     do 3 intro.
     eapply fold_rec_bis with (P := fun specs a => (forall v, a = Some v -> exists lbl, find lbl specs = Some v /\ stn lbl = Some w) /\ (forall v lbl, specs_stn_injective specs stn -> find lbl specs = Some v -> stn lbl = Some w -> a = Some v)); simpl; intros.
     unfold ProgramLogic2.specs_stn_injective in *.
@@ -310,24 +316,28 @@ Section ADTValue.
   Qed.
 
   Lemma is_pointer_of_label_intro : forall specs stn w v lbl, specs_stn_injective specs stn -> find lbl specs = Some v -> stn lbl = Some w -> is_pointer_of_label specs stn w = Some v.
+  Proof using Type.
     eapply is_pointer_of_label_intro_elim; eauto.
   Qed.
 
   Lemma is_pointer_of_label_elim : forall specs stn w v, is_pointer_of_label specs stn w = Some v -> exists lbl, find lbl specs = Some v /\ stn lbl = Some w.
+  Proof using Type.
     eapply is_pointer_of_label_intro_elim; eauto.
   Qed.
 
   Lemma equal_domain_specs_stn_injective : forall specs1 specs2 stn, equal_domain specs1 specs2 -> (specs_stn_injective specs1 stn <-> specs_stn_injective specs2 stn).
+  Proof using Type.
     split; intros.
     eapply sub_domain_specs_stn_injective; eauto; eapply H.
     eapply sub_domain_specs_stn_injective; eauto; eapply H.
   Qed.
   Lemma equal_domain_sym : forall elt1 elt2 (m1 : t elt1) (m2 : t elt2), equal_domain m1 m2 -> equal_domain m2 m1.
+  Proof using .
     unfold equal_domain; intuition.
   Qed.
 
   Lemma change_env_agree : forall specs new_specs, equal_domain new_specs specs -> forall env, specs_env_agree specs env -> specs_env_agree new_specs (change_env new_specs env).
-  Proof.
+  Proof using Type.
     unfold specs_env_agree.
     intros.
     openhyp.
@@ -372,7 +382,7 @@ Section ADTValue.
   Qed.
 
   Lemma sub_domain_apply_specs_diff_equal_domain a b : sub_domain b a -> equal_domain (apply_specs_diff a b) a.
-  Proof.
+  Proof using Type.
     unfold apply_specs_diff.
     unfold equal_domain.
     intros H.

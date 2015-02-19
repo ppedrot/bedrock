@@ -89,7 +89,7 @@ Module BedrockPtsToEvaluator.
           exprD funcs uvars vars b tv = Some r ->
           Valid Prover_correct uvars vars sum ->
           l = r.
-    Proof.
+    Proof using Type.
       unfold expr_equal. intros. revert H; consider (expr_seq_dec a b); intros; subst; auto.
       rewrite H1 in H0; inversion H0; auto.
       generalize (Prove_correct Prover_correct). intro XX; eapply XX in H; eauto; clear XX.
@@ -143,7 +143,7 @@ Module BedrockPtsToEvaluator.
           ST.HT.smem_get_word (IL.implode stn) p m = Some v
         | _ => False
       end.
-    Proof.
+    Proof using Type.
       simpl; intros.
       unfold sym_read_word_ptsto32 in H.
       repeat (destruct args; try congruence).
@@ -180,7 +180,7 @@ Module BedrockPtsToEvaluator.
             | Some sm' => ST.satisfies cs pr stn sm'
           end
       end.
-    Proof.
+    Proof using Type.
       simpl; intros; expose.
       revert H; consider (expr_equal Prover summ ptrT pe e); intros; try congruence.
       inversion H6; clear H6; subst. simpl.

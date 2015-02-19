@@ -113,12 +113,14 @@ Opaque allocated.
 
 Lemma single_cell : forall p,
   (p =?> 1 = (Ex v, p =*> v) * Emp)%Sep.
+Proof using .
   auto.
 Qed.
 
 Lemma le_40 : forall w : W,
   w <= natToW 40
   -> (wordToNat w <= 40)%nat.
+Proof using .
   intros; pre_nomega.
   rewrite wordToNat_natToWord_idempotent in * by reflexivity; omega.
 Qed.
@@ -130,6 +132,7 @@ Ltac t := solve [ t'
   | post; evaluate hints; descend; try match_locals; t' ].
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

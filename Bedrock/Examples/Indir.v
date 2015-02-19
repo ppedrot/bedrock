@@ -15,6 +15,7 @@ Definition indir := bmodule "indir" {{
 }}.
 
 Theorem indirOk : moduleOk indir.
+Proof using .
   vcgen; abstract sep_auto.
 Qed.
 
@@ -32,6 +33,7 @@ Definition doubleIndir := bmodule "doubleIndir" {{
 }}.
 
 Theorem doubleIndirOk : moduleOk doubleIndir.
+Proof using .
 (*TIME Clear Timing Profile. *)
   vcgen; abstract sep_auto.
 (*TIME Print Timing Profile. *)

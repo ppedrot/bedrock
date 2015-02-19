@@ -54,7 +54,7 @@ Section ADTValue.
       related st (vs, h2) ->
       NoDup args ->
       Semantics.good_inputs h (combine words cinput).
-  Proof.
+  Proof using Type.
     simpl; induction args; destruct words; destruct cinput; destruct input; try solve [simpl in *; intros; eauto; try discriminate]; unfold Semantics.good_inputs, Semantics.disjoint_ptrs in *.
     - simpl in *.
       intros.
@@ -144,7 +144,7 @@ Section ADTValue.
           let t := compile s in
           let t_st := (vs, h) in
           CitoSafe t_env t t_st.
-  Proof.
+  Proof using Type.
     simpl; intros.
     rename H2 into Henv.
     eapply

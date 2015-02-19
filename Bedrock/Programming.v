@@ -500,6 +500,7 @@ Section PropX.
   Theorem injL : forall (p : Prop),
     (p -> interp specs P)
     -> interp specs ([| p |] ---> P).
+  Proof using Type.
     intros.
     apply Imply_I.
     eapply Inj_E.
@@ -510,6 +511,7 @@ Section PropX.
   Theorem cptrL : forall i a,
     (specs i = Some (fun x => a x) -> interp specs P)
     -> interp specs (Cptr i a ---> P).
+  Proof using Type.
     intros.
     apply Imply_I.
     eapply Cptr_E.
@@ -520,6 +522,7 @@ Section PropX.
   Theorem andL : forall Q R,
     interp specs (Q ---> (R ---> P))
     -> interp specs (Q /\ R ---> P).
+  Proof using Type.
     intros.
     apply Imply_I.
     eapply Imply_E.
@@ -536,6 +539,7 @@ Section PropX.
   Theorem existsL : forall A (p : A -> _),
     (forall x, interp specs (p x ---> P))
     -> interp specs ((Exists p) ---> P).
+  Proof using Type.
     intros.
     apply Imply_I.
     eapply Exists_E.
@@ -549,6 +553,7 @@ Section PropX.
   Theorem injR : forall (p : Prop),
     p
     -> interp specs (P ---> [| p |]).
+  Proof using Type.
     intros.
     apply Imply_I.
     eapply Inj_I.
@@ -558,6 +563,7 @@ Section PropX.
   Theorem cptrR : forall i a,
     specs i = Some (fun x => a x)
     -> interp specs (P ---> Cptr i a).
+  Proof using Type.
     intros.
     apply Imply_I.
     apply Cptr_I.
@@ -568,6 +574,7 @@ Section PropX.
     interp specs (P ---> Q)
     -> interp specs (P ---> R)
     -> interp specs (P ---> Q /\ R).
+  Proof using Type.
     intros.
     apply Imply_I.
     apply And_I.
@@ -582,6 +589,7 @@ Section PropX.
   Theorem allR : forall A (p : A -> _),
     (forall x, interp specs (P ---> p x))
     -> interp specs (P ---> (Forall p)).
+  Proof using Type.
     intros.
     apply Imply_I.
     apply Forall_I; intro.
@@ -593,6 +601,7 @@ Section PropX.
   Theorem existsR : forall A (p : A -> _) x,
     interp specs (P ---> p x)
     -> interp specs (P ---> (Exists p)).
+  Proof using Type.
     intros.
     apply Imply_I.
     apply Exists_I with x.
@@ -604,6 +613,7 @@ Section PropX.
   Theorem existsXR : forall A (p : propX _ _ (A :: nil)) x,
     interp specs (P ---> Subst p x)
     -> interp specs (P ---> (ExistsX p)).
+  Proof using Type.
     intros.
     apply Imply_I.
     apply ExistsX_I with x.
@@ -615,6 +625,7 @@ Section PropX.
   Theorem forallXR : forall A (p : propX _ _ (A :: nil)),
     (forall x, interp specs (P ---> PropX.Subst p x))
     -> interp specs (P ---> (ForallX p)).
+  Proof using Type.
     intros.
     apply Imply_I.
     apply ForallX_I; intro.
@@ -626,6 +637,7 @@ Section PropX.
   Theorem swap : forall Q R,
     interp specs (R ---> Q ---> P)
     -> interp specs (Q ---> R ---> P).
+  Proof using Type.
     intros.
     do 2 apply Imply_I.
     eapply Imply_E.

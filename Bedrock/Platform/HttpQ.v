@@ -32,11 +32,13 @@ Definition bufs := starL onebuf.
 
 Theorem onebuf_fwd : forall p,
   onebuf p ===> p =?>8 bsize * [| p <> 0 |] * [| freeable p (nat_of_N buf_size) |].
+Proof using .
   unfold onebuf; sepLemma.
 Qed.
 
 Theorem onebuf_bwd : forall p,
   p =?>8 bsize * [| p <> 0 |] * [| freeable p (nat_of_N buf_size) |] ===> onebuf p.
+Proof using .
   unfold onebuf; sepLemma.
 Qed.
 
@@ -58,16 +60,19 @@ Module Httpq : HTTPQ.
     Ex ls, sll ls p * bufs ls.
 
   Theorem httpq_fwd : forall p, httpq p ===> Ex ls, sll ls p * bufs ls.
+  Proof using .
     unfold httpq; sepLemma.
   Qed.
 
   Theorem httpq_bwd : forall p, Ex ls, sll ls p * bufs ls ===> httpq p.
+  Proof using .
     unfold httpq; sepLemma.
   Qed.
 
   Definition httpqSplitMe := httpq.
 
   Theorem httpq_split : forall p, (Ex x, Ex ls, sll (x :: ls) p * bufs (x :: ls)) ===> httpqSplitMe p.
+  Proof using .
     sepLemma.
     etransitivity; [ | apply httpq_bwd ].
     apply himp_ex_c; exists (x0 :: x).
@@ -334,6 +339,7 @@ Ltac match_locals :=
 
 Lemma globalInv_wiggle : forall P Q fs fs', fs %<= fs'
   -> P * (globalInv fs * Q) ===> P * (globalInv fs' * Q).
+Proof using .
   sepLemma; apply globalInv_monotone; auto.
 Qed.
 
@@ -352,6 +358,7 @@ Ltac t' :=
 Ltac t := easy || prove_irrel || t'.
 
 Lemma buf_size_simp : wordToNat (NToW buf_size) = N.to_nat buf_size.
+Proof using .
   unfold NToW; rewrite NToWord_nat.
   apply wordToNat_natToWord_idempotent.
   change (goodSize (N.to_nat buf_size)).
@@ -361,6 +368,7 @@ Lemma buf_size_simp : wordToNat (NToW buf_size) = N.to_nat buf_size.
 Qed.
 
 Lemma buf_size_lower' : natToW 2 <= NToW buf_size.
+Proof using .
   pre_nomega.
   rewrite buf_size_simp.
   apply buf_size_lower.
@@ -371,6 +379,7 @@ Local Hint Immediate buf_size_lower'.
 Lemma freeable_coerce : forall p,
   freeable p (wordToNat (NToW buf_size))
   -> freeable p (N.to_nat buf_size).
+Proof using .
   intros.
   rewrite buf_size_simp in *; auto.
 Qed.
@@ -378,6 +387,7 @@ Qed.
 Local Hint Immediate freeable_coerce.
 
 Lemma make_bsize : wordToNat (NToW buf_size) * 4 = bsize.
+Proof using .
   rewrite buf_size_simp.
   unfold bsize.
   rewrite N2Nat.inj_mul.
@@ -388,6 +398,7 @@ Qed.
 Hint Rewrite make_bsize : sepFormula.
 
 Lemma bsize_simp : wordToNat (natToW bsize) = bsize.
+Proof using .
   intros; apply wordToNat_natToWord_idempotent.
   change (goodSize bsize).
   eapply goodSize_weaken.
@@ -402,6 +413,7 @@ Lemma lt_le : forall w n,
   w < natToW bsize
   -> n = bsize
   -> (wordToNat w <= n)%nat.
+Proof using .
   intros; subst; pre_nomega; rewrite bsize_simp in *.
   auto.
 Qed.
@@ -410,12 +422,14 @@ Lemma le_le : forall n (w u : W),
   u <= w
   -> n = wordToNat w
   -> (wordToNat u <= n)%nat.
+Proof using .
   intros; subst; nomega.
 Qed.
 
 Lemma bsize_wordToNat : forall n,
   n = bsize
   -> n = wordToNat (natToW bsize).
+Proof using .
   intros; rewrite bsize_simp; auto.
 Qed.
 
@@ -426,6 +440,7 @@ Hint Rewrite bsize_simp natToW_wordToNat : sepFormula.
 Lemma bsize_re : forall w : W,
   w < natToW bsize
   -> (wordToNat w < bsize)%nat.
+Proof using .
   intros; pre_nomega.
   autorewrite with sepFormula in *.
   auto.
@@ -438,6 +453,7 @@ Hint Rewrite bsize_simp : N.
 Lemma multisub : forall w,
   (1 <= bsize - wordToNat w)%nat
   -> wordToNat (natToW bsize ^- w ^- natToW 1) = (bsize - wordToNat w - 1).
+Proof using .
   intros.
   rewrite wordToNat_wminus.
   rewrite wordToNat_wminus.
@@ -449,6 +465,7 @@ Qed.
 
 Lemma assoc1 : forall u v : W,
   u ^+ (v ^+ natToW 1) = u ^+ v ^+ natToW 1.
+Proof using .
   intros; words.
 Qed.
 
@@ -457,24 +474,28 @@ Hint Rewrite multisub assoc1 using assumption : sepFormula.
 Lemma goodSize_wordToNat' : forall n (w : W),
   n = wordToNat w
   -> goodSize n.
+Proof using .
   intros; subst; eauto.
 Qed.
 
 Lemma lt_le' : forall u v : W,
   u < v
   -> (wordToNat u <= wordToNat v)%nat.
+Proof using .
   intros; nomega.
 Qed.
 
 Local Hint Immediate goodSize_wordToNat' lt_le'.
 
 Lemma bsize_unexpand : N.to_nat buf_size * 4 = bsize.
+Proof using .
   unfold bsize; rewrite N2Nat.inj_mul; auto.
 Qed.
 
 Hint Rewrite buf_size_simp bsize_unexpand : sepFormula.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

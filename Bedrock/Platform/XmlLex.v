@@ -45,12 +45,14 @@ Module Xmlp : XMLP.
     ===> Ex pos, Ex selStart, Ex selLen, (p ==*> len, pos, selStart, selLen)
     * [| pos <= len |] * [| (wordToNat selStart + wordToNat selLen <= wordToNat len)%nat |]
     * [| p <> 0 |] * [| freeable p 4 |].
+  Proof using .
     unfold xmlp; sepLemma.
   Qed.
 
   Theorem xmlp_bwd : forall len p, (Ex pos, Ex selStart, Ex selLen, (p ==*> len, pos, selStart, selLen)
     * [| pos <= len |] * [| (wordToNat selStart + wordToNat selLen <= wordToNat len)%nat |]
     * [| p <> 0 |] * [| freeable p 4 |]) ===> xmlp len p.
+  Proof using .
     unfold xmlp; sepLemma.
   Qed.
 
@@ -58,12 +60,14 @@ Module Xmlp : XMLP.
     ===> Ex pos, Ex selLen, (p ==*> len, pos, selStart, selLen)
     * [| pos <= len |] * [| (wordToNat selStart + wordToNat selLen <= wordToNat len)%nat |]
     * [| p <> 0 |] * [| freeable p 4 |].
+  Proof using .
     unfold xmlp'; sepLemma.
   Qed.
 
   Theorem xmlp'_bwd : forall len selStart p, (Ex pos, Ex selLen, (p ==*> len, pos, selStart, selLen)
     * [| pos <= len |] * [| (wordToNat selStart + wordToNat selLen <= wordToNat len)%nat |]
     * [| p <> 0 |] * [| freeable p 4 |]) ===> xmlp' len selStart p.
+  Proof using .
     unfold xmlp'; sepLemma.
   Qed.
 End Xmlp.
@@ -331,6 +335,7 @@ Definition m := bimport [[ "malloc"!"malloc" @ [mallocS], "malloc"!"free" @ [fre
 Local Hint Extern 1 (@eq W _ _) => words.
 
 Lemma zero_le : forall w : W, natToW 0 <= w.
+Proof using .
   intros; pre_nomega; rewrite roundTrip_0; auto.
 Qed.
 
@@ -342,6 +347,7 @@ Lemma wle_plus1 : forall u v w,
   u <= v
   -> v < w
   -> u <= v ^+ natToW 1.
+Proof using .
   intros; pre_nomega; rewrite wordToNat_wplus; auto;
     apply goodSize_weaken with (wordToNat w); eauto; rewrite roundTrip_1; auto.
 Qed.
@@ -350,6 +356,7 @@ Lemma quite_so_old_fellow : forall pos n n',
   pos < n'
   -> n = wordToNat n'
   -> pos < natToW n.
+Proof using .
   intros; subst; unfold natToW; rewrite natToWord_wordToNat; auto.
 Qed.
 
@@ -357,6 +364,7 @@ Lemma ruleout : forall u v : W,
   u <= v
   -> u <> v
   -> u < v.
+Proof using .
   intros; pre_nomega.
   assert (wordToNat u <> wordToNat v) by (intro Ho; apply H0; apply wordToNat_inj in Ho; auto).
   auto.
@@ -365,6 +373,7 @@ Qed.
 Lemma wlt_wle : forall u v,
   u < v
   -> u ^+ natToW 1 <= v.
+Proof using .
   intros; pre_nomega.
   rewrite wordToNat_wplus; rewrite roundTrip_1; auto.
   apply goodSize_weaken with (wordToNat v); eauto.
@@ -374,6 +383,7 @@ Lemma combotize : forall start pos len,
   start < pos
   -> pos < len
   -> (wordToNat (start ^+ natToW 1) + wordToNat (pos ^- (start ^+ natToW 1)) <= wordToNat len)%nat.
+Proof using .
   intros; pre_nomega.
   rewrite wordToNat_wminus.
   rewrite wordToNat_wplus; rewrite roundTrip_1; auto.
@@ -388,5 +398,6 @@ Local Hint Immediate wle_plus1 quite_so_old_fellow inc ruleout wlt_wle combotize
 Ltac t := sep hints; eauto; nomega || rewrite wordToNat_wminus; nomega.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.

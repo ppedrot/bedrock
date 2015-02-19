@@ -33,6 +33,7 @@ Definition m2_ok := bedrock_module_impl_ok output.
 Definition all1 := link m1 m2.
 
 Lemma all1_ok : moduleOk all1.
+Proof using .
     link m1_ok m2_ok.
 Qed.
 
@@ -42,5 +43,6 @@ Require Import Bedrock.Platform.Facade.examples.FiatImpl.
 Definition all := link all1 FiatImpl.m.
 
 Theorem all_ok : moduleOk all.
+Proof using .
   link all1_ok FiatImpl.ok.
 Qed.

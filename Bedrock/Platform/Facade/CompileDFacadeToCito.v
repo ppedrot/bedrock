@@ -60,7 +60,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics5.
 
   Lemma cenv_impls_env_fenv cenv env : cenv_impls_env cenv env -> exists fenv, CompileRunsTo.cenv_impls_env cenv fenv /\ fenv_impls_env fenv env.
-  Proof.
+  Proof using Type.
     intros [H Hinj].
     set (fenv :=
            {|
@@ -121,7 +121,7 @@ Section ADTValue.
   Existing Instance equiv_rel_Transitive.
 
   Lemma equiv_related (st st' : State) cst : related st cst -> st' === st -> find fun_ptr_varname st' = None -> related st' cst.
-  Proof.
+  Proof using Type.
     intros Hr Heqv Hfpv.
     unfold related.
     split.
@@ -194,7 +194,7 @@ Section ADTValue.
               (forall x, ~ StringSet.In x (assigned s) -> is_good_varname x = true -> Locals.sel (fst t_st) x = Locals.sel (fst t_st') x) /\
               (* main result: final source-level and target level states are related *)
               related s_st' (fst t_st', snd t_st' - h2).
-  Proof.
+  Proof using Type.
     intros Hcrt s Hcomp Hsyn h1 Hsm s_st Hr Hnotmp s_env Henv Hsf.
     eapply cenv_impls_env_fenv in Henv.
     destruct Henv as [fenv [Htenv Hfenv]].
@@ -238,7 +238,7 @@ Section ADTValue.
       t = compile s ->
       t_st = (vs, h) ->
       CSafe t_env t t_st.
-  Proof.
+  Proof using Type.
     simpl; intros Hsfs Hsyn Hsstok vs h h1 Hsm Hr t_env t t_st Henv Ht Htst.
     subst.
     eapply cenv_impls_env_fenv in Henv.

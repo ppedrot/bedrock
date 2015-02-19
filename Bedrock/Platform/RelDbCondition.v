@@ -144,6 +144,7 @@ Section Condition.
     wfEquality ns s e
     -> exists offset, resolve s (fst e) = Some offset
       /\ (offset < length s)%nat.
+  Proof using (ns reserved).
     unfold wfEquality; induction s; simpl; intuition subst;
       match goal with
         | [ |- context[if ?E then _ else _] ] => destruct E
@@ -162,6 +163,7 @@ Section Condition.
     -> forall specs st,
       interp specs (Postcondition (toCmd (compileEquality e) mn (im := im) H ns res pre) st)
       -> interp specs (eqinv ns res st).
+  Proof using All.
     unfold compileEquality; intros.
     match goal with
       | [ H : _ |- _ ] => destruct (resolve_ok H); intuition idtac; destruct H
@@ -187,10 +189,12 @@ Section Condition.
   Hypothesis goodSize_sch : goodSize (length sch).
 
   Lemma length_posl : forall ls, length (posl ls) = length ls.
+  Proof using .
     clear; induction ls; simpl; intuition.
   Qed.
 
   Lemma length_lenl : forall ls, length (lenl ls) = length ls.
+  Proof using .
     clear; induction ls; simpl; intuition.
   Qed.
 
@@ -198,6 +202,7 @@ Section Condition.
     (x < length sch)%nat
     -> length ls = length sch
     -> natToW x < natToW (Datatypes.length ls).
+  Proof using goodSize_sch.
     generalize goodSize_sch; clear; intros.
     pre_nomega.
     rewrite wordToNat_natToWord_idempotent.
@@ -211,6 +216,7 @@ Section Condition.
     (x < length sch)%nat
     -> length ls = length sch
     -> natToW x < natToW (Datatypes.length (posl ls)).
+  Proof using goodSize_sch.
     intros; rewrite length_posl; auto using length_match.
   Qed.
 
@@ -218,6 +224,7 @@ Section Condition.
     (x < length sch)%nat
     -> length ls = length sch
     -> natToW x < natToW (Datatypes.length (lenl ls)).
+  Proof using goodSize_sch.
     intros; rewrite length_lenl; auto using length_match.
   Qed.
 
@@ -226,6 +233,7 @@ Section Condition.
   Lemma selN_col : forall x ls,
     (x < length sch)%nat
     -> Array.sel ls (natToW x) = selN ls x.
+  Proof using goodSize_sch.
     generalize goodSize_sch; clear; unfold Array.sel; intros; f_equal.
     apply wordToNat_natToWord_idempotent.
     change (goodSize x).
@@ -238,6 +246,7 @@ Section Condition.
     inBounds len cols
     -> forall col, (col < length cols)%nat
       -> (wordToNat (selN (posl cols) col) + wordToNat (selN (lenl cols) col) <= wordToNat len)%nat.
+  Proof using .
     clear; induction cols; inversion 1; simpl; intuition; destruct col; intuition.
   Qed.
 
@@ -248,6 +257,7 @@ Section Condition.
       -> c = wordToNat len
       -> (col < length cols)%nat
       -> (wordToNat a + wordToNat b <= c)%nat.
+  Proof using .
     intros; subst; eauto using inBounds_selN'.
   Qed.
 
@@ -259,6 +269,7 @@ Section Condition.
     -> pos = selN (posl cols) x
     -> (x < length cols)%nat
     -> pos <= len.
+  Proof using .
     clear; intros; subst.
     eapply inBounds_selN in H; try (reflexivity || eassumption).
     nomega.
@@ -271,6 +282,7 @@ Section Condition.
   Lemma In_exps : forall s e c,
     In (s, e) c
     -> In e (exps c).
+  Proof using .
     clear; induction c; simpl; intuition (subst; auto).
   Qed.
 
@@ -283,6 +295,7 @@ Section Condition.
       interp specs (pre st)
       -> interp specs (eqinv ns res st))
     -> vcs (VerifCond (toCmd (compileEquality e) mn (im := im) H ns res pre)).
+  Proof using All.
       unfold compileEquality; intros.
       match goal with
         | [ H : _ |- _ ] => destruct (resolve_ok H); intuition idtac; destruct H
@@ -362,12 +375,14 @@ Section Condition.
   Lemma wfEqualities_inv1 : forall ns sch e es,
     wfEqualities ns sch (e :: es)
     -> wfEquality ns sch e.
+  Proof using .
     inversion 1; auto.
   Qed.
 
   Lemma wfEqualities_inv2 : forall ns sch e es,
     wfEqualities ns sch (e :: es)
     -> wfEqualities ns sch es.
+  Proof using .
     inversion 1; auto.
   Qed.
 
@@ -381,6 +396,7 @@ Section Condition.
     -> forall specs st,
       interp specs (Postcondition (toCmd (compileEqualities es) mn (im := im) H ns res pre) st)
       -> interp specs (eqinv ns res st).
+  Proof using All.
     induction es; simpl; intuition idtac;
       (pre;
         repeat (match goal with
@@ -398,6 +414,7 @@ Section Condition.
       interp specs (pre st)
       -> interp specs (eqinv ns res st))
     -> vcs (VerifCond (toCmd (compileEqualities es) mn (im := im) H ns res pre)).
+  Proof using All.
     induction es; intros; try match goal with
                                 | [ H : incl _ cond |- _ ] => apply incl_peel in H
                               end; wrap0;

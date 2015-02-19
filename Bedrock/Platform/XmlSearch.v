@@ -448,6 +448,7 @@ Section Pat.
   Notation "l ~~ im ~~> s" := (LabelMap.find l%SP im = Some (Precondition s None)) (at level 0).
 
   Lemma inBounds_sel : forall cdatas V, inBounds cdatas (sel V) = inBounds cdatas V.
+  Proof using .
     auto.
   Qed.
 
@@ -456,12 +457,14 @@ Section Pat.
     -> List.Forall Q ls
     -> (forall x, P x -> Q x -> R x)
     -> List.Forall R ls.
+  Proof using .
     induction 1; inversion 1; eauto.
   Qed.
 
   Lemma incl_peel : forall A (x : A) ls ls',
     incl (x :: ls) ls'
     -> In x ls' /\ incl ls ls'.
+  Proof using .
     unfold incl; intuition.
   Qed.
 
@@ -482,14 +485,17 @@ Section Pat.
 
   Lemma mult4_S : forall n,
     4 * S n = S (S (S (S (4 * n)))).
+  Proof using .
     simpl; intros; omega.
   Qed.
 
   Lemma invPre_sel : forall a V, invPre a (sel V) = invPre a V.
+  Proof using Type.
     auto.
   Qed.
 
   Lemma invPost_sel : forall a V R, invPost a (sel V) R = invPost a V R.
+  Proof using Type.
     auto.
   Qed.
 
@@ -524,6 +530,7 @@ Section Pat.
     w <= len
     -> stackOk ws len
     -> stackOk (w :: ws) len.
+  Proof using .
     constructor; auto.
   Qed.
 
@@ -534,12 +541,14 @@ Section Pat.
   Lemma noConflict_Both1 : forall p1 p2 cdatas,
     noConflict (Both p1 p2) cdatas
     -> noConflict p1 cdatas.
+  Proof using .
     noConflict.
   Qed.
 
   Lemma noConflict_Both2' : forall p1 p2 cdatas,
     noConflict (Both p1 p2) cdatas
     -> noConflict p2 cdatas.
+  Proof using .
     noConflict.
   Qed.
 
@@ -551,11 +560,13 @@ Section Pat.
 
   Lemma allCdatas_freeVar1 : forall xy p,
     In xy (allCdatas p) -> freeVar p (fst xy).
+  Proof using .
     allCdatas_freeVar.
   Qed.
 
   Lemma allCdatas_freeVar2 : forall xy p,
     In xy (allCdatas p) -> freeVar p (snd xy).
+  Proof using .
     allCdatas_freeVar.
   Qed.
 
@@ -564,6 +575,7 @@ Section Pat.
     -> (forall x, freeVar p1 x -> freeVar p2 x -> False)
     -> (forall x, freeVar p1 x -> ~In x baseVars)
     -> noConflict p2 (allCdatas p1 ++ cdatas).
+  Proof using .
     intros; apply Forall_app.
     2: eapply noConflict_Both2'; eauto.
     apply Forall_forall; intros.
@@ -583,24 +595,28 @@ Section Pat.
   Lemma Forall_app1 : forall A P (ls1 ls2 : list A),
     List.Forall P (ls1 ++ ls2)
     -> List.Forall P ls1.
+  Proof using .
     induction ls1; inversion 1; eauto.
   Qed.
 
   Lemma Forall_app2 : forall A P (ls1 ls2 : list A),
     List.Forall P (ls1 ++ ls2)
     -> List.Forall P ls2.
+  Proof using .
     induction ls1; inversion 1; eauto.
   Qed.
 
   Lemma inBounds_app1 : forall ls1 ls2 x,
     inBounds (ls1 ++ ls2) x
     -> inBounds ls1 x.
+  Proof using .
     intros; eapply Forall_app1; eauto.
   Qed.
 
   Lemma inBounds_app2 : forall ls1 ls2 x,
     inBounds (ls1 ++ ls2) x
     -> inBounds ls2 x.
+  Proof using .
     intros; eapply Forall_app2; eauto.
   Qed.
 
@@ -609,6 +625,7 @@ Section Pat.
   Lemma inBounds_decons : forall x cdatas y,
     inBounds (x :: cdatas) y
     -> inBounds cdatas y.
+  Proof using .
     inversion 1; auto.
   Qed.
 
@@ -617,12 +634,14 @@ Section Pat.
   Lemma inBounds_assoc : forall ls1 ls2 ls3 x,
     inBounds ((ls1 ++ ls2) ++ ls3) x
     -> inBounds (ls1 ++ ls2 ++ ls3) x.
+  Proof using .
     intros; rewrite app_assoc; assumption.
   Qed.
 
   Lemma inBounds_assoc' : forall ls1 ls2 ls3 x,
     inBounds (ls1 ++ ls2 ++ ls3) x
     -> inBounds ((ls1 ++ ls2) ++ ls3) x.
+  Proof using .
     intros; rewrite <- app_assoc; assumption.
   Qed.
 
@@ -630,6 +649,7 @@ Section Pat.
 
   Lemma wplus_wminus : forall u v : W,
     u ^+ v ^- v = u.
+  Proof using .
     intros; words.
   Qed.
 
@@ -846,6 +866,7 @@ Section Pat.
   Lemma StringMatch_ok : forall (x : W) n y,
     (wordToNat x + n <= wordToNat y)%nat
     -> x <= y.
+  Proof using .
     intros; nomega.
   Qed.
 
@@ -854,12 +875,14 @@ Section Pat.
   Lemma stackOk_hd : forall w ws len,
     stackOk (w :: ws) len
     -> w <= len.
+  Proof using .
     inversion 1; auto.
   Qed.
 
   Lemma stackOk_tl : forall w ws len,
     stackOk (w :: ws) len
     -> stackOk ws len.
+  Proof using .
     inversion 1; auto.
   Qed.
 
@@ -871,6 +894,7 @@ Section Pat.
     -> "res" <> start
     -> "res" <> len
     -> inBounds ((start, len) :: cdatas) (upd V "res" k).
+  Proof using .
     intros.
     rewrite <- inBounds_sel in *.
     inversion_clear H.
@@ -895,6 +919,7 @@ Section Pat.
     -> sel (upd (upd V "res" w) len q) "res" <= sel (upd (upd V "res" w) len q) "len"
     -> sel (upd V "res" w) start <= w
     -> inBounds ((start, len) :: cdatas) (upd (upd V "res" k) len (w ^- sel V start)).
+  Proof using .
     intros.
     autorewrite with sepFormula in *.
     rewrite <- inBounds_sel in *.
@@ -944,6 +969,7 @@ Section Pat.
           (im := im) mn H ns res pre).(Postcondition) st)
           -> interp specs (inv cdatas true (fun x => x) ns res st))
         /\ vcs ((toCmd (Pat' p level cdatas onSuccess) (im := im) mn H ns res pre).(VerifCond)).
+  Proof using Type.
     induction p; abstract PatR.
   Qed.
 

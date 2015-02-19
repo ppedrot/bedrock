@@ -144,6 +144,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Require Import Coq.Lists.SetoidList.
 
       Lemma In_exports : forall l, In l exports -> exists m f, List.In m modules /\ List.In f (Functions m) /\ l = (MName m, FName f).
+      Proof using Type.
         intros.
         eapply In_to_map in H.
         unfold InKey in *.
@@ -169,6 +170,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma NoDupKey_bimports_base : NoDupKey bimports_base.
+      Proof using NoSelfImport.
         eapply NoDupKey_NoDup_fst.
         unfold bimports_base.
         erewrite map_app.
@@ -212,14 +214,17 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma impl_label_is_injection : forall mn, IsInjection (impl_label mn).
+      Proof using .
         unfold IsInjection, impl_label; intuition.
       Qed.
 
       Lemma GoodModule_GoodName : forall m : GoodModule, IsGoodModuleName (MName m).
+      Proof using .
         intros m0; destruct m0; simpl; eauto.
       Qed.
 
       Lemma In_bimports_base_fst : forall x, List.In x bimports_base ->  In (fst x) imports \/ exists m f, List.In m modules /\ List.In f (Functions m) /\ fst x = (MName m, FName f).
+      Proof using Type.
         intros.
         unfold bimports_base in *.
         eapply in_app_or in H.
@@ -243,6 +248,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma bimports_base_good_names : forall x, List.In x bimports_base -> IsGoodModuleName (fst (fst x)).
+      Proof using (ImportsGoodModuleName modules).
         intros.
         eapply In_bimports_base_fst in H.
         openhyp.
@@ -253,6 +259,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma NoDupKey_bimports : NoDupKey bimports.
+      Proof using (ImportsGoodModuleName NoSelfImport m).
         unfold bimports.
         eapply NoDupKey_app.
         eapply NoDupKey_bimports_base.
@@ -288,6 +295,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma GoodModule_NoDup_labels : forall a : GoodModule, List.NoDup (List.map (fun x : GoodFunction => (MName a, FName x)) (Functions a)).
+      Proof using .
         destruct a; simpl in *.
         unfold FName.
         eauto.
@@ -304,6 +312,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         forall ls : list GoodModule,
           List.NoDup (List.map MName ls) ->
           NoDupKey (app_all (List.map get_module_exports ls)).
+      Proof using .
         clear.
         induction ls; simpl; intros.
         econstructor.
@@ -348,6 +357,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma incl_bexports_bimports : incl bexports bimports.
+      Proof using (NoDupModuleNames imports in_modules).
         unfold incl, bexports, stubs.
         intros.
         rewrite map_map in H.
@@ -398,7 +408,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
           exists lbl : glabel,
             find lbl exports = Some spec /\
             Labels stn lbl = Some p.
-      Proof.
+      Proof using Type.
         intros.
         unfold LinkSpec.fs in *.
         destruct (option_dec (is_export stn p)).
@@ -424,7 +434,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
             Labels stn l = Some p ->
             LabelMap.LabelMap.find (l : Labels.label) imps = Some spec ->
             specs p = Some spec.
-      Proof.
+      Proof using .
         induction lbls; simpl; intros.
         intuition.
         destruct H1.
@@ -448,6 +458,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma imports_bimports : forall k v, find k imports = Some v -> find_list k bimports = Some (foreign_func_spec k v).
+      Proof using (ImportsGoodModuleName NoSelfImport m).
         unfold bimports, bimports_base.
         intros.
         eapply NoDup_app_find_list.
@@ -462,6 +473,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Corollary in_imports_in_bimports : forall x, In x imports -> List.In x (List.map fst bimports).
+      Proof using Type.
       unfold bimports, bimports_base.
       intros.
       erewrite map_app.
@@ -475,6 +487,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma exports_bimports : forall k v, find k exports = Some v -> find_list k bimports = Some (func_spec k v).
+      Proof using (ImportsGoodModuleName NoSelfImport m).
         unfold bimports, bimports_base.
         intros.
         eapply NoDup_app_find_list.
@@ -490,6 +503,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Corollary in_exports_in_bimports : forall x, In x exports -> List.In x (List.map fst bimports).
+      Proof using Type.
       unfold bimports, bimports_base.
       intros.
       erewrite map_app.
@@ -503,6 +517,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma NoDupKey_bexports : NoDupKey bexports.
+      Proof using Type.
         unfold bexports.
         unfold stubs.
         rewrite map_map.
@@ -515,6 +530,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma NoDup_union : NoDupKey (bimports_diff_bexports ++ bexports).
+      Proof using (ImportsGoodModuleName NoSelfImport m).
         unfold bimports_diff_bexports.
         eapply NoDupKey_app.
         eapply diff_NoDupKey.
@@ -524,6 +540,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma Equal_union_bimports : Equal_map (bimports_diff_bexports ++ bexports) bimports.
+      Proof using All.
         unfold bimports_diff_bexports.
         eapply diff_union.
         eapply NoDupKey_bimports.
@@ -534,6 +551,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Definition full_imports := fullImports bimports_diff_bexports stubs.
 
       Lemma fullImports_eq_bimports : forall (k : glabel), LabelMap.LabelMap.find (k : Labels.label) full_imports = find_list k bimports.
+      Proof using All.
         intros.
         unfold full_imports in *.
         erewrite fullImports_spec.
@@ -544,7 +562,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Require Import Bedrock.Platform.Cito.SetoidListFacts.
 
       Corollary bimports_fullImports : forall (x : glabel), List.In x (List.map fst bimports) -> LabelMap.LabelMap.find (x : label) full_imports <> None.
-      Proof.
+      Proof using All.
         intros.
         specialize In_find_list_not_None; intros.
         eapply InA_eq_In_iff in H.
@@ -559,7 +577,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         forall x : glabel,
           List.In x accessible_labels ->
           LabelMap.LabelMap.find (x : Labels.label) full_imports <> None.
-      Proof.
+      Proof using All.
         unfold accessible_labels.
         intros.
         eapply in_app_or in H.
@@ -575,6 +593,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma exports_accessible_labels : forall l, find l exports <> None -> List.In l accessible_labels.
+      Proof using Type.
         unfold accessible_labels.
         intros.
         eapply in_or_app.
@@ -584,12 +603,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma exports_fullImports : forall (l : glabel) spec, find l exports = Some spec -> LabelMap.LabelMap.find (l : label) full_imports = Some (func_spec l spec).
+      Proof using All.
         intros.
         rewrite fullImports_eq_bimports.
         eapply exports_bimports; eauto.
       Qed.
 
       Lemma tgt_fullImports : forall f, List.In f (Functions m) -> LabelMap.LabelMap.find (tgt f : Labels.label) full_imports = Some (CompileFuncSpecMake.spec f).
+      Proof using All.
         intros.
         rewrite fullImports_eq_bimports.
         unfold bimports, bimports_base.
@@ -614,7 +635,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
           exists lbl : glabel,
             find lbl imports = Some spec /\
             Labels stn lbl = Some p.
-      Proof.
+      Proof using Type.
         intros.
         unfold LinkSpec.fs in *.
         destruct (option_dec (is_export stn p)).
@@ -637,6 +658,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma imports_accessible_labels : forall l, find l imports <> None -> List.In l accessible_labels.
+      Proof using Type.
         unfold accessible_labels.
         intros.
         eapply in_or_app.
@@ -646,6 +668,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma imports_fullImports : forall (l : glabel) spec, find l imports = Some spec -> LabelMap.LabelMap.find (l : label) full_imports = Some (foreign_func_spec l spec).
+      Proof using All.
         intros.
         rewrite fullImports_eq_bimports.
         eapply imports_bimports; eauto.
@@ -656,7 +679,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
           augment full_imports specs stn accessible_labels ->
           fs stn p = Some (Internal spec) ->
           exists id, specs p = Some (func_spec id spec).
-      Proof.
+      Proof using All.
         intros.
         eapply fs_internal in H0.
         openhyp.
@@ -672,7 +695,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
           augment full_imports specs stn accessible_labels ->
           fs stn p = Some (Foreign spec) ->
           exists lbl, specs p = Some (foreign_func_spec lbl spec).
-      Proof.
+      Proof using All.
         intros.
         eapply fs_foreign in H0.
         openhyp.
@@ -687,7 +710,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         forall specs stn,
           augment full_imports specs stn accessible_labels ->
           interp specs (funcs_ok stn fs).
-      Proof.
+      Proof using All.
         unfold funcs_ok.
         post; descend.
 
@@ -723,6 +746,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma InKey_exports_elim : forall A (f : _ -> A) (ms : list GoodModule) m lbl, List.In m ms -> List.NoDup (List.map MName ms) -> fst lbl = MName m -> InKey lbl (app_all (List.map get_module_exports ms)) -> InKey lbl (List.map (fun x : GoodFunction => (MName m, FName x, f x)) (Functions m)).
+      Proof using .
         clear.
         induction ms; simpl; intros.
         unfold InKey in *; simpl in *; intuition.
@@ -778,6 +802,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Require Import Bedrock.Platform.Cito.NameVC.
 
       Lemma module_name_not_in_bimports_diff_bexports : ~ List.In (MName m) (List.map fst2 bimports_diff_bexports).
+      Proof using (NoDupModuleNames NoSelfImport in_modules).
         intuition.
         unfold fst_2 in *.
         rewrite <- map_map in H.
@@ -834,11 +859,13 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma module_name_not_in_imports : NameNotInImports (MName m) bimports_diff_bexports.
+      Proof using (NoDupModuleNames NoSelfImport in_modules).
         eapply NotIn_NameNotInImports.
         eapply module_name_not_in_bimports_diff_bexports.
       Qed.
 
       Lemma no_dup_func_names : NoDupFuncNames stubs.
+      Proof using (imports in_modules).
         eapply NoDup_NoDupFuncNames.
         unfold stubs.
         rewrite map_map.
@@ -848,6 +875,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma In_exports_module_name : forall k m, In k (get_module_Exports m) -> fst k = MName m.
+      Proof using Type.
         intros.
         eapply In_to_map in H.
         unfold InKey in *.
@@ -860,6 +888,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma Disjoint_exports_foreign_imports : forall m, List.In m modules -> Disjoint (get_module_Exports m) foreign_imports.
+      Proof using NoSelfImport.
         intros.
         unfold Disjoint.
         intros.
@@ -884,6 +913,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Existing Instance Disjoint_rel_Symmetric.
 
       Lemma Disjoint_many_exports_foreign_imports : forall ms, incl ms modules -> Disjoint (update_all (List.map get_module_Exports ms)) foreign_imports.
+      Proof using NoSelfImport.
         intros.
         symmetry.
         eapply Disjoint_update_all.
@@ -897,17 +927,20 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma Compat_many_exports_foreign_imports : forall ms, incl ms modules -> Compat (update_all (List.map get_module_Exports ms)) foreign_imports.
+      Proof using NoSelfImport.
         intros.
         eapply Disjoint_Compat.
         eapply Disjoint_many_exports_foreign_imports; eauto.
       Qed.
 
       Lemma Disjoint_total_exports_foreign_imports : Disjoint total_exports foreign_imports.
+      Proof using NoSelfImport.
         unfold LinkSpecMake2.exports.
         eapply Disjoint_many_exports_foreign_imports; intuition.
       Qed.
 
       Lemma Compat_total_exports_foreign_imports : Compat total_exports foreign_imports.
+      Proof using NoSelfImport.
         unfold LinkSpecMake2.exports.
         eapply Compat_many_exports_foreign_imports; intuition.
       Qed.
@@ -916,6 +949,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Require Import Coq.Setoids.Setoid.
 
       Lemma Equal_get_module_Exports : forall m, mapi func_spec_IFS (of_list (get_module_exports m)) == get_module_Exports m.
+      Proof using Type.
         intros.
         unfold module_exports.
         unfold to_map.
@@ -927,6 +961,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma exports_Equal_total_exports : mapi func_spec_IFS exports == total_exports.
+      Proof using (NoDupModuleNames imports).
         unfold exports_IFS.
         unfold LinkSpecMake2.exports.
         unfold to_map.
@@ -942,6 +977,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma bimports_base_Equal_update : of_list bimports_base == total_exports + foreign_imports.
+      Proof using (NoDupModuleNames NoSelfImport).
         intros.
         rewrite Compat_update_sym.
         Focus 2.
@@ -956,6 +992,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma bimports_Equal_update_update : of_list bimports == total_exports + foreign_imports + get_module_impl_Imports m.
+      Proof using -(imports in_modules modules).
         intros.
         unfold bimports.
         rewrite of_list_app.
@@ -965,6 +1002,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma bexports_Equal_exports : of_list bexports == get_module_Exports m.
+      Proof using Type.
         intros.
         unfold bexports.
         unfold stubs.
@@ -979,6 +1017,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Definition get_module_exports_map m := of_list (get_module_exports m).
 
       Lemma exports_alt : exports == update_all (List.map get_module_exports_map modules).
+      Proof using NoDupModuleNames.
         unfold exports_IFS.
         unfold get_module_exports_map.
         rewrite app_all_update_all.
@@ -988,6 +1027,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma NoDupKey_get_module_exports : forall m, NoDupKey (get_module_exports m).
+      Proof using .
         intros.
         eapply NoDupKey_NoDup_fst.
         unfold get_module_exports.
@@ -997,6 +1037,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma AllCompat_exports : AllCompat (List.map get_module_exports_map modules).
+      Proof using NoDupModuleNames.
         unfold get_module_exports_map.
         rewrite <- map_map.
         eapply NoDupKey_app_all_AllCompat.
@@ -1004,6 +1045,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma exports_mapsto_iff : forall l v, MapsTo l v exports <-> exists m f, List.In m modules /\ List.In f (Functions m) /\ l = (MName m, FName f) /\ v = f.
+      Proof using NoDupModuleNames.
         split; intros.
         rewrite exports_alt in H.
         eapply update_all_elim in H.
@@ -1060,6 +1102,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
           end.
 
       Lemma name_marker_injective : forall l1 l2, name_marker l1 = name_marker l2 -> l1 = l2.
+      Proof using .
         intros.
         unfold name_marker in *.
         apply (f_equal (@unexX _ _ _)) in H; simpl in H.
@@ -1072,6 +1115,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma func_spec_eq_id_eq : forall (stn : settings) l1 l2 f1 f2, func_spec l1 f1 = func_spec l2 f2 -> l1 = l2.
+      Proof using Type.
         intros.
         unfold LinkSpecMake2.func_spec in *.
         evar (st : (ST.settings * state)%type).
@@ -1084,6 +1128,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma foreign_func_spec_eq_id_eq : forall (stn : settings) l1 l2 f1 f2, foreign_func_spec l1 f1 = foreign_func_spec l2 f2 -> l1 = l2.
+      Proof using .
         intros.
         unfold foreign_func_spec in *.
         evar (st : (ST.settings * state)%type).
@@ -1095,6 +1140,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma func_spec_neq_foreign_func_spec : forall (stn : settings) l1 l2 f1 f2, func_spec l1 f1 <> foreign_func_spec l2 f2.
+      Proof using Type.
         intros.
         nintro.
         unfold LinkSpecMake2.func_spec, foreign_func_spec in H.
@@ -1106,6 +1152,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma augment_injective_exports : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> forall (l1 l2 : glabel), In l1 exports -> In l2 exports -> forall p, Labels stn l1 = Some p -> Labels stn l2 = Some p -> l1 = l2.
+      Proof using All.
         intros.
         generalize H; intro.
         eapply In_MapsTo in H0; openhyp.
@@ -1139,6 +1186,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma augment_injective_imports : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> forall (l1 l2 : glabel), In l1 imports -> In l2 imports -> forall p, Labels stn l1 = Some p -> Labels stn l2 = Some p -> l1 = l2.
+      Proof using All.
         intros.
         generalize H; intro.
         eapply In_MapsTo in H0; openhyp.
@@ -1172,6 +1220,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma imports_Disjoint_exports : forall k, ~ (In k imports /\ In k exports).
+      Proof using (NoDupModuleNames NoSelfImport).
         intros.
         nintro.
         openhyp.
@@ -1184,6 +1233,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma augment_injective_exports_imports : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> forall (l1 l2 : glabel) p1 p2, In l1 exports -> In l2 imports -> Labels stn l1 = Some p1 -> Labels stn l2 = Some p2 -> p1 <> p2.
+      Proof using All.
         intros.
         nintro.
         subst.
@@ -1220,6 +1270,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma is_export_iff : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> forall p v, is_export stn p = Some v <-> exists (lbl : glabel), MapsTo lbl v exports /\ Labels stn lbl = Some p.
+      Proof using All.
         intro.
         intro.
         intro HH.
@@ -1241,6 +1292,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma is_import_iff : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> forall p v, is_import stn p = Some v <-> exists (lbl : glabel), MapsTo lbl v imports /\ Labels stn lbl = Some p.
+      Proof using All.
         intro.
         intro.
         intro HH.
@@ -1265,6 +1317,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Notation fs_good_to_use := (LinkSpec.fs_good_to_use modules imports fs).
 
       Lemma augment_fs_good_to_use : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> fs_good_to_use stn.
+      Proof using All.
         split; intros; unfold label_mapsto in *.
 
         (* elimination *)
@@ -1332,6 +1385,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma Some_not_None : forall A o, o <> None <-> exists a : A, o = Some a.
+      Proof using .
         split; intros.
         eapply ex_up; eauto.
         openhyp.
@@ -1346,7 +1400,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
           forall l,
             List.In l lbls ->
             Labels stn l <> None.
-      Proof.
+      Proof using .
         induction lbls; simpl; intros.
         intuition.
         destruct H1.
@@ -1379,7 +1433,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Notation stn_good_to_use := (LinkSpec.stn_good_to_use modules imports).
 
       Lemma augment_stn_good_to_use : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> stn_good_to_use stn.
-      Proof.
+      Proof using All.
         unfold LinkSpec.stn_good_to_use.
         unfold label_in.
         intros.
@@ -1411,7 +1465,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma augment_stn_injective : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> stn_injective (label_in modules imports) (glabel2w stn).
-      Proof.
+      Proof using All.
         unfold stn_injective.
         intros.
 
@@ -1451,6 +1505,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma augment_env_good_to_use : forall specs stn, augment (fullImports bimports_diff_bexports stubs) specs stn accessible_labels -> env_good_to_use modules imports stn fs.
+      Proof using All.
         intros.
         split.
         eapply augment_stn_good_to_use; eauto.
@@ -1460,6 +1515,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma good_vcs : forall ls, (forall x, List.In x ls -> List.In x (Functions m)) -> vcs (makeVcs bimports_diff_bexports stubs (List.map make_stub ls)).
+      Proof using All.
         induction ls; simpl; eauto.
         Opaque funcs_ok.
         Opaque spec_without_funcs_ok.
@@ -1481,6 +1537,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       (* Interface *)
 
       Theorem make_module_ok : XCAP.moduleOk make_module.
+      Proof using All.
         eapply bmoduleOk.
         eapply module_name_not_in_imports.
         eapply no_dup_func_names.
@@ -1488,6 +1545,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma make_module_Imports : Imports make_module === get_module_Imports m.
+      Proof using -(imports in_modules modules).
         intros.
         unfold make_module, bmodule_, Imports.
         rewrite importsMap_of_list.
@@ -1505,6 +1563,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma make_module_Exports : Exports make_module === get_module_Exports m.
+      Proof using Type.
         intros.
         unfold make_module, bmodule_, Imports; simpl.
         rewrite exps_spec.
@@ -1519,6 +1578,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       Qed.
 
       Lemma make_module_Modules : SS.Equal (Modules make_module) (singleton (MName m)).
+      Proof using Type.
         intros.
         unfold make_module, bmodule_, Modules.
         reflexivity.

@@ -30,6 +30,7 @@ Definition m := bmodule "m" {{
 
 Lemma countNonzero_app : forall ws2 ws1,
   countNonzero (ws1 ++ ws2) = countNonzero ws1 + countNonzero ws2.
+Proof using .
   induction ws1; simpl; intuition;
     match goal with
       | [ |- context[if ?E then _ else _] ] => destruct E
@@ -40,6 +41,7 @@ Lemma skip : forall val x,
   wneb val 0 <> true
   -> forall ws, x = natToW (countNonzero ws)
     -> x = countNonzero (ws ++ val :: nil).
+Proof using .
   intros; subst; rewrite countNonzero_app; simpl;
     unfold wneb, natToW in *;
       match goal with
@@ -51,6 +53,7 @@ Lemma increment : forall val x,
   wneb val 0 = true
   -> forall ws, x = natToW (countNonzero ws)
     -> x ^+ $1 = natToW (countNonzero (ws ++ val :: nil)).
+Proof using .
   intros; subst; rewrite countNonzero_app; simpl;
     unfold wneb, natToW in *;
       match goal with
@@ -62,5 +65,6 @@ Hint Immediate skip increment.
 Hint Resolve tt.
 
 Theorem mOk : moduleOk m.
+Proof using .
   vcgen; abstract (for0; sep_auto; eauto).
 Qed.

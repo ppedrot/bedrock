@@ -139,16 +139,19 @@ Module Tq : TQ.
     starB (fun p => susp w sc (fst p) (snd p)) b.
 
   Theorem susps_empty_bwd : forall w sc, Emp ===> susps w empty sc.
+  Proof using .
     intros; apply starB_empty_bwd.
   Qed.
 
   Theorem susps_add_bwd : forall w sc b pc sp, pc = pc -> mergeSusp -> susp w sc pc sp * susps w b sc ===> susps w (b %+ (pc, sp)) sc.
+  Proof using .
     intros; eapply Himp_trans; [ | apply starB_add_bwd ].
     unfold susps; simpl.
     apply Himp_star_comm.
   Qed.
 
   Theorem susps_del_fwd : forall w sc b pc sp, (pc, sp) %in b -> susps w b sc ===> susp w sc pc sp * susps w (b %- (pc, sp)) sc.
+  Proof using .
     intros; eapply Himp_trans; [ apply starB_del_fwd; eauto | apply Himp_refl ].
   Qed.
 
@@ -158,24 +161,28 @@ Module Tq : TQ.
       * queue b p * susps w b sc.
 
   Theorem tq_extensional : forall w sc, HProp_extensional (tq w sc).
+  Proof using .
     reflexivity.
   Qed.
 
   Theorem tq_fwd : forall w sc, tq w sc ===> Ex b, Ex p, Ex sp, Ex vs, (sc ==*> p, sp) * (sc ^+ $8) =?> 2
     * locals ("rp" :: "sc" :: "ss" :: "curPc" :: "curSp" :: "newPc" :: "newSp" :: nil) vs 14 sp
     * queue b p * susps w b sc.
+  Proof using .
     unfold tq; sepLemma.
   Qed.
 
   Theorem tq_bwd : forall w sc, (Ex b, Ex p, Ex sp, Ex vs, (sc ==*> p, sp) * (sc ^+ $8) =?> 2
     * locals ("rp" :: "sc" :: "ss" :: "curPc" :: "curSp" :: "newPc" :: "newSp" :: nil) vs 14 sp
     * queue b p * susps w b sc) ===> tq w sc.
+  Proof using .
     unfold tq; sepLemma.
   Qed.
 
   Theorem into_ex : forall A (P P' : A -> _),
     (forall x, P x ===>* P' x)
     -> exB P ===>* exB P'.
+  Proof using .
     unfold HimpWeak; propxFo.
     apply H in H0; eauto.
   Qed.
@@ -184,18 +191,21 @@ Module Tq : TQ.
     P ===>* P'
     -> Q ===>* Q'
     -> P * Q ===>* P' * Q'.
+  Proof using .
     unfold HimpWeak; propxFo.
     apply H in H1; apply H0 in H4; eauto.
   Qed.
 
   Theorem weak_refl : forall P,
     P ===>* P.
+  Proof using .
     unfold HimpWeak; auto.
   Qed.
 
   Theorem tq_weaken : forall w w' sc,
     evolve w w'
     -> tq w sc ===>* tq w' sc.
+  Proof using .
     unfold tq; intros; repeat match goal with
                                 | [ |- exB _ ===>* exB _ ] => apply into_ex; intro
                                 | [ |- (_ * _ ===>* _ * _)%Sep ] => apply into_star; try apply weak_refl
@@ -222,6 +232,7 @@ Transparent mult.
 
 Lemma expose_stack : forall ns vs ss sp,
   locals_expose ns vs ss sp ===> sp =?> (length ns + ss).
+Proof using .
   unfold locals_expose, locals; intros; eapply Himp_trans; [ | apply allocated_join ].
   instantiate (1 := length ns).
   2: omega.
@@ -265,6 +276,7 @@ Lemma starting_intro : forall specs sc w pc ss P stn st,
       * tq w' sc * ginv w' sc * mallocHeap 0 ] (stn, st')
     ---> pre (stn, st'))%PropX)
   -> interp specs (![ starting w sc pc ss * P ] (stn, st)).
+Proof using .
   cptr.
 Qed.
 
@@ -277,6 +289,7 @@ Lemma starting_elim : forall specs w sc pc ss P stn st,
       /\ ![ locals ("rp" :: nil) vs ss (Regs st' Sp)
       * tq w' sc * ginv w' sc * mallocHeap 0 ] (stn, st')
     ---> pre (stn, st'))%PropX).
+Proof using .
   cptr.
   generalize (split_semp _ _ _ H0 H); intros; subst; auto.
   rewrite <- sepFormula_eq; descend; step auto_ext.
@@ -300,6 +313,7 @@ Lemma susp_convert : forall specs w sc pc sp P stn st pc_tq,
   -> Labels stn (labl "threadq" "ADT") = Some pc_tq
   -> specs pc_tq = Some (fun _ => PropX.Forall (fun x => tq (World x) (Pointer x) (Settings x) (Mem x)))
   -> interp specs (![ susp w sc pc sp * P ] (stn, st)).
+Proof using .
   cptr.
   descend; step auto_ext.
   eauto.
@@ -314,6 +328,7 @@ Lemma susp'_intro : forall specs w sc pc sp P stn st,
         /\ [| Regs st' Sp = sp |]
         ---> pre (stn, st'))%PropX)
   -> interp specs (![ susp' w sc pc sp * P ] (stn, st)).
+Proof using .
   cptr.
   descend; step auto_ext.
   eauto.
@@ -376,12 +391,14 @@ Definition yieldS : spec := SPEC("sc") reserving 19
 Definition stackSize := 21.
 
 Lemma stackSize_bound : natToW stackSize >= natToW 2.
+Proof using .
   unfold stackSize; auto.
 Qed.
 
 Hint Immediate stackSize_bound.
 
 Lemma stackSize_split : stackSize = length ("rp" :: "sc" :: "ss" :: "curPc" :: "curSp" :: "newPc" :: "newSp" :: nil) + 14.
+Proof using .
   reflexivity.
 Qed.
 
@@ -581,6 +598,7 @@ Ltac t := abstract (sep hints;
 Lemma wordBound : forall w : W,
   natToW 2 <= w
   -> (wordToNat w >= 2)%nat.
+Proof using .
   intros; pre_nomega;
     rewrite wordToNat_natToWord_idempotent in * by reflexivity; assumption.
 Qed.
@@ -595,6 +613,7 @@ Theorem evalInstrs_app_fwd_None : forall stn is1 is2 st,
   evalInstrs stn st (is1 ++ is2) = None
   -> evalInstrs stn st is1 = None
   \/ exists st', evalInstrs stn st is1 = Some st' /\ evalInstrs stn st' is2 = None.
+Proof using .
   induction is1; simpl; intuition eauto.
   destruct (evalInstr stn st a); eauto.
 Qed.
@@ -602,6 +621,7 @@ Qed.
 Theorem evalInstrs_app_fwd_Some : forall stn is1 is2 st st',
   evalInstrs stn st (is1 ++ is2) = Some st'
   -> exists st'', evalInstrs stn st is1 = Some st'' /\ evalInstrs stn st'' is2 = Some st'.
+Proof using .
   induction is1; simpl; intuition eauto.
   destruct (evalInstr stn st a); eauto.
   discriminate.
@@ -614,6 +634,7 @@ Require Import Coq.Logic.Eqdep.
 Hint Immediate evolve_refl.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen.
 
   t.

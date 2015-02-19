@@ -35,6 +35,7 @@ Definition m := cmodule "fact" {{
 }}.
 
 Lemma good : IsGoodModule m.
+Proof using .
   good_module.
 Qed.
 
@@ -105,6 +106,7 @@ Definition change_fs (fs : settings -> W -> option Callee) : settings -> W -> op
       | other => other
     end.
 Lemma in_specs_label_in : forall lbl, In lbl specs -> label_in modules imports lbl.
+Proof using .
   intros.
   unfold specs in *.
   eapply add_in_iff in H.
@@ -120,10 +122,12 @@ Lemma in_specs_label_in : forall lbl, In lbl specs -> label_in modules imports l
 Qed.
 Require Import Bedrock.Platform.Cito.Option.
 Lemma Some_not_None : forall A o (v : A), o = Some v -> o <> None.
+Proof using .
   intuition.
 Qed.
 
 Lemma change_fs_agree : forall fs stn, env_good_to_use modules imports stn fs -> specs_env_agree specs (from_bedrock_label_map (Labels stn), change_fs fs stn).
+Proof using .
   intros.
   split.
   simpl.
@@ -221,6 +225,7 @@ Ltac cito_vcs body := unfold body; simpl;
 Require Import Bedrock.Platform.Cito.BedrockTactics.
 
 Lemma vcs_good : and_all (vc body empty_precond) specs.
+Proof using .
 
   unfold empty_precond.
 
@@ -252,6 +257,7 @@ Require Import Bedrock.Platform.Cito.WordFacts2 Bedrock.Platform.Cito.WordFacts5
 Lemma fact_step : forall n,
   ($0 < n)%word
   -> fact_w n = n ^* fact_w (n ^- $1).
+Proof using .
   intros.
   unfold fact_w.
   rewrite wordToNat_positive by assumption.
@@ -267,6 +273,7 @@ Hint Rewrite fact_step using solve [ eauto 2 ] : sepFormula.
 Theorem final : forall n,
   ($0 >= n)%word
   -> $1 = fact_w n.
+Proof using .
   intros; subst.
   assert (n = $0) by (apply wordToNat_inj; nomega).
   subst.
@@ -280,6 +287,7 @@ Infix "==" := WordMap.WordMap.Equal.
 Require Import Bedrock.Platform.Cito.GeneralTactics4.
 
 Lemma body_runsto' : forall env v v', specs_env_agree specs env -> RunsTo env (Body f) v v' -> sel (fst v') (RetVar f) = fact_w (sel (fst v) "n") /\ snd v' == snd v.
+Proof using .
   cito_runsto f empty_precond vcs_good.
   3 : eauto.
   Focus 2.
@@ -321,10 +329,12 @@ Lemma body_runsto' : forall env v v', specs_env_agree specs env -> RunsTo env (B
 Qed.
 
 Lemma body_safe' : forall env v, specs_env_agree specs env -> Safe env (Body f) v.
+Proof using .
   cito_safe f empty_precond vcs_good.
 Qed.
 
 Lemma change_fs_strengthen : forall fs stn, env_good_to_use modules imports stn fs ->strengthen (from_bedrock_label_map (Labels stn), fs stn) (from_bedrock_label_map (Labels stn), change_fs fs stn).
+Proof using .
   unfold modules, imports.
   intros.
   generalize H; intro.
@@ -423,6 +433,7 @@ Lemma change_fs_strengthen : forall fs stn, env_good_to_use modules imports stn 
 Qed.
 
 Lemma body_safe : forall stn fs v, env_good_to_use modules imports stn fs -> Safe (from_bedrock_label_map (Labels stn), fs stn) (Body f) v.
+Proof using .
   intros.
   eapply strengthen_safe.
   eapply body_safe'; eauto.
@@ -431,6 +442,7 @@ Lemma body_safe : forall stn fs v, env_good_to_use modules imports stn fs -> Saf
 Qed.
 
 Lemma body_runsto : forall stn fs v v', env_good_to_use modules imports stn fs -> RunsTo (from_bedrock_label_map (Labels stn), fs stn) (Body f) v v' -> sel (fst v') (RetVar f) = fact_w (sel (fst v) "n") /\ snd v' == snd v.
+Proof using .
   intros.
   eapply strengthen_runsto with (env_ax := (from_bedrock_label_map (Labels stn), change_fs fs stn)) in H0.
   eapply body_runsto'; eauto.
@@ -449,6 +461,7 @@ Require Import Bedrock.Platform.Cito.GeneralTactics3.
 Require Import Bedrock.Platform.Cito.BedrockTactics.
 
 Theorem top_ok : moduleOk top.
+Proof using .
   vcgen.
 
   sep_auto.
@@ -506,5 +519,6 @@ Qed.
 Definition all := link top (compile_to_bedrock modules imports).
 
 Theorem all_ok : moduleOk all.
+Proof using .
   link0 top_ok.
 Qed.

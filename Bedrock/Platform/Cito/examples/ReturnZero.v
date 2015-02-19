@@ -17,6 +17,7 @@ Definition m := cmodule "return_zero" {{
 }}.
 
 Lemma good : IsGoodModule m.
+Proof using .
   good_module.
 Qed.
 
@@ -48,11 +49,13 @@ Definition top := bimport [[ ("return_zero"!"return_zero", fspec), "sys"!"printI
   }}.
 
 Lemma body_safe : forall env v, Safe env (Body f) v.
+Proof using .
   econstructor; eauto.
 Qed.
 
 Lemma body_runsto : forall env v v', RunsTo env (Body f) v v'
   -> sel (fst v') (RetVar f) = 0 /\ snd v' = snd v.
+Proof using .
   intros.
   inversion_clear H.
   subst vs.
@@ -64,6 +67,7 @@ Qed.
 Import LinkSpecMake2.CompileFuncSpecMake.InvMake.SemanticsMake.
 
 Theorem top_ok : moduleOk top.
+Proof using .
   vcgen.
 
   sep_auto.
@@ -112,5 +116,6 @@ Qed.
 Definition all := link top (compile_to_bedrock (gm :: nil) (empty _)).
 
 Theorem all_ok : moduleOk all.
+Proof using .
   link0 top_ok.
 Qed.

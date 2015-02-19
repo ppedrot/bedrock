@@ -40,6 +40,7 @@ Section WordProver.
     end.
 
   Theorem natToWord'_def : natToWord' = natToWord.
+  Proof using .
     reflexivity.
   Qed.
 
@@ -53,14 +54,17 @@ Section WordProver.
   Definition wminus' (x y : W) : W := wplus' x (wneg' y).
 
   Theorem wplus'_def : wplus' = @wplus _.
+  Proof using .
     reflexivity.
   Qed.
 
   Theorem wneg'_def : wneg' = @wneg _.
+  Proof using .
     reflexivity.
   Qed.
 
   Theorem wminus'_def : wminus' = @wminus _.
+  Proof using .
     reflexivity.
   Qed.
 
@@ -204,6 +208,7 @@ Section WordProver.
       /\ Forall notEqualValid sum.(NotEquals).
 
     Lemma addZ_0 : forall w : W, w = w ^+ zero.
+    Proof using .
       intros.
       rewrite wplus_comm.
       symmetry.
@@ -216,7 +221,7 @@ Section WordProver.
       forall v, exprD funcs uvars vars e (tvType 0) = Some v
         -> exists v', exprD funcs uvars vars b (tvType 0) = Some v'
           /\ v = v' ^+ n.
-    Proof.
+    Proof using Type.
       Opaque natToWord'.
       induction e; simpl; intuition.
 
@@ -303,6 +308,7 @@ Section WordProver.
       Forall equalityValid fs1
       -> forall fs2, Forall equalityValid fs2
         -> Forall equalityValid (merge fs1 fs2).
+    Proof using Type.
       induction 1; simpl; intuition.
       destruct (alreadyCovered x fs2); auto.
     Qed.
@@ -311,7 +317,7 @@ Section WordProver.
       equalityValid f1
       -> equalityValid f2
       -> Forall equalityValid (combine f1 f2).
-    Proof.
+    Proof using Type.
       unfold combine; intros.
       generalize (expr_seq_dec_correct (Destination f1) (Source f2)).
       destruct (expr_seq_dec (Destination f1) (Source f2)); intuition.
@@ -338,7 +344,7 @@ Section WordProver.
       equalityValid f
       -> Forall equalityValid fs
       -> Forall equalityValid (combineAll f fs).
-    Proof.
+    Proof using Type.
       induction 2; simpl; intuition.
     Qed.
 
@@ -353,7 +359,7 @@ Section WordProver.
         exists v' : tvarD (repr bedrock_types_r types') (tvType 0),
           exprD funcs uvars vars e0 (tvType 0) = Some v' /\ v = v' ^+ w0)
       -> equalityValid {| Source := e0; Destination := e; Difference := wminus' w0 w |}.
-    Proof.
+    Proof using Type.
       intros.
       hnf in H.
       simpl in *.
@@ -395,7 +401,7 @@ Section WordProver.
     Lemma Provable_swap : forall hyp1 hyp2,
       Provable funcs uvars vars (Equal (tvType 0) hyp1 hyp2)
       -> Provable funcs uvars vars (Equal (tvType 0) hyp2 hyp1).
-    Proof.
+    Proof using Type.
       unfold Provable; simpl; intros.
       case_eq (exprD funcs uvars vars hyp2 (tvType 0)); intros.
       simpl in *; rewrite H0 in *.
@@ -416,7 +422,7 @@ Section WordProver.
       Forall equalityValid ls1
       -> Forall equalityValid ls2
       -> Forall equalityValid (if b then ls1 else ls2).
-    Proof.
+    Proof using Type.
       destruct b; auto.
     Qed.
 
@@ -426,7 +432,7 @@ Section WordProver.
       wordValid sum -> forall hyp,
         Provable funcs uvars vars hyp ->
         wordValid (wordLearn1 sum hyp).
-    Proof.
+    Proof using Type.
       destruct hyp; simpl; intuition.
 
       do 5 (destruct f; auto).
@@ -477,7 +483,7 @@ Section WordProver.
       wordValid sum
       -> forall hyps, AllProvable funcs uvars vars hyps
         -> wordValid (wordLearn sum hyps).
-    Proof.
+    Proof using Type.
       intros; generalize dependent sum; induction hyps; simpl in *; intuition.
     Qed.
 
@@ -486,7 +492,7 @@ Section WordProver.
     Theorem wordSummarizeCorrect : forall hyps,
       AllProvable funcs uvars vars hyps
       -> wordValid (wordSummarize hyps).
-    Proof.
+    Proof using Type.
       intros; apply wordLearnCorrect; auto.
       repeat split; constructor.
     Qed.
@@ -494,7 +500,7 @@ Section WordProver.
     Lemma equalitysEq_correct : forall f1 f2,
       equalitysEq f1 f2 = true
       -> f1 = f2.
-    Proof.
+    Proof using Type.
       unfold equalitysEq; intros.
       apply andb_prop in H; intuition.
       apply andb_prop in H0; intuition.
@@ -509,7 +515,7 @@ Section WordProver.
       Forall equalityValid eqs
       -> equalityMatches f eqs = true
       -> equalityValid f.
-    Proof.
+    Proof using Type.
       induction 1; simpl; intuition.
       apply orb_prop in H1; intuition.
       apply equalitysEq_correct in H2; congruence.
@@ -520,7 +526,7 @@ Section WordProver.
       -> forall lts, Forall lessThanValid lts
         -> lessThanMatches e1 e2 lts eqs = true
         -> lessThanValid (e1, e2).
-    Proof.
+    Proof using Type.
       induction 2; simpl; intuition.
       destruct x.
       apply orb_prop in H2; intuition.
@@ -595,7 +601,7 @@ Section WordProver.
       -> forall lts, Forall notEqualValid lts
         -> lessThanMatches e1 e2 lts eqs = true
         -> notEqualValid (e1, e2).
-    Proof.
+    Proof using Type.
       induction 2; simpl; intuition.
       destruct x.
       apply orb_prop in H2; intuition.
@@ -669,7 +675,7 @@ Section WordProver.
   Hint Resolve equalityMatches_correct.
 
   Theorem wordProverCorrect : ProverCorrect funcs wordValid wordProve.
-  Proof.
+  Proof using Type.
     hnf; intros.
     destruct H.
     destruct goal; simpl in *; try discriminate.
@@ -749,7 +755,7 @@ Section WordProver.
   Lemma wordValid_weaken : forall (u g : env types) (f : word_summary)
     (ue ge : list (sigT (tvarD types))),
     wordValid u g f -> wordValid (u ++ ue) (g ++ ge) f.
-  Proof.
+  Proof using Type.
     unfold wordValid; intuition.
     induction H0; eauto.
     econstructor; eauto. unfold equalityValid in *.
@@ -785,6 +791,7 @@ Section WordProver.
    |}.
 
   Definition wordProver_correct : ProverT_correct wordProver funcs.
+  Proof using Type.
     eapply Build_ProverT_correct with (Valid := wordValid);
       eauto using wordValid_weaken, wordSummarizeCorrect, wordLearnCorrect, wordProverCorrect.
   Qed.

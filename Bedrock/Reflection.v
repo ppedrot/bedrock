@@ -2,6 +2,7 @@ Require Import Coq.omega.Omega.
 Require Coq.Setoids.Setoid.
 
 Global Set Asymmetric Patterns.
+Global Set Suggest Proof Using.
 
 (** This file defines some inductives, type-classes and tactics to
 perform reflection on a small scale *)
@@ -67,17 +68,17 @@ Section boolean_logic.
   Context {T1 T2 P1 Q1 P2 Q2} {R1 : Reflect T1 P1 Q1} {R2: Reflect T2 P2 Q2}.
 
   Global Instance Reflect_andb : Reflect (T1 && T2)%bool (P1 /\ P2) (Q1 \/ Q2).
-  Proof.
+  Proof using All.
     destruct T1; destruct T2; t; constructor; tauto.
   Qed.
 
   Global Instance Reflect_orb : Reflect (T1 || T2)%bool (P1 \/ P2) (Q1 /\ Q2).
-  Proof.
+  Proof using All.
     destruct T1; destruct T2; t; constructor; tauto.
   Qed.
 
   Global Instance Reflect_negb : Reflect (negb T1)%bool Q1 P1.
-  Proof.
+  Proof using R1.
     destruct T1; t; constructor; tauto.
   Qed.
 

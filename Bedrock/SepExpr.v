@@ -154,32 +154,32 @@ Module SepExprFacts (SE : SepExpr).
     Variable cs : codeSpec (tvarD types pcType) (tvarD types stateType).
 
     Global Instance Trans_himp : Transitive (@SE.himp types _ _ funcs preds U G cs).
-    Proof.
+    Proof using Type.
       red. unfold SE.himp. intros; etransitivity; eauto.
     Qed.
 
     Global Instance Trans_heq : Transitive (@SE.heq types _ _ funcs preds U G cs).
-    Proof.
+    Proof using Type.
       red. unfold SE.heq. intros; etransitivity; eauto.
     Qed.
 
     Global Instance Refl_himp : Reflexive (@SE.himp types _ _ funcs preds U G cs).
-    Proof.
+    Proof using Type.
       red; unfold SE.himp; intros. reflexivity.
     Qed.
 
     Global Instance Refl_heq : Reflexive (@SE.heq types _ _ funcs preds U G cs).
-    Proof.
+    Proof using Type.
       red; unfold SE.heq; intros. reflexivity.
     Qed.
 
     Global Instance Sym_heq : Symmetric (@SE.heq types _ _ funcs preds U G cs).
-    Proof.
+    Proof using Type.
       red; unfold SE.heq; intros. symmetry. auto.
     Qed.
 
     Global Instance Equiv_heq : Equivalence (SE.heq funcs preds U G cs).
-    Proof.
+    Proof using Type.
       constructor; eauto with typeclass_instances.
     Qed.
 
@@ -187,14 +187,14 @@ Module SepExprFacts (SE : SepExpr).
       (@SE.himp types _ _ funcs preds U G cs P Q /\
        @SE.himp types _ _ funcs preds U G cs Q P) <->
       (@SE.heq types _ _ funcs preds U G cs P Q).
-    Proof.
+    Proof using Type.
       unfold SE.heq, SE.himp. intros; apply SE.ST.heq_defn.
     Qed.
 
     Lemma heq_himp : forall P Q,
       @SE.heq types _ _ funcs preds U G cs P Q ->
       @SE.himp types _ _ funcs preds U G cs P Q.
-    Proof.
+    Proof using Type.
       unfold SE.heq, SE.himp. intros; apply SE.ST.heq_himp; auto.
     Qed.
 
@@ -207,7 +207,7 @@ Module SepExprFacts (SE : SepExpr).
         Folds.all2 (@is_well_typed types tfuncs tU tG) l (SE.SDomain p) = true ->
         SE.himp funcs preds U G cs (SE.Star (SE.Func f l) P) Q) ->
       SE.himp funcs preds U G cs (SE.Star (SE.Func f l) P) Q.
-    Proof.
+    Proof using Type.
       intros. unfold SE.himp in *; simpl in *. consider (nth_error preds f); intros;
         try solve [ eapply SE.ST.himp_star_pure_c; contradiction ].
       match goal with
@@ -236,73 +236,73 @@ Module SepExprFacts (SE : SepExpr).
     Global Add Parametric Morphism : (@SE.Star types pcType stateType) with
       signature (SE.himp funcs preds U G cs ==> SE.himp funcs preds U G cs ==> SE.himp funcs preds U G cs)
       as star_himp_mor.
-    Proof.
+    Proof using Type.
       unfold SE.himp; simpl; intros; eapply SEP_FACTS.star_himp_mor; eauto.
     Qed.
 
     Global Add Parametric Morphism : (@SE.Star types pcType stateType) with
       signature (SE.heq funcs preds U G cs ==> SE.heq funcs preds U G cs ==> SE.heq funcs preds U G cs)
       as star_heq_mor.
-    Proof.
+    Proof using Type.
       unfold SE.himp; simpl; intros; eapply SEP_FACTS.star_heq_mor; eauto.
     Qed.
 
     Global Add Parametric Morphism : (SE.himp funcs preds U G cs) with
       signature (SE.heq funcs preds U G cs ==> SE.heq funcs preds U G cs ==> Basics.impl)
       as himp_heq_mor.
-    Proof.
+    Proof using Type.
       unfold SE.heq; simpl; intros. eapply SEP_FACTS.himp_heq_mor; eauto.
     Qed.
 
     Global Add Parametric Morphism : (SE.himp funcs preds U G cs) with
       signature (SE.himp funcs preds U G cs --> SE.himp funcs preds U G cs ==> Basics.impl)
       as himp_himp_mor.
-    Proof.
+    Proof using Type.
       unfold SE.himp; simpl; intros. intro. etransitivity. eauto. etransitivity; eauto.
     Qed.
 
     Global Add Parametric Morphism : (SE.himp funcs preds U G cs) with
       signature (SE.himp funcs preds U G cs --> SE.himp funcs preds U G cs ++> Basics.impl)
       as himp_himp_mor'.
-    Proof.
+    Proof using Type.
       unfold SE.himp; simpl; intros. eapply SEP_FACTS.himp_himp_mor; eauto.
     Qed.
 
     Global Add Parametric Morphism : (SE.sexprD funcs preds U G) with
       signature (SE.heq funcs preds U G cs ==> SE.ST.heq cs)
       as heq_ST_heq_mor.
-    Proof.
+    Proof using Type.
       unfold SE.heq; simpl; auto.
     Qed.
 
     Global Add Parametric Morphism : (SE.sexprD funcs preds U G) with
       signature (SE.himp funcs preds U G cs ==> SE.ST.himp cs)
       as himp_ST_himp_mor.
-    Proof.
+    Proof using Type.
       unfold SE.himp; simpl; auto.
     Qed.
 
     Lemma heq_star_emp_r : forall P,
       SE.heq funcs preds U G cs (SE.Star P SE.Emp) P.
-    Proof.
+    Proof using Type.
       unfold SE.heq; simpl; intros; autorewrite with hprop; reflexivity.
     Qed.
 
     Lemma heq_star_emp_l : forall P,
       SE.heq funcs preds U G cs (SE.Star SE.Emp P) P.
-    Proof.
+    Proof using Type.
       unfold SE.heq; simpl; intros; autorewrite with hprop; reflexivity.
     Qed.
 
     Lemma heq_star_assoc : forall P Q R,
       SE.heq funcs preds U G cs (SE.Star (SE.Star P Q) R) (SE.Star P (SE.Star Q R)).
-    Proof.
+    Proof using Type.
       unfold SE.heq; simpl; intros; autorewrite with hprop. rewrite SE.ST.heq_star_assoc. reflexivity.
     Qed.
 
     Lemma heq_star_comm : forall P Q,
       SE.heq funcs preds U G cs (SE.Star P Q) (SE.Star Q P).
-    Proof.
+    Proof using Type.
       unfold SE.heq; simpl; intros; apply SE.ST.heq_star_comm.
     Qed.
 
@@ -310,7 +310,7 @@ Module SepExprFacts (SE : SepExpr).
       SE.heq funcs preds U G cs P R ->
       SE.heq funcs preds U G cs Q S ->
       SE.heq funcs preds U G cs (SE.Star P Q) (SE.Star R S).
-    Proof.
+    Proof using Type.
       unfold SE.heq; simpl; intros. eapply SE.ST.heq_star_frame; auto.
     Qed.
 
@@ -318,35 +318,35 @@ Module SepExprFacts (SE : SepExpr).
       SE.himp funcs preds U G cs P R ->
       SE.himp funcs preds U G cs Q S ->
       SE.himp funcs preds U G cs (SE.Star P Q) (SE.Star R S).
-    Proof.
+    Proof using Type.
       unfold SE.himp; simpl; intros. rewrite H; rewrite H0; reflexivity.
     Qed.
 
     Lemma heq_star_comm_p : forall P Q R,
       SE.heq funcs preds U G cs (SE.Star P Q) R ->
       SE.heq funcs preds U G cs (SE.Star Q P) R.
-    Proof.
+    Proof using Type.
       intros. rewrite heq_star_comm. auto.
     Qed.
 
     Lemma heq_star_comm_c : forall P Q R,
       SE.heq funcs preds U G cs R (SE.Star P Q) ->
       SE.heq funcs preds U G cs R (SE.Star Q P).
-    Proof.
+    Proof using Type.
       intros. rewrite heq_star_comm. auto.
     Qed.
 
     Lemma heq_star_assoc_p1 : forall P Q R S,
       SE.heq funcs preds U G cs (SE.Star P (SE.Star Q R)) S ->
       SE.heq funcs preds U G cs (SE.Star (SE.Star P Q) R) S.
-    Proof.
+    Proof using Type.
       intros. rewrite heq_star_assoc; auto.
     Qed.
 
     Lemma heq_star_assoc_p2 : forall P Q R S,
       SE.heq funcs preds U G cs (SE.Star Q (SE.Star P R)) S ->
       SE.heq funcs preds U G cs (SE.Star (SE.Star P Q) R) S.
-    Proof.
+    Proof using Type.
       intros. apply heq_star_assoc_p1 in H. rewrite <- H.
       apply heq_star_frame; try reflexivity. rewrite heq_star_comm. reflexivity.
     Qed.
@@ -354,14 +354,14 @@ Module SepExprFacts (SE : SepExpr).
     Lemma heq_star_assoc_c1 : forall P Q R S,
       SE.heq funcs preds U G cs S (SE.Star P (SE.Star Q R)) ->
       SE.heq funcs preds U G cs S (SE.Star (SE.Star P Q) R).
-    Proof.
+    Proof using Type.
       intros. rewrite heq_star_assoc; auto.
     Qed.
 
     Lemma heq_star_assoc_c2 : forall P Q R S,
       SE.heq funcs preds U G cs S (SE.Star Q (SE.Star P R)) ->
       SE.heq funcs preds U G cs S (SE.Star (SE.Star P Q) R).
-    Proof.
+    Proof using Type.
       intros. apply heq_star_assoc_c1 in H. rewrite H.
       apply heq_star_frame; try reflexivity. apply heq_star_comm; reflexivity.
     Qed.
@@ -369,14 +369,14 @@ Module SepExprFacts (SE : SepExpr).
     Lemma heq_star_emp_p : forall P S,
       SE.heq funcs preds U G cs P S ->
       SE.heq funcs preds U G cs (SE.Star SE.Emp P) S.
-    Proof.
+    Proof using Type.
       intros. rewrite heq_star_emp_l. auto.
     Qed.
 
     Lemma heq_star_emp_c : forall P S,
       SE.heq funcs preds U G cs S P ->
       SE.heq funcs preds U G cs S (SE.Star SE.Emp P).
-    Proof.
+    Proof using Type.
       intros. rewrite heq_star_emp_l. auto.
     Qed.
 
@@ -434,7 +434,7 @@ Module SepExprFacts (SE : SepExpr).
       SE.WellTyped_sexpr (typeof_funcs funcs) (SE.typeof_preds preds) (typeof_env U) (typeof_env G) s = true ->
       SE.ST.heq cs (SE.sexprD funcs preds U G s)
                    (SE.sexprD funcs preds (U ++ U') (G ++ G') s).
-    Proof.
+    Proof using Type.
       induction s; simpl; intros; think; try reflexivity.
       { consider (exprD funcs U G e tvProp); intros.
         erewrite exprD_weaken by eauto. reflexivity.
@@ -453,7 +453,7 @@ Module SepExprFacts (SE : SepExpr).
     Theorem sexprD_weaken : forall s U G G' U',
       SE.ST.himp cs (SE.sexprD funcs preds U G s)
                     (SE.sexprD funcs preds (U ++ U') (G ++ G') s).
-    Proof.
+    Proof using Type.
       induction s; simpl; intros; try reflexivity.
       { consider (exprD funcs U G e tvProp); intros.
         erewrite exprD_weaken by eauto. reflexivity.
@@ -475,7 +475,7 @@ Module SepExprFacts (SE : SepExpr).
       SE.ST.heq cs (SE.sexprD funcs preds (U ++ U') (G ++ G') s)
                    (SE.sexprD funcs preds (U ++ U'' ++ U') (G ++ G'' ++ G')
                      (SE.liftSExpr (length U) (length U'') (length G) (length G'') s)).
-    Proof.
+    Proof using Type.
       do 8 intro. revert G. induction s; simpl; intros; think; try reflexivity.
       rewrite <- liftExpr_ext. reflexivity.
       apply SE.ST.heq_ex. intros. etransitivity.
@@ -492,7 +492,7 @@ Module SepExprFacts (SE : SepExpr).
     Theorem liftSExpr_combine : forall (s : SE.sexpr types pcT stT) ua ub uc a b c,
       SE.liftSExpr ua ub a b (SE.liftSExpr ua uc a c s) =
       SE.liftSExpr ua (uc + ub) a (c + b) s.
-    Proof.
+    Proof using Type.
       clear. induction s; intros; simpl; think; try reflexivity.
       rewrite liftExpr_combine. reflexivity.
       f_equal. clear. induction l; simpl; intros; try rewrite liftExpr_combine; think; auto.
@@ -500,7 +500,7 @@ Module SepExprFacts (SE : SepExpr).
 
     Theorem liftSExpr_0 : forall (s : SE.sexpr types pcT stT) ua a,
       SE.liftSExpr ua 0 a 0 s = s.
-    Proof.
+    Proof using Type.
       clear; induction s; intros; simpl; think; try reflexivity.
       rewrite liftExpr_0; auto.
       f_equal. clear. induction l; simpl; intros; try rewrite liftExpr_0; think; auto.

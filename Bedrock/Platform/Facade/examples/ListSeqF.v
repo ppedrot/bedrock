@@ -50,22 +50,26 @@ Module Adt : ADT.
 
   Theorem lseq_fwd : forall ls c, lseq ls c ===> [| c <> 0 |] * [| freeable c 2 |]
     * Ex p, Ex junk, (c ==*> p, junk) * lseq' ls p.
+  Proof using .
     unfold lseq; sepLemma.
   Qed.
 
   Theorem lseq_bwd : forall ls (c : W), ([| c <> 0 |] * [| freeable c 2 |]
     * Ex p, Ex junk, (c ==*> p, junk) * lseq' ls p) ===> lseq ls c.
+  Proof using .
     unfold lseq; sepLemma.
   Qed.
 
   Theorem lseq'_empty_fwd : forall ls (c : W), c = 0
     -> lseq' ls c
     ===> [| ls = nil |].
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem lseq'_empty_bwd : forall ls (c : W), c = 0
     -> [| ls = nil |] ===> lseq' ls c.
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
@@ -73,12 +77,14 @@ Module Adt : ADT.
     -> lseq' ls c
     ===> Ex x, Ex ls', [| ls = x :: ls' |] * [| freeable c 2 |] * Ex p', (c ==*> x, p')
         * lseq' ls' p'.
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
   Theorem lseq'_nonempty_bwd : forall ls (c : W), c <> 0
     -> (Ex x, Ex ls', [| ls = x :: ls' |] * [| freeable c 2 |] * Ex p', (c ==*> x, p')
         * lseq' ls' p') ===> lseq' ls c.
+  Proof using .
     destruct ls; sepLemma.
     injection H0; sepLemma.
   Qed.
@@ -86,6 +92,7 @@ Module Adt : ADT.
   Theorem lseq'_cons_fwd : forall x ls (c : W),
     lseq' (x :: ls) c
     ===> [| c <> 0 |] * [| freeable c 2 |] * Ex p', (c ==*> x, p') * lseq' ls p'.
+  Proof using .
     sepLemma.
   Qed.
 End Adt.
@@ -245,6 +252,7 @@ Definition m := bimport [[ "malloc"!"malloc" @ [mallocS], "malloc"!"free" @ [fre
 Local Hint Extern 1 (@eq W _ _) => words.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep hints; eauto; try rewrite natToW_S; try rewrite <- rev_alt;
                    eauto; step auto_ext).
 Qed.

@@ -116,12 +116,14 @@ Section ADTValue.
   Definition and_all : list entailment -> entailment := fold_right (fun a b specs => a specs /\ b specs)%type (fun _ => True).
 
   Lemma and_all_app : forall ls1 ls2 specs, and_all (ls1 ++ ls2) specs -> and_all ls1 specs /\ and_all ls2 specs.
+  Proof using Type.
     induction ls1; simpl; intuition.
     eapply IHls1 in H1; openhyp; eauto.
     eapply IHls1 in H1; openhyp; eauto.
   Qed.
 
   Lemma is_true_intro : forall e specs v v', wneb (eval (fst v') e) $0 = true -> (is_true e) specs v v'.
+  Proof using Type.
     intros.
     unfold is_true.
     unfold wneb in *.
@@ -131,6 +133,7 @@ Section ADTValue.
   Hint Resolve is_true_intro.
 
   Lemma is_false_intro : forall e specs v v', wneb (eval (fst v') e) $0 = false -> (is_false e) specs v v'.
+  Proof using Type.
     intros.
     unfold is_false.
     unfold wneb in *.
@@ -180,7 +183,7 @@ Section ADTValue.
       specs_env_agree specs env ->
       RunsTo env (DCallEx r f args) v v' ->
       RunsToDCall specs r f args v v'.
-  Proof.
+  Proof using Type.
     intros.
     simpl in *.
     unfold RunsToDCall.
@@ -220,7 +223,7 @@ Section ADTValue.
       specs_env_agree specs env ->
       SafeDCall specs f args v ->
       Safe env (DCallEx r f args) v.
-  Proof.
+  Proof using Type.
     intros.
     destruct H.
     destruct env; simpl in *.
@@ -246,6 +249,7 @@ Section ADTValue.
   Qed.
 
   Lemma sound_runsto' : forall env (s : Stmt) v v', RunsTo env s v v' -> forall s' : StmtEx, s = s' -> forall specs, specs_env_agree specs env -> forall p, and_all (vc s' p) specs -> forall v0, p specs v0 v -> (sp s' p) specs v0 v'.
+  Proof using Type.
     induction 1; simpl; intros; destruct s'; try discriminate; simpl in *; try inject.
 
     (* skip *)
@@ -289,6 +293,7 @@ Section ADTValue.
   Qed.
 
   Theorem sound_runsto : forall env (s : StmtEx) v v' specs p, RunsTo env s v v' -> specs_env_agree specs env -> and_all (vc s p) specs -> p specs v v -> (sp s p) specs v v'.
+  Proof using Type.
     intros.
     eapply sound_runsto'; eauto.
   Qed.
@@ -296,6 +301,7 @@ Section ADTValue.
   Close Scope assert_scope.
 
   Theorem sound_safe : forall specs env (s : Stmt) (s' : StmtEx) v p v0, s = s' -> specs_env_agree specs env -> and_all (vc s' p) specs -> p specs v0 v -> Safe env s v.
+  Proof using Type.
     intros.
     eapply (Safe_coind (fun s v => Safe env s v \/ exists (s' : StmtEx) p v0, s = s' /\ and_all (vc s' p) specs /\ p specs v0 v)); [ .. | right; descend; eauto]; generalize H0; clear; intros; openhyp.
 

@@ -13,11 +13,13 @@ End HIDE.
 Module Hide : HIDE.
   Definition heapSize4 n := (n * 4)%N.
   Theorem heapSize4_eq : forall n, heapSize4 n = (n * 4)%N.
+  Proof using .
     auto.
   Qed.
 
   Definition to_nat := N.to_nat.
   Theorem to_nat_eq : to_nat = N.to_nat.
+  Proof using .
     auto.
   Qed.
 End Hide.
@@ -43,10 +45,12 @@ Module M'.
   Definition inbuf_size := 256.
 
   Theorem inbuf_size_lower : (inbuf_size >= 2)%nat.
+  Proof using .
     unfold inbuf_size; auto.
   Qed.
 
   Theorem inbuf_size_upper : (N_of_nat (inbuf_size * 4) < Npow2 32)%N.
+  Proof using .
     reflexivity.
   Qed.
 End M'.
@@ -62,6 +66,7 @@ Section boot.
   Hypothesis heapSizeLowerBound : (3 <= heapSize)%N.
 
   Let heapSizeLowerBound' : (3 <= heapSize')%nat.
+  Proof using All.
     intros; unfold heapSize'; rewrite Hide.to_nat_eq.
     assert (heapSize >= 3)%N by (apply N.le_ge; auto); nomega.
   Qed.
@@ -71,10 +76,12 @@ Section boot.
   Hypothesis mem_size : goodSize (size * 4)%nat.
 
   Let heapSizeUpperBound : goodSize (heapSize' * 4).
+  Proof using mem_size.
     goodSize.
   Qed.
 
   Lemma heapSizeLowerBound'' : natToW 3 <= NToW heapSize.
+  Proof using All.
     hnf; intros.
     red in H.
     pre_nomega.
@@ -125,16 +132,19 @@ Section boot.
     -> sp = (heapSize' * 4)%nat
     -> goodSize (heapSize' * 4)
     -> False.
+  Proof using heapSizeLowerBound'.
     intros; eapply bootstrap_Sp_nonzero; try eassumption; eauto.
   Qed.
 
   Lemma bootstrap_Sp_freeable : forall sp : W,
     sp = (heapSize' * 4)%nat
     -> freeable sp 50.
+  Proof using (heapSizeLowerBound' mem_size).
     intros; eapply bootstrap_Sp_freeable; try eassumption; eauto.
   Qed.
 
   Lemma noWrap : noWrapAround 4 (wordToNat (NToW heapSize) - 1).
+  Proof using All.
     intros.
     unfold NToW; rewrite NToWord_nat by auto.
     unfold heapSize' in *; rewrite Hide.to_nat_eq in *.
@@ -149,6 +159,7 @@ Section boot.
   Local Hint Immediate bootstrap_Sp_nonzero bootstrap_Sp_freeable noWrap.
 
   Lemma break : NToW ((heapSize + 50) * 4)%N = ((heapSize' + 50) * 4)%nat.
+  Proof using .
     intros.
     unfold NToW; rewrite NToWord_nat by auto.
     unfold heapSize'; rewrite N2Nat.inj_mul; auto.
@@ -156,6 +167,7 @@ Section boot.
   Qed.
 
   Lemma times4 : (Hide.heapSize4 heapSize : W) = (heapSize' * 4)%nat.
+  Proof using .
     rewrite Hide.heapSize4_eq; intros.
     unfold NToW; rewrite NToWord_nat by auto.
     unfold heapSize'; rewrite N2Nat.inj_mul; auto.
@@ -163,6 +175,7 @@ Section boot.
   Qed.
 
   Lemma wordToNat_heapSize : wordToNat (NToW heapSize) = heapSize'.
+  Proof using All.
     unfold heapSize'; rewrite Hide.to_nat_eq.
     unfold NToW.
     rewrite NToWord_nat.
@@ -179,6 +192,7 @@ Section boot.
     genesis; rewrite natToW_plus; reflexivity.
 
   Theorem ok0 : moduleOk boot.
+  Proof using .
     unfold boot; rewrite <- Hide.heapSize4_eq; vcgen; abstract t.
   Qed.
 
@@ -191,22 +205,27 @@ Section boot.
   Definition m := link E.m m4.
 
   Lemma ok1 : moduleOk m1.
+  Proof using .
     link ok0 E.T.ok.
   Qed.
 
   Lemma ok2 : moduleOk m2.
+  Proof using .
     link Buffers.ok ok1.
   Qed.
 
   Lemma ok3 : moduleOk m3.
+  Proof using .
     link E.MyIo.ok ok2.
   Qed.
 
   Lemma ok4 : moduleOk m4.
+  Proof using .
     link StringDb.ok ok3.
   Qed.
 
   Theorem ok : moduleOk m.
+  Proof using .
     link E.ok ok4.
   Qed.
 
@@ -240,6 +259,7 @@ Section boot.
   Import Safety.
 
   Theorem safe : sys_safe stn prog (w, st).
+  Proof using All.
     eapply safety; try eassumption; [
       link_simp; unfold labelSys, labelSys'; simpl; tauto
       | apply ok

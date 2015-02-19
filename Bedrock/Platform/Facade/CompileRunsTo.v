@@ -82,7 +82,7 @@ Section ADTValue.
   Notation ceval := SemanticsExpr.eval.
   Notation cRunsTo := Semantics.RunsTo.
   Lemma eval_ceval : forall s_st vs h e w, eval s_st e = Some (SCA _ w) -> related s_st (vs, h) -> ceval vs e = w.
-  Proof.
+  Proof using Type.
     induction e; simpl in *; intuition.
     unfold related in *.
     openhyp.
@@ -135,7 +135,7 @@ Section ADTValue.
   Qed.
 
   Lemma eval_bool_wneb : forall (s_st : State) vs h e b, eval_bool s_st e = Some b -> related s_st (vs, h) -> wneb (ceval vs e) $0 = b.
-  Proof.
+  Proof using Type.
     intros.
     unfold eval_bool in *.
     destruct (option_value_dec (eval s_st e)).
@@ -153,7 +153,7 @@ Section ADTValue.
   Notation boolcase := Sumbool.sumbool_of_bool.
 
   Lemma wneb_is_true : forall s_st vs h e, wneb (ceval vs e) $0 = true -> related s_st (vs, h) -> is_bool s_st e -> is_true s_st e.
-  Proof.
+  Proof using Type.
     intros.
     unfold is_true.
     unfold is_bool in *.
@@ -167,7 +167,7 @@ Section ADTValue.
   Qed.
 
   Lemma wneb_is_false : forall s_st vs h e, wneb (ceval vs e) $0 = false -> related s_st (vs, h) -> is_bool s_st e -> is_false s_st e.
-  Proof.
+  Proof using Type.
     intros.
     unfold is_false.
     unfold is_bool in *.
@@ -205,7 +205,7 @@ Section ADTValue.
   Ltac unfold_related H := copy H; unfold related in H; simpl in H; openhyp.
 
   Lemma related_no_alias : forall vs h st x1 a1 x2 a2, related st (vs, h) -> StringMap.find x1 st = Some (ADT a1) -> StringMap.find x2 st = Some (ADT a2) -> vs x1 = vs x2 -> x1 = x2.
-  Proof.
+  Proof using Type.
     intros.
     unfold_related H.
     copy H0; eapply H in H0; simpl in *.
@@ -247,7 +247,7 @@ Section ADTValue.
     related st (vs, h) ->
     NoDup args ->
     no_aliasM vs args input.
-  Proof.
+  Proof using Type.
     intros Hmm Hr Hnd.
     unfold no_aliasM, no_dupM, only_adt.
     intros i j p ai aj Hki Hvi Hkj Hvj.
@@ -290,7 +290,7 @@ Section ADTValue.
     NoDup vars2 ->
     length vars1 = length input ->
     related (StringMapFacts.make_map vars2 input) (vs2, h).
-  Proof.
+  Proof using Type.
     intros Hr Hm Hnd1 Hnd2 Hl.
     copy_as Hr Hr'.
     destruct Hr' as [Hr1 Hr2]; unfold related; simpl in *.
@@ -348,7 +348,7 @@ Section ADTValue.
     NoDup args ->
     reachable_heap vs args input <= h /\
     related (StringMapFacts.make_map args input) (vs, reachable_heap vs args input).
-  Proof.
+  Proof using Type.
     intros Hmm Hr Hdn.
     split.
     unfold Submap.
@@ -408,14 +408,14 @@ Section ADTValue.
   Import WordMapFacts.
   Require Import Bedrock.Platform.Facade.Facade.
   Lemma submap_represent p h1 h2 v : represent p (WordMap.find p h1) v -> h1 <= h2 -> represent p (WordMap.find p h2) v.
-  Proof.
+  Proof using Type.
     intros Hpr Hsm.
     destruct v as [w | a]; simpl in *.
     eauto.
     eapply submap_find; eauto.
   Qed.
   Lemma not_reachable_iff ks st vs h input k a : related st (vs, h) -> mapM (sel st) ks = Some input -> StringMap.find k st = Some (ADT a) -> (not_reachable k ks input <-> ~ WordMap.In (vs k) (reachable_heap vs ks input)).
-  Proof.
+  Proof using Type.
     intros Hr Hmm Hf.
     unfold not_reachable.
     split.
@@ -453,7 +453,7 @@ Section ADTValue.
     length ks = length outs ->
     not_reachable (ADTValue := ADTValue) k ks ins ->
     StringMap.find k (add_remove_many ks ins outs h) = StringMap.find k h.
-  Proof.
+  Proof using Type.
     intros Hnd Hlki Hlko Hnr.
     eapply option_univalence.
     intros v; split; intros Hf.
@@ -482,7 +482,7 @@ Section ADTValue.
             let input' := cinput in
             same_types input input' ->
             input = input'.
-  Proof.
+  Proof using Type.
     simpl; induction args; destruct words; destruct cinput; destruct input; try solve [simpl in *; intros; eauto; try discriminate].
     intros until 5; intros Hmm; intros; eapply mapM_length in Hmm; simpl in *; discriminate.
     rename a into x.
@@ -524,7 +524,7 @@ Section ADTValue.
     mapM (sel st) args = Some input ->
     words_cinput = combine words cinput ->
     no_alias words_cinput.
-  Proof.
+  Proof using Type.
     intros Hr Hnd Hm Hid Hmm Hwid.
     subst.
     unfold no_alias.
@@ -554,7 +554,7 @@ Section ADTValue.
     mapM (sel st) args = Some cinput ->
     ~ In p h ->
     not_reachable_p p (combine words cinput).
-  Proof.
+  Proof using Type.
     intros Hr Hm Hmm Hni.
     unfold not_reachable_p.
     intros i v Hi.
@@ -578,7 +578,7 @@ Section ADTValue.
     mapM (sel st) args = Some cinput ->
     not_reachable_p (vs x) (combine words cinput) ->
     not_reachable x args cinput.
-  Proof.
+  Proof using Type.
     intros Hm Hmm.
     intros Hnr; unfold not_reachable_p, not_reachable in *.
     intros i Hi.
@@ -601,7 +601,7 @@ Section ADTValue.
     StringMap.find x st = Some (ADT a) ->
     not_reachable x args cinput ->
     not_reachable_p (vs x) (combine words cinput).
-  Proof.
+  Proof using Type.
     intros Hr Hnd Hm Hmm Hf.
     intros Hnr; unfold not_reachable_p, not_reachable in *.
     intros i v Hi.
@@ -643,7 +643,7 @@ Section ADTValue.
               p = Locals.sel vs x /\
               StringMap.find x (add_remove_many args input (wrap_output coutput) st) = Some (ADT a)) <->
            find p (h' - h1) = Some a).
-  Proof.
+  Proof using Type.
     intros st vs h2 args triples words cinput coutput input h h' p a Hr Hnd Hw Hci Hco Hi Hm Hmm Hsm2 h1 He Hsm1'.
     assert (Hna : no_alias (combine words cinput)) by (eapply NoDup_no_alias; eauto).
     assert (Hsm1 : h1 <= h) by eapply diff_submap.
@@ -797,7 +797,7 @@ Section ADTValue.
           p = Locals.sel vs x ->
           StringMap.find x (add_remove_many args input (wrap_output coutput) st) = Some (ADT a) ->
           find p (h' - h1) = Some a.
-  Proof.
+  Proof using Type.
     intros.
     eapply add_remove_many_fold_store_out_iff; eauto.
   Qed.
@@ -809,7 +809,7 @@ Section ADTValue.
   Infix "===" := (@StringMapFacts.M.Equal _) (at level 70).
   Hint Extern 0 (_ === _) => reflexivity.
   Lemma related_Equal_1 st vs h st' vs' h' : st === st' -> (forall x, Locals.sel vs x = Locals.sel vs' x) -> h == h' -> related st (vs, h) -> related st' (vs', h').
-  Proof.
+  Proof using Type.
     unfold related; intros Hst Hvs Hh; intros [Hr1 Hr2]; simpl in *.
     split.
     intros k v Hfk.
@@ -833,7 +833,7 @@ Section ADTValue.
   Qed.
 
   Lemma related_Equal st vs h st' vs' h' : st === st' -> (forall x, Locals.sel vs x = Locals.sel vs' x) -> h == h' -> (related st (vs, h) <-> related st' (vs', h')).
-  Proof.
+  Proof using Type.
     intros Hst Hvs Hh; split; intros Hr.
     eapply related_Equal_1; eauto.
     eapply related_Equal_1; pick_related; eauto.
@@ -843,7 +843,7 @@ Section ADTValue.
 
   Definition new_adt_no_pollute s_st vs s_st' vs' h := forall x, @is_mapsto_adt ADTValue x s_st = false \/ is_mapsto_adt x s_st = true /\ Locals.sel vs x <> Locals.sel vs' x -> @is_mapsto_adt ADTValue x s_st' = true -> ~ @In ADTValue (Locals.sel vs' x) h.
   Lemma new_adt_no_pollute_seq st vs st' vs' st'' vs'' h h' h'' : new_adt_no_pollute st vs st' vs' h -> new_adt_no_pollute st' vs' st'' vs'' h' -> h == h'' -> h' == h'' -> new_adt_no_pollute st vs st'' vs'' h''.
-  Proof.
+  Proof using Type.
     unfold new_adt_no_pollute; intros Hanew Hbnew Hheq Hheq' x Hmt Hmt''.
     unfold Locals.sel in *.
     destruct (boolcase (is_mapsto_adt x st')) as [Hmt' | Hmtf'].
@@ -862,7 +862,7 @@ Section ADTValue.
   Qed.
 
   Lemma related_add_sca st vs h lhs w h' : related st (vs, h) -> not_mapsto_adt lhs st = true -> h' == h -> related (StringMap.add lhs (SCA _ w) st) (Locals.upd vs lhs w, h').
-  Proof.
+  Proof using Type.
     intros Hr Hnmt Hheq.
     unfold related; simpl in *.
     split.
@@ -904,7 +904,7 @@ Section ADTValue.
   Qed.
 
   Lemma new_adt_no_pollute_add_sca st vs lhs w1 w2 h : new_adt_no_pollute st vs (StringMap.add lhs (SCA _ w1) st) (Locals.upd vs lhs w2) h.
-  Proof.
+  Proof using Type.
     unfold new_adt_no_pollute.
     intros x Hmt Hmt'.
     destruct (string_dec x lhs) as [Heq | Hne].
@@ -944,7 +944,7 @@ Section ADTValue.
                 (forall x, is_mapsto_adt x s_st = false \/ is_mapsto_adt x s_st = true /\ Locals.sel (fst t_st) x <> Locals.sel (fst t_st') x -> is_mapsto_adt x s_st' = true -> ~ In (Locals.sel (fst t_st') x) h2) /\
                 (* main result: final source-level and target level states are related *)
                 related s_st' (fst t_st', snd t_st' - h2).
-  Proof.
+  Proof using Type.
     induction 1; simpl; intros; destruct s; simpl in *; intros; try discriminate.
 
     Focus 7.

@@ -87,7 +87,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
                (Postcondition
                   (do_compile s k pre) x) ->
         interp specs (postcond vars temp_size k rv_postcond x).
-    Proof.
+    Proof using Type.
 
       Opaque mult.
       Opaque star. (* necessary to use eapply_cancel *)

@@ -27,10 +27,12 @@ Section ForallR.
     end.
 
   Theorem Forall_ForallR : forall ls, List.Forall P ls -> ForallR ls.
+  Proof using Type.
     induction 1; simpl; intuition.
   Qed.
 
   Theorem ForallR_Forall : forall ls, ForallR ls -> List.Forall P ls.
+  Proof using Type.
     induction ls; simpl; intuition.
   Qed.
 
@@ -41,10 +43,12 @@ Section ForallR.
     end.
 
   Theorem Exists_ExistsR : forall ls, List.Exists P ls -> ExistsR ls.
+  Proof using Type.
     induction 1; simpl; intuition.
   Qed.
 
   Theorem ExistsR_Exists : forall ls, ExistsR ls -> List.Exists P ls.
+  Proof using Type.
     induction ls; simpl; intuition.
   Qed.
 End ForallR.
@@ -228,6 +232,7 @@ Lemma findTable_good : forall tab t ts0,
   -> In t ts0
   -> Name t = tab
   -> findTable tab ts0 = Some t.
+Proof using .
   induction ts0; simpl; inversion 1; intuition subst; ift.
   exfalso; eapply H2.
   rewrite <- e.
@@ -237,12 +242,14 @@ Qed.
 Lemma removeTable_irrel_fwd : forall x ts,
   ~In x (Names ts)
   -> db ts ===> db (removeTable x ts).
+Proof using .
   induction ts; simpl; intuition subst; try ift; sepLemma.
 Qed.
 
 Lemma removeTable_irrel_bwd : forall x ts,
   ~In x (Names ts)
   -> db (removeTable x ts) ===> db ts.
+Proof using .
   induction ts; simpl; intuition subst; try ift; sepLemma.
 Qed.
 
@@ -253,6 +260,7 @@ Lemma removeTable_bwd : forall x ts,
   -> In x ts
   -> RelDb.table (Schema x) (Address x) * db (removeTable (Name x) ts)
   ===> db ts.
+Proof using .
   induction ts; inversion 1; simpl; intuition subst;
     match goal with
       | [ |- context[if ?E then _ else _] ] => destruct E; intuition
@@ -269,6 +277,7 @@ Lemma removeTable_fwd : forall x ts,
   NoDup (Names ts)
   -> In x ts
   -> db ts ===> RelDb.table (Schema x) (Address x) * db (removeTable (Name x) ts).
+Proof using .
   induction ts; inversion 1; simpl; intuition subst;
     match goal with
       | [ |- context[if ?E then _ else _] ] => destruct E; intuition
@@ -282,6 +291,7 @@ Lemma removeTable_fwd : forall x ts,
 Qed.
 
 Lemma mult4_S : forall n, 4 * S n = S (S (S (S (4 * n)))).
+Proof using .
   simpl; intros; omega.
 Qed.
 
@@ -297,6 +307,7 @@ Lemma removeTable_bwd' : forall x ts P,
   -> In x ts
   -> RelDb.table (Schema x) (Address x) * (db (removeTable (Name x) ts) * P)
   ===> P * db ts.
+Proof using .
   intros; eapply Himp_trans; [ apply Himp_star_assoc' | ].
   eapply Himp_trans; [ | apply Himp_star_comm ].
   apply Himp_star_frame; try apply Himp_refl.
@@ -308,6 +319,7 @@ Lemma removeTable_fwd' : forall x ts P,
   -> In x ts
   -> P * db ts
   ===> RelDb.table (Schema x) (Address x) * (P * db (removeTable (Name x) ts)).
+Proof using .
   intros; eapply Himp_trans; [ | apply Himp_star_frame; [ | apply Himp_star_comm ] ].
   intros; eapply Himp_trans; [ | apply Himp_star_assoc ].
   eapply Himp_trans; [ apply Himp_star_comm | ].
@@ -320,6 +332,7 @@ Lemma make_cursor : forall specs t V rw data P,
   himp specs (row (Schema t) (sel V data)
     * (inv (Address t) (Schema t) (sel V rw) (sel V data) * P))%Sep
   (P * cursor V {| Table := t; Row := rw; Data := data |})%Sep.
+Proof using .
 sepLemma; apply himp_star_comm.
 Qed.
 
@@ -327,6 +340,7 @@ Lemma unmake_cursor : forall specs t V rw data P,
   himp specs (P * cursor V {| Table := t; Row := rw; Data := data |})%Sep
   (row (Schema t) (sel V data)
     * (inv (Address t) (Schema t) (sel V rw) (sel V data) * P))%Sep.
+Proof using .
 sepLemma; apply himp_star_comm.
 Qed.
 
@@ -334,6 +348,7 @@ Theorem matchup : forall P Q R P' Q',
   P ===> P'
   -> Q ===> Q'
   -> P * (Q * R) ===> R * (P' * Q').
+Proof using .
   sepLemma; eapply Himp_star_frame; eauto.
 Qed.
 
@@ -341,6 +356,7 @@ Theorem matchup2 : forall P Q R Q' R',
   Q ===> Q'
   -> R ===> R'
   -> P * (Q * R) ===> P * (Q' * R').
+Proof using .
   sepLemma; eapply Himp_star_frame; eauto.
 Qed.
 
@@ -349,6 +365,7 @@ Definition ANames := map (fun av => Name (Table av)).
 Lemma cursors_irrel : forall V av avs,
   ~In (Name (Table av)) (ANames avs)
   -> cursors V (removeCursor (Name (Table av)) avs) ===> cursors V avs.
+Proof using .
   induction avs; simpl; intuition; try ift; sepLemma.
 Qed.
 
@@ -360,6 +377,7 @@ Theorem grab_cursor : forall V av avs,
     (sel V (Row av)) (sel V (Data av))
     * row (Schema (Table av)) (sel V (Data av)))
   ===> cursors V avs.
+Proof using .
   clear; induction avs; inversion_clear 2; simpl in *; intuition subst.
   ift.
   unfold cursor.
@@ -381,6 +399,7 @@ Qed.
 Lemma cursors_irrel' : forall V av avs,
   ~In (Name (Table av)) (ANames avs)
   -> cursors V avs ===> cursors V (removeCursor (Name (Table av)) avs).
+Proof using .
   induction avs; simpl; intuition; try ift; sepLemma.
 Qed.
 
@@ -389,6 +408,7 @@ Theorem release_cursor : forall V av avs,
   -> NoDup (ANames avs)
   -> cursors V avs
   ===> cursor V av * cursors V (removeCursor (Name (Table av)) avs).
+Proof using .
   clear; induction avs; inversion_clear 2; simpl in *; intuition subst; ift.
   sepLemma.
   apply cursors_irrel'; auto.
@@ -409,6 +429,7 @@ Lemma weaken_cursors : forall specs V V',
   -> forall avs,
     goodCursors avs
     -> himp specs (cursors V avs) (cursors V' avs).
+Proof using .
   induction avs; inversion_clear 1; simpl; intuition.
   apply himp_star_frame; auto.
   unfold cvars in *; simpl in *; intuition idtac;
@@ -432,6 +453,7 @@ Lemma Weaken_cursors : forall V V',
   -> forall avs,
     goodCursors avs
     -> cursors V avs ===> cursors V' avs.
+Proof using .
   intros; hnf; intros; apply weaken_cursors; auto.
 Qed.
 
@@ -448,6 +470,7 @@ Lemma cursor_expand : forall V' V P Q avs av,
   * inv (Address (Table av)) (Schema (Table av))
   (sel V' (Row av)) (sel V' (Data av))
   * row (Schema (Table av)) (sel V' (Data av)) ===> P * (Q * cursors V avs).
+Proof using .
   sepLemma.
   etransitivity; [ | eapply weaken_cursors ]; try eassumption.
   etransitivity; [ | apply grab_cursor ]; eauto.
@@ -464,6 +487,7 @@ Lemma cursor_expand' : forall V' V P Q avs av,
   * inv (Address (Table av)) (Schema (Table av))
   (sel V' (Row av)) (sel V' (Data av))
   * row (Schema (Table av)) (sel V' (Data av)) ===> P * (cursors V avs * Q).
+Proof using .
   sepLemma.
   etransitivity; [ | eapply weaken_cursors ]; try eassumption.
   etransitivity; [ | apply grab_cursor ]; eauto.
@@ -473,6 +497,7 @@ Qed.
 Hint Constructors unit.
 
 Lemma length_append : forall s1 s2, String.length (s1 ++ s2) = String.length s1 + String.length s2.
+Proof using .
   induction s1; simpl; intuition.
 Qed.
 
@@ -483,10 +508,12 @@ Lemma Forall_impl2 : forall A (P Q R : A -> Prop) ls,
   -> List.Forall Q ls
   -> (forall x, P x -> Q x -> R x)
   -> List.Forall R ls.
+Proof using .
   induction 1; inversion 1; eauto.
 Qed.
 
 Lemma wplus_wminus : forall u v : W, u ^+ v ^- v = u.
+Proof using .
   intros; words.
 Qed.
 
@@ -495,6 +522,7 @@ Hint Rewrite wplus_wminus mult4_S : sepFormula.
 Lemma findCol_bound : forall s col,
   In col s
   -> (findCol s col < length s)%nat.
+Proof using .
   clear; induction s; simpl; intuition subst;
     match goal with
       | [ |- context[if ?E then _ else _] ] => destruct E
@@ -506,6 +534,7 @@ Lemma findCol_bound_natToW : forall sch col n,
   -> goodSize (Datatypes.length sch)
   -> n = length sch
   -> natToW (findCol sch col) < natToW n.
+Proof using .
   clear; intros; subst.
   pre_nomega.
   rewrite wordToNat_natToWord_idempotent.
@@ -521,6 +550,7 @@ Lemma findCol_posl : forall sch col cols,
   -> goodSize (Datatypes.length sch)
   -> length cols = length sch
   -> natToW (findCol sch col) < natToW (length (posl cols)).
+Proof using .
   intros; rewrite length_posl; eauto using findCol_bound_natToW.
 Qed.
 
@@ -529,6 +559,7 @@ Lemma findCol_lenl : forall sch col cols,
   -> goodSize (Datatypes.length sch)
   -> length cols = length sch
   -> natToW (findCol sch col) < natToW (length (lenl cols)).
+Proof using .
   intros; rewrite length_lenl; eauto using findCol_bound_natToW.
 Qed.
 
@@ -539,6 +570,7 @@ Lemma selN_col : forall sch col cols,
   -> goodSize (length sch)
   -> length cols = length sch
   -> Array.sel cols (natToW (findCol sch col)) = selN cols (findCol sch col).
+Proof using .
   clear; unfold Array.sel; intros; f_equal.
   apply wordToNat_natToWord_idempotent.
   change (goodSize (findCol sch col)).
@@ -551,6 +583,7 @@ Lemma selN_posl : forall sch col cols,
   -> goodSize (length sch)
   -> length cols = length sch
   -> Array.sel (posl cols) (natToW (findCol sch col)) = selN (posl cols) (findCol sch col).
+Proof using .
   intros; apply selN_col; auto; rewrite length_posl; auto.
 Qed.
 
@@ -559,6 +592,7 @@ Lemma selN_lenl : forall sch col cols,
   -> goodSize (length sch)
   -> length cols = length sch
   -> Array.sel (lenl cols) (natToW (findCol sch col)) = selN (lenl cols) (findCol sch col).
+Proof using .
   intros; apply selN_col; auto; rewrite length_lenl; auto.
 Qed.
 
@@ -572,6 +606,7 @@ Lemma inBounds_selN : forall sch len cols,
     -> In col sch
     -> length cols = length sch
     -> (wordToNat a + wordToNat b <= c)%nat.
+Proof using .
   intros; eapply inBounds_selN; try eassumption.
   rewrite H4; eapply findCol_bound; auto.
 Qed.
@@ -586,6 +621,7 @@ Lemma findCursor_good : forall tab av avs,
   -> Name (Table av) = tab
   -> In av avs
   -> findCursor tab avs = Some av.
+Proof using .
   induction avs; simpl; inversion 1; intuition subst; ift.
   exfalso; eapply H2.
   rewrite <- e.
@@ -596,6 +632,7 @@ Lemma inBounds_inputOk : forall ns sch V cdatas,
   inBounds cdatas V
   -> forall cond, cwf ns sch cdatas cond
     -> inputOk V (exps cond).
+Proof using .
   clear; induction 2; simpl; constructor; auto.
   unfold eqwf in *; destruct x; simpl in *; intuition.
   destruct e; simpl in *; intuition idtac.
@@ -614,6 +651,7 @@ Lemma inBounds_weaken_dontTouch : forall cdatas V rw data V',
     -> x <> "ibuf" -> x <> "ilen" -> x <> "tmp" -> x <> "ipos"
     -> x <> "overflowed" -> x <> "matched" -> sel V x = sel V' x)
   -> inBounds cdatas V'.
+Proof using .
   clear; intros; eapply Forall_impl3; [ apply H | apply ForallR_Forall; apply H0 | apply H1 | ].
   simpl in *; intuition idtac.
   match goal with
@@ -646,6 +684,7 @@ Lemma weaken_cursors' : forall rw data specs V V',
     goodCursors avs
     -> dontReuse rw data avs
     -> himp specs (cursors V avs) (cursors V' avs).
+Proof using .
   unfold dontReuse; induction avs; inversion_clear 1; simpl; intuition.
   apply himp_star_frame; auto.
   unfold cvars in *; simpl in *; intuition idtac;
@@ -666,6 +705,7 @@ Hint Resolve weaken_cursors'.
 Lemma twfs_removeTable : forall x ts,
   twfs ts
   -> twfs (removeTable x ts).
+Proof using .
   unfold twfs; induction 1; simpl; intuition; ift.
 Qed.
 
@@ -674,6 +714,7 @@ Hint Constructors NoDup.
 Lemma In_removeTable : forall x y ts,
   In x (Names (removeTable y ts))
   -> In x (Names ts).
+Proof using .
   induction ts; simpl; intuition idtac;
     match goal with
       | [ _ : context[if ?E then _ else _] |- _ ] => destruct E; simpl in *; tauto
@@ -685,6 +726,7 @@ Hint Immediate In_removeTable.
 Lemma NoDup_removeTable : forall x ts,
   NoDup (Names ts)
   -> NoDup (Names (removeTable x ts)).
+Proof using .
   induction ts; inversion_clear 1; simpl; intuition;
     match goal with
       | [ |- context[if ?E then _ else _] ] => destruct E; simpl; eauto
@@ -701,6 +743,7 @@ Hint Extern 1 (incl _ _) => hnf; simpl; intuition congruence.
 Lemma cwf_wfEqualities : forall sch cdatas ns cond,
   cwf ns sch cdatas cond
   -> wfEqualities ns sch cond.
+Proof using .
   clear; unfold wfEqualities; induction 1; simpl; intuition.
   constructor; auto.
   unfold wfEquality, eqwf in *; destruct x as [ ? [ ] ]; simpl in *; tauto.
@@ -712,6 +755,7 @@ Lemma goodSize_base : forall t ts,
   twfs ts
   -> In t ts
   -> goodSize (length (Schema t)).
+Proof using .
   intros ? ? H H0; eapply Forall_forall in H; [ | eassumption ]; unfold twf in *; intuition idtac.
   eapply goodSize_weaken; eauto.
 Qed.
@@ -722,6 +766,7 @@ Lemma cwf_noOverlapExps : forall ns rw data cdatas sch cond,
   cwf ns sch cdatas cond
   -> dontTouch rw data cdatas
   -> noOverlapExps rw data (exps cond).
+Proof using .
   unfold dontTouch, noOverlapExps, noOverlapExp, eqwf; induction 1; simpl; intuition.
   constructor; auto.
   unfold eqwf in *; intuition.
@@ -738,12 +783,14 @@ Definition NoDups (avs : list avail) (ts : tables) :=
 Lemma NoDups_ts : forall avs ts,
   NoDups avs ts
   -> NoDup (Names ts).
+Proof using .
   intros; eapply NoDup_unapp2; eauto.
 Qed.
 
 Lemma NoDups_avs : forall avs ts,
   NoDups avs ts
   -> NoDup (map (fun av => Name (Table av)) avs).
+Proof using .
   intros; eapply NoDup_unapp1; eauto.
 Qed.
 
@@ -752,6 +799,7 @@ Hint Immediate NoDups_ts NoDups_avs.
 Lemma goodCursors_removeCursor : forall tab avs,
   goodCursors avs
   -> goodCursors (removeCursor tab avs).
+Proof using .
   unfold goodCursors; induction 1; simpl; intuition; ift.
 Qed.
 
@@ -763,6 +811,7 @@ Lemma goodCursors_cons : forall t rw data avs,
   -> ~In data cvars
   -> goodSize (length (Schema t))
   -> goodCursors ({| Table := t; Row := rw; Data := data |} :: avs).
+Proof using .
   clear; intros; constructor; intuition.
 Qed.
 
@@ -773,6 +822,7 @@ Lemma NoDups_app : forall A (ls1 ls2 : list A),
   -> NoDup ls2
   -> (forall x, In x ls1 -> ~In x ls2)
   -> NoDup (ls1 ++ ls2).
+Proof using .
   clear; induction 1; simpl; intuition.
   constructor; eauto.
   intro.
@@ -782,6 +832,7 @@ Qed.
 Lemma NoDups_unapp_cross : forall A (ls1 ls2 : list A),
   NoDup (ls1 ++ ls2)
   -> (forall x, In x ls1 -> ~In x ls2).
+Proof using .
   clear; induction ls1; inversion_clear 1; simpl; intuition eauto.
   subst.
   apply H0.
@@ -792,6 +843,7 @@ Lemma removeTable_contra : forall tab ts,
   NoDup (Names ts)
   -> In tab (Names (removeTable tab ts))
   -> False.
+Proof using .
   clear; induction ts; inversion_clear 1; simpl; intuition.
   destruct (string_dec tab (Name a)); subst; simpl in *; intuition.
 Qed.
@@ -800,6 +852,7 @@ Lemma NoDups_move : forall avs ts t rw data,
   In t ts
   -> NoDups avs ts
   -> NoDups ({| Table := t; Row := rw; Data := data |} :: avs) (removeTable (Name t) ts).
+Proof using .
   clear; unfold NoDups; intros; simpl.
   constructor.
   intro.
@@ -827,6 +880,7 @@ Module ToCmd : TO_CMD.
   Definition toCmd' := toCmd.
 
   Theorem toCmd'_eq : toCmd' = toCmd.
+  Proof using .
     auto.
   Qed.
 End ToCmd.
@@ -1333,22 +1387,27 @@ Section Out.
   Opaque mult.
 
   Lemma invPre_sel : forall a V, invPre a (sel V) = invPre a V.
+  Proof using .
     auto.
   Qed.
 
   Lemma invPost_sel : forall a V R, invPost a (sel V) R = invPost a V R.
+  Proof using .
     auto.
   Qed.
 
   Lemma inBounds_sel : forall cdatas V, inBounds cdatas (sel V) = inBounds cdatas V.
+  Proof using .
     auto.
   Qed.
 
   Lemma cursors_sel : forall V av, cursors (sel V) av = cursors V av.
+  Proof using .
     auto.
   Qed.
 
   Lemma cursor_sel : forall V av, cursor (sel V) av = cursor V av.
+  Proof using .
     auto.
   Qed.
 
@@ -1451,6 +1510,7 @@ Section Out.
     -> invPre a V ===> invPre a V'
     -> invPre a V * (cursors V avs * P)
     ===> P * (invPre a V' * cursors V' avs).
+  Proof using .
     clear; sepLemma; apply himp_star_frame.
     apply weaken_cursors; auto.
     auto.
@@ -1608,6 +1668,7 @@ Section Out.
           -> (forall specs st, interp specs (Postcondition (toCmd (OutList (Out' cdatas avs ts ) xms) mn H ns res pre) st)
             -> interp specs (invar cdatas avs ts true (fun x => x) ns res st))
           /\ vcs (VerifCond (toCmd (OutList (Out' cdatas avs ts) xms) mn H ns res pre)).
+    Proof using Type.
       induction 2; simpl; intuition auto 1; split; intros; try apply vcs_app_fwd;
         repeat match goal with
                  | [ H : _ |- vcs _ ] => eapply H; eauto; intros
@@ -1623,6 +1684,7 @@ Section Out.
       -> (forall x, x <> "overflowed" -> x <> "opos" -> x <> "tmp" -> x <> "matched"
         -> x <> "res" -> sel V x = sel V' x)
       -> inBounds cdatas V'.
+    Proof using .
       intros; rewrite <- inBounds_sel in *;
         eapply Forall_impl2; [ match goal with
                                  | [ H : cdatasGood _ |- _ ] => apply H
@@ -1683,6 +1745,7 @@ Section Out.
       a < b ^- c
       -> c <= b
       -> c ^+ a <= b.
+    Proof using .
       clear; intros.
       pre_nomega.
       rewrite wordToNat_wplus in *.
@@ -1716,6 +1779,7 @@ Section Out.
       -> c <= b
       -> n = wordToNat b
       -> (wordToNat c + wordToNat a <= n)%nat.
+    Proof using .
       clear; intros; subst.
       pre_nomega.
       omega.
@@ -1818,6 +1882,7 @@ Section Out.
       In t avs
       -> tab <> Name (Table t)
       -> In t (removeCursor tab avs).
+    Proof using .
       clear; induction avs; simpl; intuition;
         ift; simpl; intuition.
     Qed.
@@ -1827,6 +1892,7 @@ Section Out.
     Lemma NoDup_survived' : forall tab' tab avs,
       In tab' (ANames (removeCursor tab avs))
       -> In tab' (ANames avs).
+    Proof using .
       clear; induction avs; simpl; intuition;
         generalize dependent H; ift; simpl in *; intuition.
     Qed.
@@ -1834,6 +1900,7 @@ Section Out.
     Lemma NoDup_survived : forall tab avs,
       NoDup (ANames avs)
       -> NoDup (ANames (removeCursor tab avs)).
+    Proof using .
       clear; induction avs; inversion_clear 1; simpl; intuition.
       ift; simpl; intuition eauto using NoDup_survived'.
     Qed.
@@ -1849,6 +1916,7 @@ Section Out.
       ===> P * (cursor V av1 * (cursor V av2
         * cursors V (removeCursor (Name (Table av2))
           (removeCursor (Name (Table av1)) avs)))).
+    Proof using .
       clear; sepLemma.
       etransitivity; [ apply release_cursor; try apply H; eauto | ]; sepLemma.
       etransitivity; [ apply release_cursor; eauto | ]; sepLemma.
@@ -1860,6 +1928,7 @@ Section Out.
       In t avs
       -> goodCursors avs
       -> goodSize (length (Schema (Table t))).
+    Proof using .
       clear; intros.
       eapply Forall_forall in H0; [ | eassumption ].
       tauto.
@@ -1871,6 +1940,7 @@ Section Out.
       (exists avs, goodCursors avs /\ In av avs)
       -> In x cvars
       -> sel (upd vs x v) (Data av) = sel vs (Data av).
+    Proof using .
       clear; destruct 1; intros; apply sel_upd_ne; intuition.
       eapply Forall_forall in H2; eauto; intuition.
     Qed.
@@ -1879,6 +1949,7 @@ Section Out.
       (exists avs, goodCursors avs /\ In av avs)
       -> In x cvars
       -> sel (upd vs x v) (Row av) = sel vs (Row av).
+    Proof using .
       clear; destruct 1; intros; apply sel_upd_ne; intuition.
       eapply Forall_forall in H2; eauto; intuition.
     Qed.
@@ -1915,6 +1986,7 @@ Section Out.
         -> (forall specs st, interp specs (Postcondition (toCmd (Out' cdatas avs ts xm) mn H ns res pre) st)
           -> interp specs (invar cdatas avs ts true (fun x => x) ns res st))
         /\ vcs (VerifCond (toCmd (Out' cdatas avs ts xm) mn H ns res pre)).
+    Proof using .
       induction xm using xml_ind'.
 
       step1.

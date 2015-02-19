@@ -49,6 +49,7 @@ Section starL_weaken.
 
     Theorem starL_weaken : forall ls,
       starL P ls ===> starL P' ls.
+    Proof using All.
       induction ls; simpl; intuition.
       sepLemma.
       apply Himp_star_frame; auto.
@@ -60,6 +61,7 @@ Section starL_weaken.
 
     Theorem starL_weaken_weak : forall ls,
       starL P ls ===>* starL P' ls.
+    Proof using All.
       unfold HimpWeak in *; induction ls; simpl; propxFo.
       do 3 esplit; eauto; propxFo.
     Qed.
@@ -226,23 +228,27 @@ Module Make(M : S).
                       end.
 
     Theorem starB_empty_bwd : Emp ===> starB P empty.
+    Proof using Type.
       to_himp; apply existsR with nil; from_himp; sepLemma.
     Qed.
 
     Lemma bagify_cong : forall ls b1 b2,
       b1 %= b2
       -> fold_left add ls b1 %= fold_left add ls b2.
+    Proof using .
       induction ls; simpl; intuition.
     Qed.
 
     Lemma add_something : forall v ls b,
       fold_left add ls (b %+ v) %= fold_left add ls b %+ v.
+    Proof using .
       induction ls; simpl; intuition.
       eapply equiv_trans; [ | apply IHls ].
       apply bagify_cong; auto.
     Qed.
 
     Theorem starB_add_bwd : forall b v, starB P b * P v ===> starB P (b %+ v).
+    Proof using .
       intros; eapply Himp_trans; [ apply exists_starL_fwd | ]; cbv beta.
       to_himp; apply existsL; intro ls; apply existsR with (v :: ls); from_himp.
       simpl; generalize (starL P ls); generalize (P v); sepLemma.
@@ -258,6 +264,7 @@ Module Make(M : S).
 
     Lemma starL_del_fwd : forall v ls, In v ls
       -> starL P ls ===> P v * starL P (nuke v ls).
+    Proof using .
       induction ls; unfold bagify in *; simpl in *; intuition subst.
       destruct (eq_dec v v); apply Himp_refl || tauto.
       destruct (eq_dec v a); subst; try apply Himp_refl.
@@ -270,6 +277,7 @@ Module Make(M : S).
     Lemma del_something : forall v ls b,
       v %in b
       -> fold_left add ls (b %- v) %= fold_left add ls b %- v.
+    Proof using .
       induction ls; simpl; intuition.
       eapply equiv_trans; [ | apply IHls ].
       apply bagify_cong; auto.
@@ -278,6 +286,7 @@ Module Make(M : S).
 
     Lemma bagify_nuke' : forall v ls, In v ls
       -> forall b, fold_left add (nuke v ls) b %= fold_left add ls b %- v.
+    Proof using .
       induction ls; simpl; intuition subst.
       destruct (eq_dec v v); intuition.
       eapply equiv_trans; [ | apply del_something ].
@@ -292,6 +301,7 @@ Module Make(M : S).
 
     Lemma bagify_nuke : forall v ls, In v ls
       -> bagify (nuke v ls) %= bagify ls %- v.
+    Proof using .
       intros; apply bagify_nuke'; auto.
     Qed.
 
@@ -299,6 +309,7 @@ Module Make(M : S).
       v %in b
       -> b %= fold_left add ls b'
       -> In v ls \/ v %in b'.
+    Proof using .
       unfold bagify; induction ls; simpl; intuition.
       eapply IHls in H; [ | eauto ].
       intuition (eauto; bags).
@@ -308,6 +319,7 @@ Module Make(M : S).
       v %in b
       -> b %= bagify ls
       -> In v ls.
+    Proof using .
       intros.
       eapply bagify_In' in H0; eauto.
       intuition bags.
@@ -317,6 +329,7 @@ Module Make(M : S).
 
     Theorem starB_del_fwd : forall b v, v %in b
       -> starB P b ===> P v * starB P (b %- v).
+    Proof using .
       intros; eapply Himp_trans; [ | apply exists_starR_bwd ]; cbv beta.
       to_himp; apply existsL; intro ls; apply existsR with (nuke v ls).
       specialize (starL_del_fwd v ls);
@@ -333,6 +346,7 @@ Module Make(M : S).
     Lemma fun_fun_fun : forall A P Q R,
       P * (Ex ls : A, Q ls * R ls)
       ===> (Ex ls : A, Q ls * (P * R ls)).
+    Proof using .
       sepLemma.
     Qed.
 
@@ -340,6 +354,7 @@ Module Make(M : S).
       v %in b
       -> (b %- v) x = b' x
       -> b x = (b' %+ v) x.
+    Proof using .
       unfold mem, del, add; intros.
       destruct (eq_dec x v); subst; omega.
     Qed.
@@ -348,6 +363,7 @@ Module Make(M : S).
       v %in b
       -> b %- v %= bagify ls
       -> b %= bagify (v :: ls).
+    Proof using .
       unfold bagify, equiv; simpl; intros.
       specialize (H0 x).
       rewrite add_something.
@@ -356,6 +372,7 @@ Module Make(M : S).
 
     Theorem starB_del_bwd : forall b v, v %in b
       -> P v * starB P (b %- v) ===> starB P b.
+    Proof using .
       unfold starB; intros.
       eapply Himp_trans; [ apply fun_fun_fun | ]; cbv beta.
       apply Himp'_ex; intro ls.
@@ -373,6 +390,7 @@ Module Make(M : S).
 
       Theorem starB_weaken : forall b,
         starB P b ===> starB P' b.
+      Proof using All.
         unfold starB; intro.
         apply Himp'_ex; intro; apply Himp_ex_c; eexists.
         apply Himp_star_frame.
@@ -385,6 +403,7 @@ Module Make(M : S).
       Hypothesis HP' : forall x, P x ===>* P' x.
 
       Theorem starB_weaken_weak : forall b, starB P b ===>* starB P' b.
+      Proof using All.
         unfold HimpWeak in *; propxFo.
         do 4 esplit; eauto.
         propxFo.

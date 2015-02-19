@@ -152,6 +152,7 @@ Section Select.
     -> List.Forall R ls
     -> (forall x : A, P x -> Q x -> R x -> S x)
     -> List.Forall S ls.
+  Proof using .
     induction 1; inversion 1; inversion 1; auto.
   Qed.
 
@@ -163,6 +164,7 @@ Section Select.
     -> rw <> "len"
     -> data <> "len"
     -> inputOk V' es.
+  Proof using .
     intros; eapply Forall_impl3; [ apply H | apply H0 | apply H1 | ].
     intro e; destruct e; simpl; intuition idtac.
     repeat rewrite <- H2 by (simpl; congruence); assumption.

@@ -37,7 +37,7 @@ Section ADTValue.
   Require Import Coq.Setoids.Setoid.
 
   Add Morphism (@store_pair ADTValue) with signature Equal ==> eq ==> Equal as store_pair_Equal_m.
-  Proof.
+  Proof using Type.
     intros st1 st2 Heq [w v].
     unfold store_pair.
     destruct v.
@@ -48,7 +48,7 @@ Section ADTValue.
   Qed.
 
   Add Parametric Morphism elt : (@not_in_heap elt) with signature eq ==> eq ==> Equal ==> iff as not_in_heap_Equal_m.
-  Proof.
+  Proof using Type.
     intros w v st1 st2 Heq.
     destruct v; simpl in *.
     intuition.
@@ -58,7 +58,7 @@ Section ADTValue.
   Require Import Bedrock.Word.
 
   Lemma store_pair_comm p1 p2 h : no_clash p1 p2 -> store_pair (store_pair h p1) p2 == store_pair (store_pair h p2) p1.
-  Proof.
+  Proof using Type.
     intros Hnc.
     intros p.
     destruct p1 as [w1 v1].
@@ -103,7 +103,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.Semantics.
 
   Lemma disjoint_ptrs_cons_elim' pairs : forall p, disjoint_ptrs (p :: pairs) -> disjoint_ptrs_ls p pairs /\ disjoint_ptrs pairs.
-  Proof.
+  Proof using Type.
     induction pairs; simpl; intros [w1 v1] H.
     {
       split.
@@ -125,7 +125,7 @@ Section ADTValue.
   Qed.
 
   Lemma disjoint_ptrs_ls_no_clash_ls pairs : forall p, disjoint_ptrs_ls p pairs -> no_clash_ls p pairs.
-  Proof.
+  Proof using Type.
     induction pairs; simpl; intros [w1 v1] H.
     {
       econstructor.
@@ -163,6 +163,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics.
 
   Lemma disjoint_ptrs_cons_elim pairs : forall p, disjoint_ptrs (p :: pairs) -> no_clash_ls p pairs /\ disjoint_ptrs pairs.
+  Proof using Type.
     intros p H.
     eapply disjoint_ptrs_cons_elim' in H.
     openhyp.
@@ -171,7 +172,7 @@ Section ADTValue.
   Qed.
 
   Lemma disjoint_ptrs_DisjointPtrs ls : disjoint_ptrs ls -> DisjointPtrs ls.
-  Proof.
+  Proof using Type.
     induction ls; simpl; intros H.
     {
       econstructor.
@@ -183,7 +184,7 @@ Section ADTValue.
   Qed.
 
   Lemma no_clash_ls_not_in_heap pairs : forall w v, no_clash_ls (w, v) pairs -> not_in_heap w v (make_heap' pairs).
-  Proof.
+  Proof using Type.
     induction pairs; simpl; intros w v H.
     {
       destruct v; simpl.
@@ -218,7 +219,7 @@ Section ADTValue.
   Arguments store_pair {_} _ _.
 
   Lemma fold_left_store_pair_comm pairs : forall w v h1 h2, no_clash_ls (w, v) pairs -> h2 == store_pair h1 (w, v) -> fold_left store_pair pairs h2 == store_pair (fold_left store_pair pairs h1) (w, v).
-  Proof.
+  Proof using Type.
     induction pairs; simpl; intros w v h1 h2 Hnin Hh.
     rewrite Hh; reflexivity.
     destruct a as [w' v'].
@@ -230,7 +231,7 @@ Section ADTValue.
   Qed.
 
   Lemma make_heap_make_heap' pairs : disjoint_ptrs pairs -> make_heap pairs == make_heap' pairs.
-  Proof.
+  Proof using Type.
     induction pairs; simpl; intros Hdisj.
     reflexivity.
     unfold make_heap in *.
@@ -244,7 +245,7 @@ Section ADTValue.
   Qed.
 
   Add Morphism (@Semantics.word_adt_match ADTValue) with signature Equal ==> eq ==> iff as word_adt_match_Equal_m.
-  Proof.
+  Proof using Type.
     intros st1 st2 Heq [w v].
     unfold Semantics.word_adt_match.
     simpl.
@@ -337,7 +338,7 @@ Section ADTValue.
   Arguments word_scalar_match {ADTValue} _.
 
   Lemma DisjointPtrs_good_scalars_forall_word_adt_match : forall pairs h, DisjointPtrs pairs -> List.Forall word_scalar_match pairs -> List.Forall (word_adt_match (fold_left store_pair pairs h)) pairs.
-  Proof.
+  Proof using Type.
     induction pairs; simpl; try solve [intuition].
     intros h Hdisj H.
     inversion H; subst.
@@ -362,7 +363,7 @@ Section ADTValue.
     @disjoint_ptrs ADTValue pairs ->
     good_scalars pairs ->
     good_inputs (make_heap pairs) pairs.
-  Proof.
+  Proof using Type.
     intros Hdisj Hgs.
     split; eauto.
     eapply DisjointPtrs_good_scalars_forall_word_adt_match; eauto.
@@ -370,7 +371,7 @@ Section ADTValue.
   Qed.
 
   Lemma good_inputs_add addr (a : ADTValue) h : ~ In addr h -> good_inputs (add addr a h) ((addr, ADT a) :: nil).
-  Proof.
+  Proof using Type.
     intros Hnin.
     unfold good_inputs.
     unfold Semantics.good_inputs.

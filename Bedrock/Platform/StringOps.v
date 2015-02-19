@@ -18,6 +18,7 @@ Section Params.
   Lemma himp_refl : forall specs (P Q : HProp),
     P = Q
     -> himp specs P Q.
+  Proof using .
     intros; subst; reflexivity.
   Qed.
 
@@ -29,10 +30,12 @@ Section Params.
       end; intros; autorewrite with sepFormula; reflexivity.
 
   Lemma precondition_sel : forall a V, precondition a (sel V) = precondition a V.
+  Proof using Type.
     auto.
   Qed.
 
   Lemma postcondition_sel : forall bs a V, postcondition bs a (sel V) = postcondition bs a V.
+  Proof using Type.
     auto.
   Qed.
 
@@ -42,6 +45,7 @@ Section Params.
     len = wordToNat len'
     -> (wordToNat pos + offset + S spacing <= wordToNat len')%nat
     -> pos ^+ natToW offset < natToW len.
+  Proof using .
     intros; subst; unfold natToW; rewrite natToWord_wordToNat; auto.
     pre_nomega.
     rewrite wordToNat_wplus.
@@ -89,6 +93,7 @@ Section Params.
   Lemma goodSize_length : forall a s,
     goodSize (String.length (String a s))
     -> goodSize (String.length s).
+  Proof using .
     intros; eapply goodSize_weaken; repeat (cbv beta; simpl; eauto).
   Qed.
 
@@ -245,6 +250,7 @@ Section Params.
       (wordToNat v + 0 + w <= wordToNat u)%nat
       -> goodSize w
       -> v ^+ natToW w <= u.
+    Proof using Type.
       intros; pre_nomega; rewrite wordToNat_wplus; autorewrite with N; try omega.
       apply goodSize_weaken with (wordToNat u); eauto.
     Qed.

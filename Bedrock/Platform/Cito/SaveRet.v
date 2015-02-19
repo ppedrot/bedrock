@@ -67,6 +67,7 @@ Section TopLevel.
   Lemma evalInstrs_write_var : forall sm x s,
     evalInstrs sm x (Assign (var_slot s) Rv :: nil)
     = evalInstrs sm x (Assign (LvMem (Imm ((Regs x Sp ^+ natToW vars_start) ^+ natToW (variablePosition vars s)))) Rv :: nil).
+  Proof using Type.
     Transparent evalInstrs.
     simpl.
     intros.
@@ -83,6 +84,7 @@ Section TopLevel.
     -> syn_req
     -> exists x0, interp specs (pre (fst x, x0))
       /\ runs_to (fst x, x0) (snd x).
+  Proof using Type.
     intros.
     unfold syn_req, body, runs_to in *.
     destruct var; simpl in *; post.
@@ -121,6 +123,7 @@ Section TopLevel.
     imply pre new_pre
     -> syn_req
     -> vcs (VerifCond (body pre)).
+  Proof using Type.
     unfold syn_req, body; intros.
     destruct var; wrap0.
     rewrite evalInstrs_write_var in *.

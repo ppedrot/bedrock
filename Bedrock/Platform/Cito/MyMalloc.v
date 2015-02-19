@@ -22,34 +22,41 @@ Definition m := bimport[["malloc"!"malloc" @ [mallocS] ]] bmodule "my_malloc" {{
 }}.
 
 Lemma wplus_ne : forall (a b c : W), a <> b -> a ^+ c <> b ^+ c.
+Proof using .
   intros; destruct (weq (a ^+ c) (b ^+ c)); eauto.
 Qed.
 
 Lemma wplus_ne_0 : forall (a c : W), a <> 0 -> a ^+ c <> c.
+Proof using .
   intros; pattern c at 2; replace c with ($0 ^+ c); [ eapply wplus_ne; eauto | words ].
 Qed.
 
 Hint Resolve wplus_ne_0.
 
 Lemma wplus_wminus : forall (a b : W), a ^+ b ^- b = a.
+Proof using .
   intros; words.
 Qed.
 
 Lemma roundTrip_2 : wordToNat (natToW 2) = 2.
+Proof using .
   compute; auto.
 Qed.
 
 Lemma wordToNat_wplus_2 : forall (w : W), goodSize (wordToNat w + 2) -> wordToNat (w ^+ natToW 2) = wordToNat w + 2.
+Proof using .
   intros; eapply wordToNat_wplus; rewrite roundTrip_2; eauto.
 Qed.
 
 Lemma goodSize_le_wordToNat_wplus : forall w : W, goodSize (wordToNat w + 2) -> (2 <= wordToNat (w ^+ natToW 2))%nat.
+Proof using .
   intros; pre_nomega; rewrite wordToNat_wplus_2 by eauto; omega.
 Qed.
 
 Hint Resolve goodSize_le_wordToNat_wplus.
 
 Lemma goodSize_le_wplus : forall w : W, goodSize (wordToNat w + 2) -> natToW 2 <= w ^+ natToW 2.
+Proof using .
   intros; pre_nomega; rewrite roundTrip_2; eauto.
 Qed.
 
@@ -61,10 +68,12 @@ Ltac tag :=
   end.
 
 Lemma wplus_minus_2 : forall (w : W), goodSize (wordToNat w + 2) -> wordToNat (w ^+ $2) - 2 = wordToNat w.
+Proof using .
   intros; rewrite wordToNat_wplus_2 by eauto; intuition.
 Qed.
 
 Lemma buf_2_fwd : forall p len, (2 <= len)%nat -> p =?> len ===> p =?> 2 * (p ^+ $8) =?> (len - 2).
+Proof using .
   destruct len; simpl; intros; try omega.
   destruct len; simpl; intros; try omega.
   sepLemma; eapply allocated_shift_base; [ words | intuition ].
@@ -87,18 +96,22 @@ Fixpoint gen_ns n :=
   end.
 
 Lemma gen_ns_len : forall n, length (gen_ns n) = n.
+Proof using .
   induction n; simpl; intuition.
 Qed.
 
 Lemma fold_gen_str : forall n, String "0" (gen_str n) = gen_str (S n).
+Proof using .
   eauto.
 Qed.
 
 Lemma gen_str_inj : forall a b, gen_str a = gen_str b -> a = b.
+Proof using .
   induction a; induction b; simpl; intuition.
 Qed.
 
 Lemma longer_str_not_in : forall r n, (n <= r)%nat -> ~ In (gen_str r) (gen_ns n).
+Proof using .
   induction r; induction n; simpl; intuition.
   rewrite fold_gen_str in *.
   eapply gen_str_inj in H1.
@@ -109,12 +122,14 @@ Hint Resolve longer_str_not_in.
 Hint Constructors NoDup.
 
 Lemma gen_ns_NoDup : forall n, NoDup (gen_ns n).
+Proof using .
   induction n; simpl; intuition.
 Qed.
 
 Hint Resolve gen_ns_NoDup.
 
 Lemma behold_the_array_ls : forall len p, p =?> len ===> Ex ls, [| length ls = len |] * array ls p.
+Proof using .
   intros; unfold array; rewrite <- (gen_ns_len len); eapply Himp_trans; [ eapply behold_the_array | rewrite gen_ns_len; sepLemma; rewrite length_toArray; rewrite gen_ns_len ]; eauto.
 Qed.
 
@@ -123,6 +138,7 @@ Definition hints2 : TacPackage.
 Defined.
 
 Theorem m_ok : moduleOk m.
+Proof using .
   vcgen; unfold array_with_size.
   sep_auto.
   sep_auto.

@@ -226,6 +226,7 @@ Lemma wordToNat_wplus' : forall u v w : W,
   v <= w
   -> goodSize (wordToNat u + wordToNat w)
   -> wordToNat (u ^+ v) = wordToNat u + wordToNat v.
+Proof using .
   intros; rewrite wordToNat_wplus; try nomega; eapply goodSize_weaken; eauto; nomega.
 Qed.
 
@@ -236,6 +237,7 @@ Hint Rewrite wordToNat_wminus using nomega : sepFormula.
 Local Hint Extern 1 (@eq W _ _) => words.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

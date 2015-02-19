@@ -35,14 +35,14 @@ Section AssumptionProver.
 
   Lemma assumptionValid_extensible : forall u g f ue ge,
     assumptionValid u g f -> assumptionValid (u ++ ue) (g ++ ge) f.
-  Proof.
+  Proof using Type.
     unfold assumptionValid. eauto using AllProvable_weaken.
   Qed.
 
   Lemma assumptionSummarizeCorrect : forall uvars vars hyps,
     AllProvable fs uvars vars hyps ->
     assumptionValid uvars vars (assumptionSummarize hyps).
-  Proof.
+  Proof using Type.
     auto.
   Qed.
 
@@ -50,12 +50,13 @@ Section AssumptionProver.
     assumptionValid uvars vars sum -> forall hyps,
     AllProvable fs uvars vars hyps ->
     assumptionValid uvars vars (assumptionLearn sum hyps).
-  Proof.
+  Proof using Type.
     unfold assumptionLearn, assumptionValid. intuition.
     apply AllProvable_app; auto.
   Qed.
 
   Theorem assumptionProverCorrect : ProverCorrect fs assumptionValid assumptionProve.
+  Proof using Type.
     t; induction sum; t.
   Qed.
 
@@ -66,6 +67,7 @@ Section AssumptionProver.
    ; Prove := assumptionProve
    |}.
   Definition assumptionProver_correct : ProverT_correct (types := types) assumptionProver fs.
+  Proof using Type.
   eapply Build_ProverT_correct with (Valid := assumptionValid);
     eauto using assumptionValid_extensible, assumptionSummarizeCorrect, assumptionLearnCorrect, assumptionProverCorrect.
   Qed.

@@ -89,10 +89,12 @@ Module M''.
   Definition evolve : bag -> bag -> Prop := incl.
 
   Theorem evolve_refl : forall w, evolve w w.
+  Proof using .
     red; bags.
   Qed.
 
   Theorem evolve_trans : forall w1 w2 w3, evolve w1 w2 -> evolve w2 w3 -> evolve w1 w3.
+  Proof using .
     unfold evolve in *; bags.
   Qed.
 
@@ -191,6 +193,7 @@ Module Sched : SCHED.
     * Ex waitL, array waitL wait * [| allInOrZero ts waitL |] * [| length waitL = wordToNat waitLen |]
       * [| wait <> 0 |] * [| freeable wait (length waitL) |]
     * tqs ts fs.
+  Proof using .
     intros; apply Himp_refl.
   Qed.
 
@@ -204,14 +207,17 @@ Module Sched : SCHED.
        * [| wait <> 0 |] * [| freeable wait (length waitL) |]
      * tqs ts fs)
      ===> sched fs.
+  Proof using .
     intros; apply Himp_refl.
   Qed.
 
   Theorem files_empty_fwd : forall ts, files ts empty ===> Emp.
+  Proof using .
     intros; apply starB_empty_fwd.
   Qed.
 
   Theorem files_empty_bwd : forall ts, Emp ===> files ts empty.
+  Proof using .
     intros; apply starB_empty_bwd.
   Qed.
 
@@ -222,18 +228,21 @@ Module Sched : SCHED.
   Theorem files_pick_fwd : forall p ts fs, p %in fs
     -> files_pick p ts fs ===> Ex fd, Ex inq, Ex outq, (p ==*> fd, inq, outq)
       * [| inq %in ts |] * [| outq %in ts |] * files ts (fs %- p).
+  Proof using .
     intros; eapply Himp_trans; [ apply starB_del_fwd | ]; eauto; fin ts.
   Qed.
 
   Theorem files_pick_bwd : forall p ts fs, p %in fs
     -> (Ex fd, Ex inq, Ex outq, (p ==*> fd, inq, outq)
       * [| inq %in ts |] * [| outq %in ts |] * files ts (fs %- p)) ===> files_pick p ts fs.
+  Proof using .
     intros; eapply Himp_trans; [ | apply starB_del_bwd ]; eauto; fin ts.
   Qed.
 
   Theorem files_add_bwd : forall p ts fs,
     (Ex fd, Ex inq, Ex outq, (p ==*> fd, inq, outq)
       * [| inq %in ts |] * [| outq %in ts |] * files ts fs) ===> files ts (fs %+ p).
+  Proof using .
     intros; eapply Himp_trans; [ | apply starB_add_bwd ]; fin ts.
   Qed.
 End Sched.
@@ -246,16 +255,19 @@ Definition exitize_me a b c d := locals a b c d.
 
 Lemma switchedy : forall P Q R S : HProp,
   (P * (Q * R)) * S ===> P * (Q * (R * S)).
+Proof using .
   sepLemma.
 Qed.
 
 Lemma swatchedy : forall P Q R : HProp,
   P * (Q * R) ===> P * Q * R.
+Proof using .
   sepLemma.
 Qed.
 
 Lemma exitize_locals : forall xx yy ns vs res sp,
   exitize_me ("rp" :: xx :: yy :: ns) vs res sp ===> Ex vs', locals ("rp" :: "sc" :: "ss" :: nil) (upd (upd vs' "ss" (sel vs yy)) "sc" (sel vs xx)) (res + length ns) sp.
+Proof using .
   unfold exitize_me, locals; intros.
   simpl; unfold upd; simpl.
   apply Himp_ex_c; exists (fun x => if string_dec x "rp" then vs "rp" else vs xx).
@@ -321,6 +333,7 @@ Lemma starting_elim : forall specs pc ss P stn st,
       /\ ![ locals ("rp" :: nil) vs ss (Regs st' Sp)
       * sched fs * M.globalInv fs * mallocHeap 0 ] (stn, st')
     ---> pre (stn, st'))%PropX).
+Proof using .
   cptr.
   generalize (split_semp _ _ _ H0 H); intros; subst; auto.
   rewrite <- sepFormula_eq; descend; step auto_ext.
@@ -338,6 +351,7 @@ Lemma starting_intro : forall specs pc ss P stn st,
       * sched fs * M.globalInv fs * mallocHeap 0 ] (stn, st')
     ---> pre (stn, st'))%PropX)
   -> interp specs (![ starting pc ss * P ] (stn, st)).
+Proof using .
   cptr.
 Qed.
 
@@ -351,6 +365,7 @@ Lemma other_starting_intro : forall specs ts w pc ss P stn st,
       * tqs ts' w' * M''.globalInv ts' w' * mallocHeap 0 ] (stn, st')
     ---> pre (stn, st'))%PropX)
   -> interp specs (![ Q'.starting ts w pc ss * P ] (stn, st)).
+Proof using .
   cptr.
 Qed.
 
@@ -431,6 +446,7 @@ Definition blockS : spec := SPEC("tq", "fd", "mode") reserving 26
 Definition initSize := 2.
 
 Theorem initSize_eq : initSize = 2.
+Proof using .
   auto.
 Qed.
 
@@ -1301,6 +1317,7 @@ Ltac spawn := post; evaluate hints;
 Lemma tqs_weaken : forall ts fs fs',
   fs %<= fs'
   -> tqs ts fs ===>* tqs ts fs'.
+Proof using .
   rewrite tqs_eq; intros; apply tqs'_weaken; hnf; intuition.
 Qed.
 
@@ -1448,6 +1465,7 @@ Lemma length_ok : forall u v n,
   u < v
   -> n = wordToNat v
   -> u < natToW n.
+Proof using .
   intros; subst; unfold natToW; rewrite natToWord_wordToNat; auto.
 Qed.
 
@@ -1456,6 +1474,7 @@ Local Hint Immediate length_ok.
 Lemma selN_In : forall ls n,
   (n < length ls)%nat
   -> In (Array.selN ls n) ls.
+Proof using .
   induction ls; destruct n; simpl; intuition.
 Qed.
 
@@ -1463,6 +1482,7 @@ Lemma sel_In : forall ls n,
   n < natToW (length ls)
   -> goodSize (length ls)
   -> In (Array.sel ls n) ls.
+Proof using .
   unfold Array.sel; intros; apply selN_In; nomega.
 Qed.
 
@@ -1473,6 +1493,7 @@ Lemma found_queue : forall x ls i b,
   -> i < natToW (length ls)
   -> goodSize (length ls)
   -> x %in b.
+Proof using .
   intros; subst.
   eapply Forall_forall in H1; [ | eauto using sel_In ].
   tauto.
@@ -1485,6 +1506,7 @@ Lemma allIn_monotone : forall b ls b',
   allIn b ls
   -> b %<= b'
   -> allIn b' ls.
+Proof using .
   intros; eapply Forall_weaken; eauto.
   bags.
   specialize (H0 x); omega.
@@ -1495,12 +1517,14 @@ Local Hint Immediate allIn_monotone.
 Lemma allIn_hd : forall b x ls,
   allIn b (x :: ls)
   -> x %in b.
+Proof using .
   inversion 1; auto.
 Qed.
 
 Lemma allIn_tl : forall b x ls,
   allIn b (x :: ls)
   -> allIn b ls.
+Proof using .
   inversion 1; auto.
 Qed.
 
@@ -1509,6 +1533,7 @@ Local Hint Immediate allIn_hd allIn_tl.
 Lemma add_incl : forall a b x,
   a %+ x %<= b
   -> a %<= b.
+Proof using .
   bags.
   specialize (H x0).
   destruct (W_Key.eq_dec x0 x); auto.
@@ -1522,6 +1547,7 @@ Lemma allInOrZero_monotone : forall b ls b',
   allInOrZero b ls
   -> b %<= b'
   -> allInOrZero b' ls.
+Proof using .
   intros; eapply Forall_weaken; [ | eauto ].
   bags.
   specialize (H0 x); omega.
@@ -1533,6 +1559,7 @@ Lemma allIn_cons : forall b x ls,
   allIn b ls
   -> x %in b
   -> allIn b (x :: ls).
+Proof using .
   constructor; auto.
 Qed.
 
@@ -1542,6 +1569,7 @@ Lemma allInOrZero_updN : forall b v ls,
   allInOrZero b ls
   -> forall i, v %in b
     -> allInOrZero b (Array.updN ls i v).
+Proof using .
   induction 1; destruct i; simpl; intuition;
     constructor; auto; apply IHForall; auto.
 Qed.
@@ -1550,6 +1578,7 @@ Lemma allInOrZero_upd : forall b ls i v,
   allInOrZero b ls
   -> v %in b
   -> allInOrZero b (Array.upd ls i v).
+Proof using .
   intros; apply allInOrZero_updN; auto.
 Qed.
 
@@ -1558,6 +1587,7 @@ Local Hint Immediate allInOrZero_upd.
 Hint Rewrite roundTrip_0 : N.
 
 Lemma zero_le : forall w : W, natToW 0 <= w.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -1566,6 +1596,7 @@ Local Hint Immediate zero_le.
 Lemma firstn_advance' : forall v n ls,
   (n < length ls)%nat
   -> firstn (n + 1) (Array.updN ls n v) = firstn n ls ++ v :: nil.
+Proof using .
   induction n; destruct ls; simpl; intuition.
   rewrite IHn; auto.
 Qed.
@@ -1574,6 +1605,7 @@ Lemma firstn_advance : forall ls w v,
   w < natToW (length ls)
   -> goodSize (length ls)
   -> firstn (wordToNat w + 1) (Array.upd ls w v) = firstn (wordToNat w) ls ++ v :: nil.
+Proof using .
   unfold Array.upd; intros; apply firstn_advance'; nomega.
 Qed.
 
@@ -1583,6 +1615,7 @@ Lemma allInOrZero_advance : forall b w ls (v : W),
   -> w < natToW (length ls)
   -> goodSize (length ls)
   -> allInOrZero b (firstn (wordToNat (w ^+ natToW 1)) (Array.upd ls w v)).
+Proof using .
   intros.
   erewrite <- next; eauto.
   rewrite firstn_advance; auto; apply Forall_app; auto.
@@ -1600,6 +1633,7 @@ Lemma allInOrZero_delivers : forall b ls i,
   -> i < natToW (length ls)
   -> goodSize (length ls)
   -> Array.sel ls i = natToW 0 \/ Array.sel ls i %in b.
+Proof using .
   intros ? ? ? H ? ?; eapply Forall_forall in H; eauto; apply sel_In; auto.
 Qed.
 
@@ -1607,6 +1641,7 @@ Local Hint Extern 1 (_ \/ _) => solve [ apply allInOrZero_delivers; auto; [ eaut
 
 Lemma firstn_length : forall A (ls : list A),
   firstn (length ls) ls = ls.
+Proof using .
   induction ls; simpl; intuition.
 Qed.
 
@@ -1616,6 +1651,7 @@ Lemma allInOrZero_done : forall b (i : W) ls l,
   -> i <= l
   -> length ls = wordToNat l
   -> allInOrZero b ls.
+Proof using .
   intros; replace i with l in *.
   rewrite <- H2 in *; rewrite firstn_length in *; assumption.
   apply wordToNat_inj; nomega.
@@ -1629,12 +1665,14 @@ Lemma nonzero : forall sp sp' sp'' : W,
   -> sp'' <> 0
   -> sp = sp'
   -> False.
+Proof using .
   intros; subst; apply H1; unfold natToW in *; ring_simplify in H; auto.
 Qed.
 
 Local Hint Immediate nonzero.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

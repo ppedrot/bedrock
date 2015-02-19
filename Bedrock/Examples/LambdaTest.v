@@ -23,6 +23,7 @@ Definition always0 := bmodule "always0" {{
 Hint Extern 1 (@eq W _ _) => words.
 
 Theorem always0Ok : moduleOk always0.
+Proof using .
   vcgen; abstract (post; try icall (@nil string); (sep_auto; auto)).
 Qed.
 
@@ -52,5 +53,6 @@ Definition add3 := bmodule "add3" {{
 }}.
 
 Theorem add3Ok : moduleOk add3.
+Proof using .
   vcgen; abstract (post; try icall ("x" :: "y" :: nil); (sep_auto; auto)).
 Qed.

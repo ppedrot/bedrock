@@ -45,6 +45,7 @@ Ltac encode_case :=
   end.
 
 Theorem mOk : moduleOk m.
+Proof using .
   vcgen; abstract (parse0; post; evaluate auto_ext;
     repeat (parse1 auto; try encode_case; reveal_slots; evaluate auto_ext); sep_auto; parse2).
 Qed.

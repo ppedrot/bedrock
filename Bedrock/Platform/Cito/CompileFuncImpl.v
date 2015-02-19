@@ -132,15 +132,17 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       end.
 
     Lemma minus_plus_two : forall a b c, a - (b + c) = a - b - c.
+    Proof using .
       intros; omega.
     Qed.
     Lemma a_plus_b_minus_a : forall a b, a + b - a = b.
+    Proof using .
       intros; omega.
     Qed.
     Opaque evalInstrs.
 
     Lemma verifCond_ok : forall pre : assert, vcs (verifCond func pre) -> vcs (VerifCond (body' pre)).
-    Proof.
+    Proof using All.
 
       unfold verifCond, imply; wrap0.
 

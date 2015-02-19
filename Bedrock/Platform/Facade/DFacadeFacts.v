@@ -136,7 +136,7 @@ Section ADTValue.
   Notation Sca := (@SCA ADTValue).
 
   Lemma safe_if_true : forall (env : Env) e t f st, Safe env (If e t f) st -> is_true st e -> Safe env t st.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     eauto.
@@ -144,7 +144,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_if_is_bool : forall (env : Env) e t f st, Safe env (If e t f) st -> is_bool st e.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     eapply is_true_is_bool; eauto.
@@ -152,7 +152,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_if_false : forall (env : Env) e t f st, Safe env (If e t f) st -> is_false st e -> Safe env f st.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     exfalso; eapply is_true_is_false; eauto.
@@ -184,15 +184,17 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.ListFacts4.
 
   Lemma NoDup_ArgVars : forall spec, NoDup (ArgVars spec).
+  Proof using .
     intros; destruct spec; simpl; eapply is_no_dup_sound; eauto.
   Qed.
 
   Lemma not_incl_spec : forall spec, ~ List.In (RetVar spec) (ArgVars spec).
+  Proof using .
     intros; destruct spec; simpl; eapply negb_is_in_iff; eauto.
   Qed.
 
   Lemma in_args_not_assigned spec x : List.In x (ArgVars spec) -> ~ StringSet.In x (assigned (Body spec)).
-  Proof.
+  Proof using .
     destruct spec; simpl in *; nintro.
     eapply is_disjoint_iff; eauto.
     split; eauto.
@@ -200,7 +202,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_seq_1 : forall (env : Env) a b st, Safe env (Seq a b) st -> Safe env a st.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     openhyp.
@@ -208,7 +210,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_seq_2 : forall (env : Env) a b st, Safe env (Seq a b) st -> forall st', RunsTo env a st st' -> Safe env b st'.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     openhyp.
@@ -218,7 +220,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics3.
 
   Lemma safe_while_is_bool (env : Env) e s st : Safe env (While e s) st -> is_bool st e.
-  Proof.
+  Proof using Type.
     intros H.
     inversion H; unfold_all; subst.
     eapply is_true_is_bool; eauto.
@@ -228,7 +230,7 @@ Section ADTValue.
   Notation RunsTo := (@RunsTo ADTValue).
 
   Lemma not_free_vars_no_change env s st st' x : RunsTo env s st st' -> ~ StringSet.In x (free_vars s) -> find x st' = find x st.
-  Proof.
+  Proof using Type.
     induction 1; simpl; intros Hnin.
     {
       eauto.

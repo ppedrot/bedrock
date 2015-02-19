@@ -70,7 +70,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.StringMapFacts.
 
   Lemma exports_sub_domain : sub_domain exports (Funs m).
-  Proof.
+  Proof using exports_in_domain.
     eapply is_sub_domain_sound; eauto.
   Qed.
 
@@ -83,7 +83,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.ListFacts1.
 
   Lemma aug_mod_name_Injection mod_name : IsInjection (aug_mod_name mod_name).
-  Proof.
+  Proof using .
     eapply Injective_IsInjection.
     intros s1 s2.
     intros H.
@@ -92,7 +92,7 @@ Section ADTValue.
   Qed.
 
   Lemma NoDupKey_aug_mod_name A B mod_name (f : string * A -> string * string * B) d : (forall p, fst (f p) = aug_mod_name mod_name (fst p)) -> NoDupKey (List.map f (StringMap.elements d)).
-  Proof.
+  Proof using .
     intros H.
     eapply NoDupKey_NoDup_fst.
     rewrite map_map; simpl.
@@ -106,7 +106,7 @@ Section ADTValue.
   Qed.
 
   Lemma map_aug_mod_name_intro elt k mod_name k' d (v : elt) : k = (mod_name, k') -> StringMap.find k' d = Some v -> GLabelMap.find k (map_aug_mod_name mod_name d) = Some v.
-  Proof.
+  Proof using .
     intros ? H.
     subst.
     unfold map_aug_mod_name.
@@ -125,7 +125,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics5.
 
   Lemma map_aug_mod_name_elim elt k mod_name d (v : elt) : find k (map_aug_mod_name mod_name d) = Some v -> exists k', k = (mod_name, k') /\ StringMap.find k' d = Some v.
-  Proof.
+  Proof using .
     intros H.
     unfold map_aug_mod_name in *.
     eapply find_mapsto_iff in H.
@@ -147,7 +147,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GLabelMapFacts.
 
   Lemma map_aug_mod_name_sub_domain A B nm a b : @StringMapFacts.sub_domain A B a b -> sub_domain (map_aug_mod_name nm a) (map_aug_mod_name nm b).
-  Proof.
+  Proof using .
     unfold sub_domain in *.
     intros Hsd lbl.
     intros H.
@@ -165,7 +165,7 @@ Section ADTValue.
   Qed.
 
   Lemma specs_equal_domain : equal_domain specs specs_op.
-  Proof.
+  Proof using (exports_in_domain imports op_mod_name).
     unfold specs.
     eapply sub_domain_apply_specs_diff_equal_domain.
     unfold specs_op, exports_with_glabel.
@@ -176,7 +176,7 @@ Section ADTValue.
   Qed.
 
   Lemma specs_op_intro fname op_spec : StringMap.find fname (Funs m) = Some op_spec -> find (op_mod_name, fname) specs_op = Some (Internal op_spec).
-  Proof.
+  Proof using Type.
     intros H.
     unfold specs_op in *.
     eapply find_mapsto_iff.
@@ -200,7 +200,7 @@ Section ADTValue.
       List.In m0 (cmodule_to_gmodule op_mod_name op_mod_name_ok m :: nil) /\
       List.In f (Functions m0) /\
       ispec = f /\ (op_mod_name, fname) = (GoodModule.Name m0, Name f).
-  Proof.
+  Proof using Type.
     intros H.
     exists op_spec.
     eexists.
@@ -230,7 +230,7 @@ Section ADTValue.
       Internal f = Internal f' /\
       GoodModule.Name m' = op_mod_name /\
       find (Name f) (Funs m) = Some f'.
-  Proof.
+  Proof using Type.
     intros Hinm Hinf.
     eapply in_singleton_iff in Hinm.
     subst.
@@ -251,7 +251,7 @@ Section ADTValue.
   Require Import Coq.Bool.Bool.
 
   Lemma find_op_mod_name_imports_none fname : find (op_mod_name, fname) imports = None.
-  Proof.
+  Proof using import_module_names_ok.
     simpl in *.
     destruct (option_dec (find (op_mod_name, fname) imports)) as [ [v Heq] | Heq]; trivial.
     pose (Himn := import_module_names_ok).
@@ -268,7 +268,7 @@ Section ADTValue.
   Qed.
 
   Lemma specs_op_equal : specs_equal specs_op modules imports.
-  Proof.
+  Proof using (Hewi import_module_names_ok op_mod_name_ok).
     unfold specs_equal.
     unfold label_mapsto.
     unfold specs_op.
@@ -351,6 +351,7 @@ Section ADTValue.
   Qed.
 
   Lemma new_env_strengthen : forall stn fs, env_good_to_use modules imports stn fs -> strengthen (from_bedrock_label_map (Labels stn), fs stn) (change_env specs (from_bedrock_label_map (Labels stn), fs stn)).
+  Proof using All.
     intros.
     eapply strengthen_diff_strenghthen.
     - eapply Hewi; eauto.
@@ -380,7 +381,7 @@ Section ADTValue.
     List.In (fname, (op_spec, ax_spec)) (StringMap.elements content) ->
     env_good_to_use modules imports stn fs ->
     strengthen_op_ax op_spec ax_spec ((change_env specs (gl2w (Labels stn), fs stn))).
-  Proof.
+  Proof using All.
     intros Hin Hegu.
     unfold exports_weakens_impl in *.
     eapply StringMapFacts.in_elements_find in Hin.
@@ -533,14 +534,14 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Bedrock.Platform.Cito.ListFacts1.
 
     Lemma NoDupKey_bimports : NoDupKey bimports.
-    Proof.
+    Proof using Type.
       unfold bimports, tgt_spec_as_import, tgt_label.
       eapply NoDupKey_aug_mod_name.
       intros; simpl; eauto.
     Qed.
 
     Lemma NoDupKey_stubs : NoDupKey (List.map (@func_to_import ax_mod_name) stubs).
-    Proof.
+    Proof using Type.
       unfold func_to_import, stubs, make_stub', make_stub.
       repeat rewrite map_map; simpl.
       eapply NoDupKey_aug_mod_name.
@@ -548,6 +549,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma no_dup_func_names : NoDupFuncNames stubs.
+    Proof using Type.
       eapply NoDup_NoDupFuncNames.
       unfold stubs, make_stub', make_stub; simpl.
       repeat rewrite map_map; simpl.
@@ -556,7 +558,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Coq.Bool.Bool.
 
     Lemma ax_neq_op_mod_name : ax_mod_name <> op_mod_name.
-    Proof.
+    Proof using name_neq.
       eapply negb_true_iff in name_neq.
       unfold string_bool in *.
       unfold sumbool_to_bool in *.
@@ -566,7 +568,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Bedrock.Platform.Cito.GeneralTactics.
 
     Lemma DisjointKey_bimports_stubs : DisjointKey bimports (List.map (@func_to_import ax_mod_name) stubs).
-    Proof.
+    Proof using (exports imports m name_neq op_mod_name_ok).
       intros k.
       intros [Hin1 Hin2].
       unfold InKey in *.
@@ -589,7 +591,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma ax_mod_name_not_in_imports : NameNotInImports ax_mod_name bimports.
-    Proof.
+    Proof using (exports imports m name_neq op_mod_name_ok).
       eapply NotIn_NameNotInImports.
       intros Hin.
       unfold bimports in *.
@@ -606,7 +608,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma NoDupKey_bimports_stubs : NoDupKey (bimports ++ List.map (@func_to_import ax_mod_name) stubs).
-    Proof.
+    Proof using (exports imports m name_neq op_mod_name_ok).
       eapply NoDupKey_app.
       eapply NoDupKey_bimports.
       eapply NoDupKey_stubs.
@@ -614,7 +616,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma find_fullImports fun_name op_spec ax_spec : List.In (fun_name, (op_spec, ax_spec)) (StringMap.elements content) -> LabelMap.find (tgt_label fun_name : label) (fullImports bimports stubs) = Some (tgt_spec fun_name op_spec).
-    Proof.
+    Proof using (exports imports m name_neq op_mod_name_ok).
       intros Hin.
       rewrite fullImports_spec.
       {
@@ -682,7 +684,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       disjoint_ptrs pairs ->
       good_scalars pairs ->
       TransitSafe ax_spec words inputs (make_heap pairs).
-    Proof.
+    Proof using Type.
       simpl.
       intros Hin Hpre Hdisj Hgs.
       unfold TransitSafe.
@@ -715,7 +717,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       disjoint_ptrs pairs ->
       good_scalars pairs ->
       Safe (gl2w (Labels stn), fs stn) (Body op_spec) (vs_callee, make_heap pairs).
-    Proof.
+    Proof using -(ax_mod_name exports imports m op_mod_name).
       intros Hin Hegu Hstr Hfst Hpre Hdisj Hgs.
       eapply strengthen_safe with (env_ax := change_env specs (from_bedrock_label_map (Labels stn), fs stn)).
       {
@@ -744,7 +746,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       let outputs := outputs_gen ret_w words inputs h' in
       let ret_a := ret_a_gen ret_w h' in
       TransitTo ax_spec words inputs outputs ret_w ret_a (make_heap pairs) h'.
-    Proof.
+    Proof using -(ax_mod_name exports imports m op_mod_name).
       simpl.
       intros Hrt Hin Hegu Hstr Hfst Hpre Hdisj Hgs.
       eapply strengthen_runsto with (env_ax := change_env specs (from_bedrock_label_map (Labels stn), fs stn)) in Hrt.
@@ -792,7 +794,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       let ret_a := ret_a_gen ret_w h' in
       let ret := combine_ret ret_w ret_a in
       PostCond ax_spec (List.map (fun x1 => (ADTIn x1, ADTOut x1)) (make_triples pairs outputs)) ret.
-    Proof.
+    Proof using -(ax_mod_name exports imports m op_mod_name).
       simpl; intros Hrt ? ? Hogok; intros.
       eapply runsto_TransitTo in Hrt; eauto.
       unfold TransitTo in *; openhyp.
@@ -849,7 +851,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Import WordMap.WordMap.
 
     Lemma good_vcs ls : List.incl ls (StringMap.elements content) -> vcs (makeVcs bimports stubs (List.map make_stub' ls)).
-    Proof.
+    Proof using All.
       induction ls; simpl; eauto.
       intros Hincl.
       eapply cons_incl_elim in Hincl.
@@ -1078,7 +1080,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem make_module_ok : XCAP.moduleOk make_module.
-    Proof.
+    Proof using All.
       eapply bmoduleOk.
       - eapply ax_mod_name_not_in_imports.
       - eapply no_dup_func_names.

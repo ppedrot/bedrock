@@ -23,10 +23,12 @@ Definition m := bimport[["malloc"!"free" @ [freeS] ]] bmodule "my_free" {{
 Set Printing Coercions.
 
 Lemma wplus_ne : forall (a b c : W), a <> b -> a ^- c <> b ^- c.
+Proof using .
   intros; destruct (weq (a ^- c) (b ^- c)); eauto.
 Qed.
 
 Lemma wminus_0_eq : forall (a b : W), a ^- b = natToW 0 -> a = b.
+Proof using .
   intros.
   destruct (weq a b).
   eauto.
@@ -37,22 +39,27 @@ Lemma wminus_0_eq : forall (a b : W), a ^- b = natToW 0 -> a = b.
 Qed.
 
 Lemma wordToNat_natToW : forall n, goodSize n -> wordToNat (natToW n) = n.
+Proof using .
   intros; eapply wordToNat_natToWord_idempotent; eauto.
 Qed.
 
 Lemma wminus_wplus : forall a b : W, a ^- b ^+ b = a.
+Proof using .
   intros; words.
 Qed.
 
 Lemma plus_minus : forall a b, a + b - b = a.
+Proof using .
   intros; intuition.
 Qed.
 Lemma buf_2_bwd : forall p len, (2 <= len)%nat -> p =?> 2 * (p ^+ $8) =?> (len - 2) ===> p =?> len.
+Proof using .
   destruct len; simpl; intros; try omega.
   destruct len; simpl; intros; try omega.
   sepLemma; eapply allocated_shift_base; [ words | intuition ].
 Qed.
 Lemma consume_the_array : forall ls p, array ls p ===> p =?> length ls.
+Proof using .
   intros; apply ptsto32m_allocated.
 Qed.
 Definition hints : TacPackage.
@@ -63,6 +70,7 @@ Definition hints2 : TacPackage.
 Defined.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; unfold array_with_size.
   sep_auto.
   sep_auto.

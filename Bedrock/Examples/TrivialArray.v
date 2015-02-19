@@ -53,6 +53,7 @@ Hint Rewrite app_length : sepFormula.
 Lemma shift_pos : forall (ls1 ls2 : list W),
   (length ls1 < length (ls1 ++ ls2))%nat
   -> length ls1 + length ls2 = length (ls1 ++ hd (natToW 0) ls2 ^+ natToW 1 :: nil) + length (tl ls2).
+Proof using .
   intros; autorewrite with sepFormula in *;
     destruct ls2; simpl in *; unfold W; omega.
 Qed.
@@ -70,6 +71,7 @@ Ltac pure := pure'; try (apply f_equal; apply shift_pos; pure'); eauto 7.
 
 Lemma nil_front : forall A n,
   n = @length A nil + n.
+Proof using .
   reflexivity.
 Qed.
 
@@ -78,6 +80,7 @@ Hint Immediate nil_front.
 Lemma shift_updN : forall v pending done,
   (length pending > 0)%nat
   -> updN (done ++ pending) (length done) v = done ++ v :: tl pending.
+Proof using .
   induction done; simpl; intuition;
     destruct pending; simpl in *; auto; omega.
 Qed.
@@ -99,6 +102,7 @@ Hint Resolve shift_pos.
 Lemma not_done_yet : forall A (done pending : list A),
   natToW (length done) < $ (length done + length pending)
   -> (length pending > 0)%nat.
+Proof using .
   destruct pending; simpl; intuition;
     rewrite <- plus_n_O in *; unfold natToW in *; nomega.
 Qed.
@@ -109,6 +113,7 @@ Lemma shift_reorg : forall pending,
   (length pending > 0)%nat
   -> hd $0 pending ^+ $1 :: bump (tl pending)
   = bump pending.
+Proof using .
   intros; autorewrite with sepFormula in *; destruct pending; simpl in *; auto; omega.
 Qed.
 
@@ -121,6 +126,7 @@ Lemma now_done : forall A (done pending : list A),
   natToW (length done + length pending) <= $ (length done)
   -> goodSize (length done + length pending)
   -> pending = nil.
+Proof using .
   destruct pending; simpl; intuition; elimtype False; eauto.
 Qed.
 
@@ -129,6 +135,7 @@ Hint Resolve now_done.
 Lemma unbump : forall done pending,
   pending = nil
   -> done ++ pending = done ++ bump pending.
+Proof using .
   intros; subst; reflexivity.
 Qed.
 
@@ -140,6 +147,7 @@ Lemma bound_nat : forall (done pending : list W),
   natToW (length done) < natToW (length done + length pending)
   -> goodSize (length (done ++ hd $0 pending ^+ $1 :: tl pending))
   -> (length done < length done + length pending)%nat.
+Proof using .
   intros; autorewrite with sepFormula N in *; simpl in *;
     apply lt_goodSize'; eauto; destruct pending; simpl in *; eauto using goodSize_weaken.
 Qed.
@@ -151,12 +159,14 @@ Hint Extern 1 (himp _ _ _) => reflexivity.
 Lemma goodSize_prefix : forall a b : list W,
   goodSize (length (a ++ b))
   -> goodSize (length a).
+Proof using .
   intros; autorewrite with sepFormula in *; eapply goodSize_weaken; eauto.
 Qed.
 
 Lemma goodSize_full : forall a b : list W,
   goodSize (length (a ++ b))
   -> goodSize (length a + length b).
+Proof using .
   intros; autorewrite with sepFormula in *; eapply goodSize_weaken; eauto.
 Qed.
 
@@ -166,6 +176,7 @@ Hint Extern 1 (goodSize (length _ + length _)) => eapply goodSize_full; eapply c
 Hint Extern 1 (_ < _)%nat => apply lt_goodSize'; [ assumption | | ].
 
 Theorem arraysOk : moduleOk arrays.
+Proof using .
 (*TIME  Clear Timing Profile. *)
   vcgen; abstract (sep_auto; pure).
 (*TIME  Print Timing Profile. *)

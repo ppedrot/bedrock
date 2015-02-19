@@ -42,6 +42,7 @@ Definition array := bmodule "array" {{
 }}.
 
 Lemma agreeUpTo_0 : forall a b, agreeUpTo a b 0.
+Proof using .
   unfold agreeUpTo; exists nil; simpl; eauto.
 Qed.
 
@@ -52,6 +53,7 @@ Lemma agreeUpTo_S : forall a b n, agreeUpTo a b (wordToNat n)
   -> n < natToW (length b)
   -> goodSize (length a)
   -> agreeUpTo (Array.upd a n (Array.sel b n)) b (wordToNat (n ^+ $1)).
+Proof using .
   unfold agreeUpTo; intros;
     repeat match goal with
              | [ H : Logic.ex _ |- _ ] => destruct H; intuition; subst
@@ -81,6 +83,7 @@ Lemma agreeUpTo_done : forall a b n,
   -> (length a <= n)%nat
   -> (length b <= n)%nat
   -> a = b.
+Proof using .
   unfold agreeUpTo; firstorder; subst.
   rewrite app_length in *.
   assert (length x0 = 0) by omega.
@@ -92,6 +95,7 @@ Qed.
 Local Hint Extern 1 (_ < _) => congruence.
 
 Theorem arrayOk : moduleOk array.
+Proof using .
   vcgen; abstract (sep_auto;
     match goal with
       | [ |- himp _ (Array.array ?A _) (Array.array ?B _) ] =>

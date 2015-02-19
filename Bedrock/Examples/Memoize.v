@@ -35,11 +35,13 @@ Module Memo : MEMO.
 
   Theorem memo_fwd : forall (f : fn) p,
     memo f p ===> Ex pc, Ex lastIn, Ex lastOut, (p ==*> pc, lastIn, lastOut) * [| lastOut = app f lastIn |] * goodMemo f pc.
+  Proof using .
     unfold memo; sepLemma.
   Qed.
 
   Theorem memo_bwd : forall f p,
     (Ex pc, Ex lastIn, Ex lastOut, (p ==*> pc, lastIn, lastOut) * [| lastOut = app f lastIn|] * goodMemo f pc) ===> memo f p.
+  Proof using .
     unfold memo; sepLemma.
   Qed.
 End Memo.
@@ -123,6 +125,7 @@ Lemma goodMemo_elim : forall specs f pc P st,
             /\ Ex vs', ![ ^[locals ("rp" :: "x" :: nil) vs' 0 st#Sp] * fr * inv ] (fst st, st'))
           ---> rpre (fst st, st'))
         ---> pre st)%PropX.
+Proof using .
   Local Opaque locals.
   rewrite sepFormula_eq; repeat (propxFo; repeat (eauto; esplit)).
   specialize (H4 (a, b) (fun a_b => fr (fst a_b) (snd a_b)) rpre).
@@ -147,6 +150,7 @@ Lemma goodMemo_intro : forall specs pre inv f pc,
           ![^[locals ("rp" :: "x" :: nil) vs' 0 (st) # (Sp)] * fr * inv]
           (fst st, st')) ---> rpre (fst st, st')))%PropX ---> pre st))
   -> himp specs inv (goodMemo f pc).
+Proof using .
   intros.
   unfold goodMemo, himp; propxFo.
   imply_simp unf.
@@ -202,5 +206,6 @@ Ltac post :=
 Ltac sep := post; PreAutoSep.sep hints; auto.
 
 Theorem memoizeMOk : moduleOk memoizeM.
+Proof using .
   vcgen; abstract sep.
 Qed.

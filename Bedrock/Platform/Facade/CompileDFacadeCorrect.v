@@ -107,7 +107,7 @@ Section ADTValue.
     Infix "===" := equiv (at level 70).
 
     Lemma equiv_sym a b : a === b -> b === a.
-    Proof.
+    Proof using Type.
       intros H; unfold equiv in *.
       openhyp.
       repeat try_split; eauto.
@@ -115,7 +115,7 @@ Section ADTValue.
     Qed.
 
     Lemma equiv_trans a b c : a === b -> b === c -> a === c.
-    Proof.
+    Proof using Type.
       intros H1 H2.
       unfold equiv in *.
       openhyp.
@@ -129,7 +129,7 @@ Section ADTValue.
           as equiv_rel.
 
     Lemma Equal_not_mapsto_adt (st st' : State) k : st == st' -> not_mapsto_adt k st = not_mapsto_adt k st'.
-    Proof.
+    Proof using Type.
       intros Heq.
       unfold not_mapsto_adt, is_mapsto_adt.
       rewrite Heq.
@@ -139,12 +139,12 @@ Section ADTValue.
     Import Logic.
 
     Global Add Morphism (@not_mapsto_adt ADTValue) with signature eq ==> Equal ==> eq as Equal_not_mapsto_adt_m.
-    Proof.
+    Proof using Type.
       intros; eapply Equal_not_mapsto_adt; eauto.
     Qed.
 
     Lemma Equal_no_adt_in st st' : st == st' -> (no_adt_in st <-> no_adt_in st').
-    Proof.
+    Proof using Type.
       intros Heq.
       unfold no_adt_in in *.
       split; intros H.
@@ -155,12 +155,12 @@ Section ADTValue.
     Qed.
 
     Global Add Morphism no_adt_in with signature Equal ==> iff as Equal_no_adt_in_m.
-    Proof.
+    Proof using Type.
       intros; eapply Equal_no_adt_in; eauto.
     Qed.
 
     Lemma Equal_equiv a a' b b' : a == a' -> b == b' -> (a === b <-> a' === b').
-    Proof.
+    Proof using Type.
       intros Ha Hb.
       unfold equiv in *.
       split; intro H.
@@ -174,12 +174,12 @@ Section ADTValue.
 
     Global Add Morphism equiv
         with signature Equal ==> Equal ==> iff as Equal_equiv_m.
-    Proof.
+    Proof using Type.
       intros; eapply Equal_equiv; eauto.
     Qed.
 
     Lemma find_adt_equiv st1 st2 k a : find k st1 = Some (ADT a) -> st1 === st2 -> find k st2 = Some (ADT a).
-    Proof.
+    Proof using Type.
       intros Hf Heqv.
       unfold equiv in *.
       destruct Heqv as [Heqon [Hnadt1 Hnadt2]].
@@ -198,7 +198,7 @@ Section ADTValue.
   Existing Instance equiv_rel_Transitive.
 
   Lemma not_in_no_adt_in_add s k v st : no_adt_in s st -> ~ StringSet.In k s -> no_adt_in s (add k v st).
-  Proof.
+  Proof using Type.
     intros H Hnin.
     unfold no_adt_in in *.
     intros k' Hk'.
@@ -212,7 +212,7 @@ Section ADTValue.
   Qed.
 
   Lemma no_adt_in_remove s k st : no_adt_in s st -> no_adt_in s (remove k st).
-  Proof.
+  Proof using Type.
     intros H.
     unfold no_adt_in in *.
     intros k' Hk'.
@@ -232,7 +232,7 @@ Section ADTValue.
   Infix "===" := equivf (at level 70).
 
   Lemma not_mapsto_adt_no_adt_in x st : not_mapsto_adt x st = true -> no_adt_in (StringSet.singleton x) st.
-  Proof.
+  Proof using Type.
     intros Hnadt.
     unfold no_adt_in.
     intros k Hk.
@@ -242,7 +242,7 @@ Section ADTValue.
   Qed.
 
   Lemma no_adt_in_not_mapsto_adt x st : no_adt_in (StringSet.singleton x) st -> not_mapsto_adt x st = true.
-  Proof.
+  Proof using Type.
     intros H.
     unfold no_adt_in in *.
     eapply H.
@@ -250,7 +250,7 @@ Section ADTValue.
   Qed.
 
   Lemma equiv_refl st : not_mapsto_adt fun_ptr_varname st = true -> st === st.
-  Proof.
+  Proof using Type.
     intros Hnadt.
     unfold equiv.
     repeat try_split.
@@ -260,7 +260,7 @@ Section ADTValue.
   Qed.
 
   Lemma equiv_nma_fpv st1 st2 : st1 === st2 -> not_mapsto_adt fun_ptr_varname st2 = true.
-  Proof.
+  Proof using Type.
     intros Heqv.
     unfold equiv in *.
     openhyp.
@@ -268,7 +268,7 @@ Section ADTValue.
   Qed.
 
   Lemma not_find_fpv_adt st1 st2 (a : ADTValue) : st1 === st2 -> find fun_ptr_varname st2 <> Some (ADT a).
-  Proof.
+  Proof using Type.
     intros Heqv Hf.
     eapply equiv_nma_fpv in Heqv.
     eapply not_mapsto_adt_iff in Heqv.
@@ -277,7 +277,7 @@ Section ADTValue.
   Qed.
 
   Lemma no_adt_in_add_sca k w st : no_adt_in (StringSet.singleton k) (add k (SCA w) st).
-  Proof.
+  Proof using Type.
     unfold no_adt_in.
     intros k' Hk'.
     eapply StringSetFacts.singleton_iff in Hk'.
@@ -288,7 +288,7 @@ Section ADTValue.
   Qed.
 
   Lemma equiv_intro st1 st2 w st1' : st1' === st2 -> st1 == add fun_ptr_varname (SCA w) st2 -> st1 === st2.
-  Proof.
+  Proof using Type.
     intros Heqv Heq.
     unfold equiv in *.
     destruct Heqv as [Heqon [Hnadt1 Hnadt2]].
@@ -303,7 +303,7 @@ Section ADTValue.
   Qed.
 
   Lemma find_equiv_fpv (st1 st2 : State) x : st1 === st2 -> x <> fun_ptr_varname -> find x st1 = find x st2.
-  Proof.
+  Proof using Type.
     intros Heq Hgn.
     unfold equiv in *.
     simpl in *.
@@ -314,7 +314,7 @@ Section ADTValue.
   Arguments find_equiv_fpv st1 st2 [_] _ _.
 
   Lemma find_equiv st1 st2 x : st1 === st2 -> is_good_varname x = true -> find x st1 = find x st2.
-  Proof.
+  Proof using Type.
     intros Heq Hgn.
     unfold equiv in *.
     simpl in *.
@@ -335,12 +335,12 @@ Section ADTValue.
     Import Logic.
 
     Global Add Morphism (find x) with signature equivf ==> eq as find_equiv_m.
-    Proof.
+    Proof using All.
       intros; eapply find_equiv; eauto.
     Qed.
 
     Lemma not_mapsto_adt_equiv st1 st2 : st1 === st2 -> not_mapsto_adt x st1 = not_mapsto_adt x st2.
-    Proof.
+    Proof using All.
       intros Heq.
       unfold not_mapsto_adt, is_mapsto_adt.
       rewrite Heq.
@@ -348,7 +348,7 @@ Section ADTValue.
     Qed.
 
     Lemma add_equiv st1 st2 v : st1 === st2 -> add x v st1 === add x v st2.
-    Proof.
+    Proof using All.
       intros Heq.
       unfold equiv in *.
       destruct Heq as [Heqon [Hnadt1 Hnadt2]].
@@ -367,7 +367,7 @@ Section ADTValue.
     Qed.
 
     Lemma remove_equiv st1 st2 : st1 === st2 -> remove x st1 === remove x st2.
-    Proof.
+    Proof using All.
       intros Heq.
       unfold equiv in *.
       destruct Heq as [Heqon [Hnadt1 Hnadt2]].
@@ -386,7 +386,7 @@ Section ADTValue.
   End good_varname_x.
 
   Lemma mapM_find_equiv st1 st2 ls : st1 === st2 -> List.forallb is_good_varname ls = true -> mapM (sel st1) ls = mapM (sel st2) ls.
-  Proof.
+  Proof using Type.
     induction ls; simpl; intros Heqv Hgn.
     - eauto.
     - rename a into k.
@@ -401,7 +401,7 @@ Section ADTValue.
   Arguments mapM_find_equiv st1 st2 [_] _ _.
 
   Lemma map_find_equiv st1 st2 ls : st1 === st2 -> List.forallb is_good_varname ls = true -> List.map (sel st1) ls = List.map (sel st2) ls.
-  Proof.
+  Proof using Type.
     induction ls; simpl; intros Heqv Hgn.
     - eauto.
     - rename a into x.
@@ -414,7 +414,7 @@ Section ADTValue.
   Arguments map_find_equiv st1 st2 [_] _ _.
 
   Lemma eval_equiv st1 st2 e : st1 === st2 -> is_syntax_ok_e e = true -> eval st1 e = eval st2 e.
-  Proof.
+  Proof using Type.
     induction e; simpl; intros Heqv Hsyn.
     - eapply is_syntax_ok_e_var_elim in Hsyn.
       eapply find_equiv; eauto.
@@ -431,7 +431,7 @@ Section ADTValue.
   Arguments eval_equiv st1 st2 [_] _ _.
 
   Lemma eval_bool_equiv st1 st2 e : st1 === st2 -> is_syntax_ok_e e = true -> eval_bool st1 e = eval_bool st2 e.
-  Proof.
+  Proof using Type.
     intros Heq Hsyn.
     unfold eval_bool in *.
     rewrite (eval_equiv st1 st2) by eauto; eauto.
@@ -439,21 +439,21 @@ Section ADTValue.
   Arguments eval_bool_equiv st1 st2 [_] _ _.
 
   Lemma is_false_equiv st1 st2 e : is_false st1 e -> st1 === st2 -> is_syntax_ok_e e = true -> is_false st2 e.
-  Proof.
+  Proof using Type.
     intros H Heq Hsyn.
     unfold is_false in *.
     rewrite (eval_bool_equiv st1 st2) in H by eauto; eauto.
   Qed.
 
   Lemma is_true_equiv st1 st2 e : is_true st1 e -> st1 === st2 -> is_syntax_ok_e e = true -> is_true st2 e.
-  Proof.
+  Proof using Type.
     intros H Heq Hsyn.
     unfold is_true in *.
     rewrite (eval_bool_equiv st1 st2) in H by eauto; eauto.
   Qed.
 
   Lemma no_adt_leak_equiv st1 st2 input avars rvar : no_adt_leak input avars rvar st2 -> st1 === st2 -> no_adt_leak input avars rvar st1.
-  Proof.
+  Proof using Type.
     intros H Heq.
     unfold no_adt_leak in *.
     intros; eapply H; eauto.
@@ -461,7 +461,7 @@ Section ADTValue.
   Qed.
 
   Lemma add_remove_many_equiv args : forall types output1 output2 st1 st2, st1 === st2 -> List.forallb is_good_varname args = true -> output_eqv types output1 output2 -> length args = length types -> add_remove_many args types output1 st1 === add_remove_many args types output2 st2.
-  Proof.
+  Proof using Type.
     induction args; destruct types; destruct output1; destruct output2; simpl; try solve [intros; try discriminate; intuition eauto].
     intros st1 st2 Heqv Hgn Hoeqv Hlen.
     inject Hlen.
@@ -480,7 +480,7 @@ Section ADTValue.
   Qed.
 
   Lemma args_name_ok_make_map avars input : forallb is_good_varname avars = true -> @not_mapsto_adt ADTValue fun_ptr_varname (make_map avars input) = true.
-  Proof.
+  Proof using Type.
     intros Hgn.
     eapply find_none_not_mapsto_adt.
     eapply not_find_in_iff.
@@ -529,7 +529,7 @@ Section ADTValue.
            output_eqv input (List.map (sel s_callee_st') avars) (List.map (sel t_callee_st') avars) /\
            sel s_callee_st' retvar = sel t_callee_st' retvar /\
            no_adt_leak input avars retvar s_callee_st').
-  Proof.
+  Proof using Type.
     induction 1; simpl; intros s_env Henv; (split; [destruct s; unfold_all; simpl in *; try solve [intros; try discriminate]; intros Hcomp Hsyn s_st Hsf Heqv | try solve [intros; try discriminate]]).
     {
       (* skip *)
@@ -831,7 +831,7 @@ Section ADTValue.
            exists s_st',
              RunsTo s_env s s_st s_st' /\
              s_st' === t_st').
-  Proof.
+  Proof using Type.
     intros; eapply compile_runsto'; eauto.
   Qed.
 
@@ -845,7 +845,7 @@ Section ADTValue.
       s_st === t_st ->
       let t := compile s in
       FSafe t_env t t_st.
-  Proof.
+  Proof using Type.
     simpl; intros Hsfs Hsyn t_env t_st Henv Heqv.
     eapply
       (Safe_coind

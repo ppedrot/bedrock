@@ -21,11 +21,13 @@ Module Adt : ADT.
 
   Theorem cell_fwd : forall n c, cell n c ===> [| c <> 0 |] * [| freeable c 2 |]
     * Ex junk, c ==*> n, junk.
+  Proof using .
     unfold cell; sepLemma.
   Qed.
 
   Theorem cell_bwd : forall n (c : W), [| c <> 0 |] * [| freeable c 2 |]
     * (Ex junk, c ==*> n, junk) ===> cell n c.
+  Proof using .
     unfold cell; sepLemma.
   Qed.
 End Adt.
@@ -75,5 +77,6 @@ Definition m := bimport [[ "malloc"!"malloc" @ [mallocS], "malloc"!"free" @ [fre
 Local Hint Extern 1 (@eq W _ _) => words.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep hints; eauto).
 Qed.

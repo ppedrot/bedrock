@@ -28,7 +28,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics.
   Require Import Bedrock.Platform.Cito.ListFacts4.
   Lemma no_alias_tail ls : forall e, no_alias (e :: ls) -> no_alias ls.
-  Proof.
+  Proof using Type.
     unfold no_alias; intros e Hna.
     intros i j p ai aj Hi Hj.
     assert (S i = S j).
@@ -36,17 +36,19 @@ Section ADTValue.
     inject H; eauto.
   Qed.
   Lemma not_reachable_p_incl ls1 ls2 p : List.incl ls1 ls2 -> not_reachable_p p ls2 -> not_reachable_p p ls1.
+  Proof using Type.
     unfold not_reachable_p; intros Hin Hnr.
     intros i v Hi.
     eapply incl_nth_error in Hi; eauto; openhyp.
     eapply Hnr in H; eauto; openhyp.
   Qed.
   Lemma not_reachable_p_tail ls e p : not_reachable_p p (e :: ls) -> not_reachable_p p ls.
+  Proof using Type.
     intros; eapply not_reachable_p_incl; eauto.
     eapply incl_tl; eapply incl_refl; eauto.
   Qed.
   Lemma not_not_reachable_p p a ls : ~ not_reachable_p p ((p, ADT a) :: ls).
-  Proof.
+  Proof using Type.
     unfold not_reachable_p.
     intros H.
     specialize (H 0 (ADT a)).
@@ -55,7 +57,7 @@ Section ADTValue.
     discriminate.
   Qed.
   Lemma no_alias_not_reachable_p p a ls : no_alias ((p, ADT a) :: ls) -> not_reachable_p p ls.
-  Proof.
+  Proof using Type.
     intros Hna.
     unfold not_reachable_p.
     intros i v Hi.
@@ -74,7 +76,7 @@ Section ADTValue.
       ((not_reachable_p p words_cinput /\ find p h = Some a) \/
        exists i input, nth_error triples i = Some {| Word := p; ADTIn := ADT input; ADTOut := Some a |}) ->
       find p (List.fold_left store_out triples h) = Some a.
-  Proof.
+  Proof using Type.
     induction triples; simpl in *.
     intros h ? H.
     openhyp.
@@ -118,7 +120,7 @@ Section ADTValue.
        forall a o, ~List.In {| Word := k; ADTIn := ADT a; ADTOut := o |} ls)
       \/ exists a,
            List.In {| Word := k; ADTIn := ADT a; ADTOut := Some v |} ls.
-  Proof.
+  Proof using Type.
     induction ls; simpl; intuition.
     apply IHls in H; intuition.
 
@@ -149,7 +151,7 @@ Section ADTValue.
     find p (List.fold_left store_out triples h) = Some a ->
     (not_reachable_p p words_cinput /\ find p h = Some a) \/
     exists i input, nth_error triples i = Some {| Word := p; ADTIn := ADT input; ADTOut := Some a |}.
-  Proof.
+  Proof using Type.
     intros Hwid Hod Hf.
     subst.
     eapply find_mapsto_iff in Hf.
@@ -182,7 +184,7 @@ Section ADTValue.
     ((not_reachable_p p words_cinput /\ find p h = Some a) \/
      exists i input, nth_error triples i = Some {| Word := p; ADTIn := ADT input; ADTOut := Some a |}) ->
     find p (List.fold_left store_out triples h) = Some a.
-  Proof.
+  Proof using Type.
     intros; subst; eapply fold_bwd; eauto.
   Qed.
   Require Import Bedrock.Platform.Cito.SemanticsFacts7.
@@ -195,7 +197,7 @@ Section ADTValue.
       exists i input,
         nth_error words_cinput i = Some (p, ADT input) /\
         nth_error coutput i = Some (Some a))).
-  Proof.
+  Proof using Type.
     intros Hna Hl.
     split.
     intros Hf.
@@ -233,7 +235,7 @@ Section ADTValue.
   Open Scope fmap_scope.
 
   Lemma find_ret_doesn't_matter p addr ret triples h h1 : ret_doesn't_matter p addr ret -> find p (heap_upd_option (fold_left store_out triples h) (fst (decide_ret addr ret)) (snd (decide_ret addr ret)) - h1) = find p (fold_left store_out triples h - h1).
-  Proof.
+  Proof using Type.
     intros Hdm; destruct Hdm.
     2 : solve [openhyp; subst; simpl; eauto].
     destruct ret; simpl in *.
@@ -248,7 +250,7 @@ Section ADTValue.
   Definition reachable_heap (vs : Locals.vals) argvars (input : list Value) := make_mapM (List.map (fun x => vs x) argvars) (only_adt input).
 
   Lemma in_reachable_heap_iff vs ks : forall ins p, length ks = length ins -> (In p (reachable_heap vs ks ins) <-> exists i k a, nth_error ks i = Some k /\ nth_error ins i = Some (ADT a) /\ vs k = p).
-  Proof.
+  Proof using Type.
     unfold reachable_heap, only_adt; intros ins p Hl.
     split.
     intros Hi.
@@ -279,7 +281,7 @@ Section ADTValue.
   Definition no_aliasM (vs : Locals.vals) ks ins := no_dupM (List.map (fun x => vs x) ks) (only_adt ins).
 
   Lemma find_Some_reachable_heap_iff vs ks : forall ins p a, length ks = length ins -> no_aliasM vs ks ins -> (find p (reachable_heap vs ks ins) = Some a <-> exists i k, nth_error ks i = Some k /\ nth_error ins i = Some (ADT a) /\ vs k = p).
-  Proof.
+  Proof using Type.
     unfold reachable_heap, only_adt; intros ins p a Hl Hna.
     split.
     intros Hi.

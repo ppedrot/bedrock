@@ -26,7 +26,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
            end.
 
   Lemma is_heap_upd_option_fwd h addr a : separated h addr a -> is_heap_upd_option h addr a ===> layout_option addr a * is_heap h.
-  Proof.
+  Proof using .
     intros Hsep.
     unfold is_heap_upd_option, separated, Semantics.separated in *.
     destruct a as [a| ]; simpl in *.

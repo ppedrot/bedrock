@@ -281,7 +281,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
     Lemma fold_map_fusion : forall m a,
       equ (FM.fold G (FM.map F m) a)
       (FM.fold (fun k x acc => G k (F x) acc) m a).
-    Proof.
+    Proof using All.
       intro. eapply PROPS.map_induction with (m := m); intros.
         rewrite PROPS.fold_Empty; eauto with typeclass_instances.
         rewrite PROPS.fold_Empty; eauto with typeclass_instances. eapply equ_Equiv.
@@ -321,7 +321,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
 
     Lemma remove_empty : forall T k,
       FM.Equal (FM.remove k (FM.empty T)) (FM.empty _).
-    Proof.
+    Proof using .
       clear. unfold FM.Equal; intros.
       rewrite FACTS.remove_o. rewrite FACTS.empty_o. destruct (FM.E.eq_dec k y); auto.
     Qed.
@@ -329,7 +329,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
     Lemma remove_Empty : forall T k (m : FM.t T),
       FM.Empty m ->
       FM.Equal (FM.remove k m) m.
-    Proof.
+    Proof using .
       clear. unfold FM.Equal; intros.
       rewrite FACTS.remove_o. consider (FM.E.eq_dec k y); auto.
       eapply find_empty_iff in H; eauto.
@@ -338,7 +338,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
     Lemma map_remove : forall k m,
       FM.Equal (FM.map F (FM.remove k m))
                (FM.remove k (FM.map F m)).
-    Proof.
+    Proof using Type.
       clear; unfold FM.Equal; intros.
       repeat (rewrite FACTS.map_o || rewrite FACTS.remove_o).
       destruct (FM.E.eq_dec k y); reflexivity.
@@ -347,7 +347,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
     Lemma map_add : forall k v m,
       FM.Equal (FM.map F (FM.add k v m))
                (FM.add k (F v) (FM.map F m)).
-    Proof.
+    Proof using Type.
       clear; unfold FM.Equal; intros.
       repeat (rewrite FACTS.map_o || rewrite FACTS.add_o).
       destruct (FM.E.eq_dec k y); reflexivity.
@@ -376,7 +376,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
     Hypothesis refl : Reflexive R.
 
     Global Instance Refl_Equiv : Reflexive (FM.Equiv R).
-    Proof.
+    Proof using All.
       revert refl; clear.
       red. unfold FM.Equiv. firstorder.
       apply FACTS.find_mapsto_iff in H.
@@ -393,7 +393,7 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
         ~FM.In k n /\
         FM.Equiv R m n /\
         R v v'.
-    Proof.
+    Proof using Type.
       intros. unfold PROPS.Add in *.
       destruct H. generalize (H1 k). intros.
       rewrite FACTS.add_o in *. destruct (FM.E.eq_dec k k); try solve [ exfalso; auto ].
@@ -427,15 +427,15 @@ Module MoreFMapFacts (FM : FMapInterface.WS)
 
     Hypothesis sym : Symmetric R.
     Global Instance Sym_Equiv : Symmetric (FM.Equiv R).
-    Proof.
-      clear refl. red. unfold FM.Equiv. intros.
+    Proof using sym.
+      (*clear refl.*) red. unfold FM.Equiv. intros.
       intuition; eauto; firstorder.
     Qed.
 
     Hypothesis trans : Transitive R.
     Global Instance Trans_Equiv : Transitive (FM.Equiv R).
-    Proof.
-      clear refl sym. red. unfold FM.Equiv. intros.
+    Proof using trans.
+      (* clear refl sym. *) red. unfold FM.Equiv. intros.
       intuition.
       eapply H. eapply H1. auto.
       eapply H1; eapply H; auto.

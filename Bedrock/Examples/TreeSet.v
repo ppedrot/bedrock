@@ -52,10 +52,12 @@ Module Bst : BST.
     * Ex t, Ex r, Ex junk, p =*> r * (p ^+ $4) =*> junk * bst' s t r.
 
   Theorem bst'_extensional : forall s t p, HProp_extensional (bst' s t p).
+  Proof using .
     destruct t; reflexivity.
   Qed.
 
   Theorem bst_extensional : forall s p, HProp_extensional (bst s p).
+  Proof using .
     reflexivity.
   Qed.
 
@@ -65,31 +67,37 @@ Module Bst : BST.
 
   Theorem bst_fwd : forall s p, bst s p ===> [| freeable p 2 |]
     * Ex t, Ex r, Ex junk, p =*> r * (p ^+ $4) =*> junk * bst' s t r.
+  Proof using .
     unfold bst; sepLemma.
   Qed.
 
   Theorem bst_bwd : forall s p, ([| freeable p 2 |]
     * Ex t, Ex r, Ex junk, p =*> r * (p ^+ $4) =*> junk * bst' s t r) ===> bst s p.
+  Proof using .
     unfold bst; sepLemma.
   Qed.
 
   Theorem nil_fwd : forall s t (p : W), p = 0 -> bst' s t p ===> [| s %= empty /\ t = Leaf |].
+  Proof using .
     destruct t; sepLemma.
   Qed.
 
   Theorem nil_bwd : forall s t (p : W), p = 0 -> [| s %= empty /\ t = Leaf |] ===> bst' s t p.
+  Proof using .
     destruct t; sepLemma.
   Qed.
 
   Theorem cons_fwd : forall s t (p : W), p <> 0 -> bst' s t p ===>
     Ex t1, Ex t2, Ex p1, Ex v, Ex p2, (p ==*> p1, v, p2) * bst' (s %< v) t1 p1 * bst' (s %> v) t2 p2
     * [| freeable p 3 /\ t = Node t1 t2 /\ v %in s |].
+  Proof using .
     destruct t; sepLemma.
   Qed.
 
   Theorem cons_bwd : forall s t (p : W), p <> 0 ->
     (Ex t1, Ex t2, Ex p1, Ex v, Ex p2, (p ==*> p1, v, p2) * bst' (s %< v) t1 p1 * bst' (s %> v) t2 p2
     * [| freeable p 3 /\ t = Node t1 t2 /\ v %in s |]) ===> bst' s t p.
+  Proof using .
     destruct t; sepLemma;
       match goal with
         | [ H : Node _ _ = Node _ _ |- _ ] => injection H; sepLemma
@@ -303,6 +311,7 @@ Hint Rewrite Nat2N.id : N.
 Lemma exhausted_cases : forall a b : W, a <> b
   -> ~(a < b)
   -> a > b.
+Proof using .
   intros.
   assert (wordToN a <> wordToN b) by (generalize wordToN_inj; firstorder).
   nomega.
@@ -313,6 +322,7 @@ Local Hint Extern 5 (@eq W _ _) => words.
 Local Hint Extern 3 (himp _ _ _) => apply bst'_set_extensional.
 
 Theorem bstMOk : moduleOk bstM.
+Proof using .
 (*TIME idtac "tree-set:verify". Time *)
   vcgen; abstract (sep hints; auto).
 (*TIME Time *)Qed.

@@ -102,6 +102,7 @@ Hint Extern 1 (@eq W _ _) => words.
 Lemma le_40 : forall w : W,
   w <= natToW 40
   -> (wordToNat w <= 40)%nat.
+Proof using .
   intros; pre_nomega.
   rewrite wordToNat_natToWord_idempotent in * by reflexivity; omega.
 Qed.
@@ -116,5 +117,6 @@ Ltac t :=
   sep hints; auto.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.

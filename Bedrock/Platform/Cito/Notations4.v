@@ -64,6 +64,7 @@ Section ADTValue.
   Theorem lt0_false : forall (n : string) env v v',
                         is_false (0 < n)%expr env v v'
                         -> ($0 >= sel (fst v') n)%word.
+  Proof using Type.
     intros.
     hnf in H.
     simpl in H.
@@ -76,6 +77,7 @@ Section ADTValue.
   Theorem lt0_true : forall (n : string) env v v',
                        is_true (0 < n)%expr env v v'
                        -> ($0 < sel (fst v') n)%word.
+  Proof using Type.
     intros.
     hnf in H.
     simpl in H.
@@ -88,6 +90,7 @@ Section ADTValue.
   Import List.
 
   Lemma map_length_eq : forall A B ls1 ls2 (f : A -> B), List.map f ls1 = ls2 -> length ls1 = length ls2.
+  Proof using .
     intros.
     eapply f_equal with (f := @length _) in H.
     simpl in *; rewrite map_length in *; eauto.
@@ -104,6 +107,7 @@ Section ADTValue.
     end.
 
   Lemma triples_intro : forall triples words in_outs, words = List.map (@Word _) triples -> List.map (fun x => (ADTIn x, ADTOut x)) triples = in_outs -> triples = make_triples_2 words in_outs.
+  Proof using Type.
     induction triples; destruct words; destruct in_outs; simpl in *; intuition.
     f_equal; intuition.
     destruct a; destruct p; simpl in *.

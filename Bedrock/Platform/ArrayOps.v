@@ -109,5 +109,6 @@ Qed.
 Local Hint Immediate goodBound.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep_auto; (descend; eauto)).
 Qed.

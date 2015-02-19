@@ -38,6 +38,7 @@ Definition m := cmodule "fact" {{
 }}.
 
 Lemma good : IsGoodModule m.
+Proof using .
   good_module.
 Qed.
 
@@ -77,6 +78,7 @@ Require Import Bedrock.Platform.Cito.WordFacts2 Bedrock.Platform.Cito.WordFacts5
 Lemma fact_step : forall n,
   ($0 < n)%word
   -> fact_w n = n ^* fact_w (n ^- $1).
+Proof using .
   intros.
   unfold fact_w.
   rewrite wordToNat_positive by assumption.
@@ -107,6 +109,7 @@ Import LinkSpecMake.
 Require Import Bedrock.Platform.Cito.GeneralTactics2.
 
 Lemma specs_good : specs_equal specs modules imports.
+Proof using .
   split; intros.
 
   unfold label_mapsto, specs in *.
@@ -146,6 +149,7 @@ Qed.
 Hint Immediate lt0_false lt0_true.
 
 Lemma vcs_good : and_all (vc body empty_precond) specs.
+Proof using .
   unfold empty_precond; cito_vcs body; words.
 Qed.
 
@@ -155,6 +159,7 @@ Theorem final : forall n x r,
   ($0 >= n)%word
   -> x = r ^* fact_w n
   -> r = x.
+Proof using .
   intros; subst.
   assert (n = $0) by (apply wordToNat_inj; nomega).
   subst.
@@ -169,11 +174,13 @@ Import LinkSpecMake.
 Hint Resolve specs_good.
 
 Lemma body_runsto : forall stn fs v v', env_good_to_use modules imports stn fs -> RunsTo (from_bedrock_label_map (Labels stn), fs stn) (Body f) v v' -> sel (fst v') (RetVar f) = fact_w (sel (fst v) "n") /\ snd v' = snd v.
+Proof using .
   cito_runsto f empty_precond vcs_good; eauto.
   eapply specs_equal_agree; eauto.
 Qed.
 
 Lemma body_safe : forall stn fs v, env_good_to_use modules imports stn fs -> Safe (from_bedrock_label_map (Labels stn), fs stn) (Body f) v.
+Proof using .
   cito_safe f empty_precond vcs_good.
   eapply specs_equal_agree; eauto.
 Qed.
@@ -187,6 +194,7 @@ Require Import Bedrock.Platform.Cito.GeneralTactics3.
 Require Import Bedrock.Platform.Cito.BedrockTactics.
 
 Theorem top_ok : moduleOk top.
+Proof using .
   vcgen.
 
   sep_auto.
@@ -243,5 +251,6 @@ Qed.
 Definition all := link top (compile_to_bedrock modules imports).
 
 Theorem all_ok : moduleOk all.
+Proof using .
   link0 top_ok.
 Qed.

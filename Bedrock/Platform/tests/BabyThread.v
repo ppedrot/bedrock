@@ -33,6 +33,7 @@ Definition m := bimport [[ "scheduler"!"init" @ [initS], "scheduler"!"exit" @ [e
   }}.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep_auto; auto).
 Qed.
 

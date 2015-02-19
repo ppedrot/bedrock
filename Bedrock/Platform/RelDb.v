@@ -63,6 +63,7 @@ Section preds.
     * [| length bs = wordToNat len |] * [| length cols = length s |] * [| inBounds len cols |]
     * [| p <> 0 |] * [| freeable p (2 + length s + length s) |]
     * [| buf <> 0 |] * [| freeable8 buf (length bs) |].
+  Proof using Type.
     unfold row; sepLemma.
   Qed.
 
@@ -72,6 +73,7 @@ Section preds.
     * [| length bs = wordToNat len |] * [| length cols = length s |] * [| inBounds len cols |]
     * [| p <> 0 |] * [| freeable p (2 + length s + length s) |]
     * [| buf <> 0 |] * [| freeable8 buf (length bs) |]) ===> row p.
+  Proof using Type.
     unfold row; sepLemma.
   Qed.
 
@@ -79,11 +81,13 @@ Section preds.
 
   Theorem rows_cons_fwd : forall (dummy : W) p ps,
     rows dummy (p :: ps) ===> row p * rows dummy ps.
+  Proof using Type.
     sepLemma.
   Qed.
 
   Theorem rows_cons_bwd : forall (dummy : W) ps, dummy <> 0
     -> (Ex p, Ex ps', Ex dummy', [| ps = p :: ps' |] * row p * rows dummy' ps') ===> rows dummy ps.
+  Proof using Type.
     destruct ps; simpl; unfold row; sepLemma; eauto;
       match goal with
         | [ H : _ :: _ = _ :: _ |- _ ] => injection H; clear H; intros; subst; sepLemma
@@ -94,10 +98,12 @@ Section preds.
     Ex p', Ex ls, p =*> p' * sll ls p' * rows p' ls.
 
   Theorem table_fwd : forall p, table p ===> Ex p', Ex ls, p =*> p' * sll ls p' * rows p' ls.
+  Proof using Type.
     unfold table; sepLemma.
   Qed.
 
   Theorem table_bwd : forall p, (Ex p', Ex ls, p =*> p' * sll ls p' * rows p' ls) ===> table p.
+  Proof using Type.
     unfold table; sepLemma.
   Qed.
 End preds.
@@ -111,18 +117,21 @@ Fixpoint zip A (ls1 ls2 : list A) : list (A * A) :=
 Lemma length_zip : forall A (ls1 ls2 : list A),
   length ls1 = length ls2
   -> length (zip ls1 ls2) = length ls1.
+Proof using .
   induction ls1; destruct ls2; simpl; intuition.
 Qed.
 
 Lemma posl_zip : forall ls1 ls2,
   length ls1 = length ls2
   -> posl (zip ls1 ls2) = ls1.
+Proof using .
   induction ls1; destruct ls2; simpl; intuition; f_equal; auto.
 Qed.
 
 Lemma lenl_zip : forall ls1 ls2,
   length ls1 = length ls2
   -> lenl (zip ls1 ls2) = ls2.
+Proof using .
   induction ls1; destruct ls2; simpl; intuition; f_equal; auto.
 Qed.
 
@@ -131,6 +140,7 @@ Lemma create_len_pos : forall base len off,
   ===> Ex ls, array (posl ls) (base ^+ natToW off)
   * array (lenl ls) (base ^+ natToW off ^+ natToW (len * 4))
   * [| length ls = len |].
+Proof using .
   intros.
   eapply Himp_trans; [ eapply allocated_split; instantiate (1 := len); omega | ].
   eapply Himp_trans; [ eapply Himp_star_frame; apply MoreArrays.allocate_array' | ].
@@ -148,6 +158,7 @@ Import Div2.
 Definition even n := exists k, n = k + k.
 
 Lemma div2_double' : forall n, div2 (n + n) = n.
+Proof using .
   induction n; simpl; try rewrite <- plus_n_Sm; intuition.
 Qed.
 
@@ -161,6 +172,7 @@ Lemma create_len_pos_div2 : forall base len off,
   ===> Ex ls, array (posl ls) (base ^+ natToW off)
   * array (lenl ls) (base ^+ natToW off ^+ natToW (div2 len * 4))
   * [| length ls = div2 len |].
+Proof using .
   destruct 1; subst; intros; rewrite div2_double'; apply create_len_pos.
 Qed.
 
@@ -170,11 +182,13 @@ Theorem append_bwd_tagged : forall p' ls p,
   (Ex ls', Ex x, Ex p'', [| ls = ls' ++ x :: nil |] * lseg ls' p p'' * [| freeable p'' 2 |]
     * [| p'' <> 0 |] * (p'' ==*> x, p'))
   ===> lseg_append ls p p'.
+Proof using .
   apply append_bwd.
 Qed.
 
 Lemma starL_app_end : forall A (P : A -> HProp) x ls,
   starL P ls * P x ===> starL P (ls ++ x :: nil).
+Proof using .
   intros until x.
   induction ls.
   sepLemma.
@@ -185,6 +199,7 @@ Qed.
 
 Lemma rows_app_end : forall sch x ls y,
   rows sch x ls * row sch y ===> rows sch x (ls ++ y :: nil).
+Proof using .
   intros; apply starL_app_end.
 Qed.
 
@@ -214,12 +229,14 @@ Definition lengthOf (e : exp) : rvalue' :=
 Lemma wfExps_inv1 : forall ns e es,
   wfExps ns (e :: es)
   -> wfExp ns e.
+Proof using .
   inversion 1; auto.
 Qed.
 
 Lemma wfExps_inv2 : forall ns e es,
   wfExps ns (e :: es)
   -> wfExps ns es.
+Proof using .
   inversion 1; auto.
 Qed.
 
@@ -228,30 +245,36 @@ Hint Immediate wfExps_inv1 wfExps_inv2.
 Lemma incl_peel : forall A (x : A) ls ls',
   incl (x :: ls) ls'
   -> In x ls' /\ incl ls ls'.
+Proof using .
   unfold incl; intuition.
 Qed.
 
 Lemma mult4_S : forall n, 4 * S n = S (S (S (S (4 * n)))).
+Proof using .
   simpl; intros; omega.
 Qed.
 
 Lemma natToW_4times : forall n,
   natToW (4 * n) = natToW 4 ^* natToW n.
+Proof using .
   intros; rewrite Mult.mult_comm; rewrite wmult_comm; apply natToW_times4.
 Qed.
 
 Lemma invPre_sel : forall A B (invPre : A -> vals -> B) a V,
   invPre a (sel V) = invPre a V.
+Proof using .
   auto.
 Qed.
 
 Lemma invPost_sel : forall A B C (invPost : A -> vals -> B -> C) a V R,
   invPost a (sel V) R = invPost a V R.
+Proof using .
   auto.
 Qed.
 
 Lemma inputOk_sel : forall V es,
   inputOk (sel V) es = inputOk V es.
+Proof using .
   auto.
 Qed.
 
@@ -307,6 +330,7 @@ Lemma posl_bound : forall (sch : schema) (es es0 : list exp) cols,
   -> goodSize (length sch)
   -> length es = length sch
   -> natToW (length es - S (length es0)) < natToW (length (posl cols)).
+Proof using .
   unfold posl; intros; rewrite map_length;
     apply lt_goodSize; omega || (eapply goodSize_weaken; eauto).
 Qed.
@@ -317,6 +341,7 @@ Lemma lenl_bound : forall (sch : schema) (es es0 : list exp) cols,
   -> goodSize (length sch)
   -> length es = length sch
   -> natToW (length es - S (length es0)) < natToW (length (lenl cols)).
+Proof using .
   unfold lenl; intros; rewrite map_length;
     apply lt_goodSize; omega || (eapply goodSize_weaken; eauto).
 Qed.
@@ -377,10 +402,12 @@ Ltac match_locals :=
   end.
 
 Lemma wminus_wplus : forall u v : W, u ^- v ^+ v = u.
+Proof using .
   intros; words.
 Qed.
 
 Lemma wplus_wminus : forall u v : W, u ^+ v ^- v = u.
+Proof using .
   intros; words.
 Qed.
 
@@ -423,6 +450,7 @@ Ltac weaken_invPre' :=
 
 Lemma eat_emp : forall P Q,
   P * Q ===> P * (Q * Emp).
+Proof using .
   sepLemma.
 Qed.
 
@@ -478,33 +506,39 @@ Definition update cols (col : W) pos len :=
 
 Lemma updN_posl : forall pos len (cols : list (W * W)) col,
   Array.updN (posl cols) col pos = posl (updateN cols col pos len).
+Proof using .
   induction cols; destruct col; simpl; intuition.
 Qed.
 
 Lemma upd_posl : forall (cols : list (W * W)) col pos len,
   Array.upd (posl cols) col pos = posl (update cols col pos len).
+Proof using .
   intros; eapply updN_posl.
 Qed.
 
 Lemma updN_lenl : forall pos len (cols : list (W * W)) col,
   Array.updN (lenl cols) col len = lenl (updateN cols col pos len).
+Proof using .
   induction cols; destruct col; simpl; intuition.
 Qed.
 
 Lemma upd_lenl : forall (cols : list (W * W)) col pos len,
   Array.upd (lenl cols) col len = lenl (update cols col pos len).
+Proof using .
   intros; eapply updN_lenl.
 Qed.
 
 Lemma moveS' : forall n m,
   (S m <= n)%nat
   -> S (n - S m) = n - m.
+Proof using .
   intros; omega.
 Qed.
 
 Lemma wle_plus0 : forall u v : W,
   u <= v
   -> u ^+ natToW 0 <= v.
+Proof using .
   intros; pre_nomega.
   rewrite wordToNat_wplus by (rewrite roundTrip_0; apply goodSize_weaken with (wordToNat u); eauto);
     nomega.
@@ -537,6 +571,7 @@ Theorem Forall_impl2 : forall A (P Q R : A -> Prop) ls,
   -> List.Forall Q ls
   -> (forall x, P x -> Q x -> R x)
   -> List.Forall R ls.
+Proof using .
   induction 1; inversion 1; auto.
 Qed.
 
@@ -545,6 +580,7 @@ Theorem inputOk_weaken : forall ns V V' es,
   -> wfExps ns es
   -> (forall x, ~In x baseVars \/ x = "len" -> sel V x = sel V' x)
   -> inputOk V' es.
+Proof using .
   intros; eapply Forall_impl2; [ apply H | apply H0 | ].
   intro e; destruct e; simpl; intuition idtac.
   repeat rewrite <- H1 by (simpl; tauto); assumption.
@@ -563,6 +599,7 @@ Definition wfEqualities ns s := List.Forall (wfEquality ns s).
 Lemma wfEqualities_wfExps : forall sch ns c,
   wfEqualities ns sch c
   -> wfExps ns (exps c).
+Proof using .
   unfold wfExps; clear; induction c; inversion 1; subst; simpl; intuition; hnf in *;
     constructor; tauto.
 Qed.
@@ -573,6 +610,7 @@ Hint Extern 2 (inputOk _ _) => eapply inputOk_weaken; try eassumption;
   try (eapply wfEqualities_wfExps; eassumption); [ simpl; intuition descend ].
 
 Lemma roundTrip_2 : wordToNat (natToW 2) = 2.
+Proof using .
   auto.
 Qed.
 
@@ -623,6 +661,7 @@ Ltac pre := auto 1; try discriminate; try prove_Himp;
 Lemma moveS : forall A (x : A) (ls : list A) ls',
   (length (x :: ls') <= length ls)%nat
   -> S (length ls - length (x :: ls')) = length ls - length ls'.
+Proof using .
   simpl; intros; omega.
 Qed.
 
@@ -633,6 +672,7 @@ Lemma minus_bound : forall (u v w : W) n,
   -> v < w ^- u
   -> u <= w
   -> (wordToNat u + wordToNat v <= n)%nat.
+Proof using .
   intros; subst; nomega.
 Qed.
 
@@ -642,6 +682,7 @@ Lemma minus_bound' : forall (u v w : W),
   v <= w ^- u
   -> u <= w
   -> u ^+ v <= w.
+Proof using .
   intros; pre_nomega;
     rewrite wordToNat_wplus
       by (eapply goodSize_weaken with (wordToNat w); eauto);
@@ -654,6 +695,7 @@ Lemma inBounds_up'' : forall pos len cols col,
   (col < length cols)%nat
   -> firstn (S col) (updateN cols col pos len)
   = firstn col cols ++ (pos, len) :: nil.
+Proof using .
   induction cols; simpl; intuition.
   destruct col; simpl; intuition.
   f_equal; apply IHcols; auto.
@@ -664,6 +706,7 @@ Lemma inBounds_up' : forall pos len cols col,
   -> goodSize (length cols)
   -> firstn (S col) (update cols col pos len)
   = firstn col cols ++ (pos, len) :: nil.
+Proof using .
   intros; unfold update.
   rewrite wordToNat_natToWord_idempotent.
   apply inBounds_up''; auto.
@@ -683,6 +726,7 @@ Lemma inBounds_up : forall (es es0 : list exp) ilen cols pos len n,
     -> (S (length es0) <= length es)%nat
     -> inBounds ilen (firstn (length es - length es0)
       (update cols (length es - S (length es0)) pos len)).
+Proof using .
   intros; subst.
   replace (length es - length es0) with (S (length es - S (length es0))).
   rewrite inBounds_up'; auto.
@@ -698,11 +742,13 @@ Hint Resolve inBounds_up.
 
 Lemma length_updateN : forall pos len cols col,
   length (updateN cols col pos len) = length cols.
+Proof using .
   induction cols; destruct col; simpl; intuition.
 Qed.
 
 Lemma length_update : forall pos len cols col,
   length (update cols col pos len) = length cols.
+Proof using .
   intros; apply length_updateN.
 Qed.
 
@@ -724,6 +770,7 @@ Lemma use_inputOk : forall V es pos len n,
   -> In (Input pos len) es
   -> n = wordToNat (sel V "len")
   -> (wordToNat (sel V pos) + wordToNat (sel V len) <= n)%nat.
+Proof using .
   intros; subst; eapply Forall_forall in H0; eauto; auto.
 Qed.
 

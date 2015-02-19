@@ -92,6 +92,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Hint Unfold NoDupKey.
 
     Lemma compile_module_Imports : forall m, Imports (compile m) === {}.
+    Proof using Type.
         intros.
         unfold compile, CompileModuleMake.compile.
         unfold compiled_funcs, bmodule_, Imports.
@@ -105,6 +106,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Notation get_module_Exports := module_impl_exports.
 
     Lemma compile_module_Exports : forall m, Exports (compile m) === get_module_Exports m.
+    Proof using Type.
         intros.
         unfold compile, CompileModuleMake.compile.
         unfold compiled_funcs, bmodule_; simpl.
@@ -117,6 +119,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma compile_module_Modules : forall m, SS.Equal (Modules (compile m)) (singleton (impl_MName m)).
+    Proof using Type.
       intros.
       unfold compile, CompileModuleMake.compile; simpl.
       unfold mod_name.
@@ -129,6 +132,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Bedrock.Platform.Cito.StringSetTactics.
 
     Lemma In_exports_module_name : forall k m, In k (get_module_Exports m) -> fst k = impl_MName m.
+    Proof using .
       unfold get_module_Exports.
       intros.
       eapply In_to_map in H.
@@ -142,6 +146,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma impl_MName_neq_Disjoint : forall m1 m2, impl_MName m1 <> impl_MName m2 -> Disjoint (get_module_Exports m1) (get_module_Exports m2).
+    Proof using .
       unfold Disjoint.
       intros.
       not_not.
@@ -152,6 +157,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma Disjoint_exports_many_exports : forall m ms, incl (m :: ms) modules -> List.NoDup (List.map impl_MName (m :: ms)) -> Disjoint (get_module_Exports m) (update_all (List.map get_module_Exports ms)).
+    Proof using ModulesNotEmpty.
       induction ms; simpl; intros.
       rewrite update_all_nil.
       eapply Disjoint_empty.
@@ -169,6 +175,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma NoDup_MName_NoDup_impl_Name : forall ms, List.NoDup (List.map MName ms) -> List.NoDup (List.map impl_MName modules).
+    Proof using NoDupModuleNames.
       intros.
       unfold impl_MName.
       rewrite <- map_map.
@@ -194,7 +201,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         SS.Equal (Modules linked) linked_module_names /\
         Exports linked === linked_exports /\
         Imports linked === linked_imports.
-    Proof.
+    Proof using (IsGoodOptimizer ModulesNotEmpty).
       Opaque CompileModuleMake.compile.
       unfold link_all.
       induction ms; simpl; intros.
@@ -293,6 +300,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     (* Interface *)
 
     Theorem module_ok : moduleOk m.
+    Proof using All.
       unfold m.
       unfold ms.
       eapply link_all_ok; intuition.
@@ -300,6 +308,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem module_imports : Imports m === {}.
+    Proof using All.
       edestruct link_all_ok; eauto.
       intuition.
       eapply NoDup_MName_NoDup_impl_Name; eauto.
@@ -308,6 +317,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem module_exports : Exports m === LinkSpecMake2.impl_exports modules.
+    Proof using All.
       edestruct link_all_ok; eauto.
       intuition.
       eapply NoDup_MName_NoDup_impl_Name; eauto.
@@ -319,6 +329,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem module_module_names : SS.Equal (Modules m) (to_set (List.map impl_MName modules)).
+    Proof using All.
       edestruct link_all_ok; eauto.
       intuition.
       eapply NoDup_MName_NoDup_impl_Name; eauto.

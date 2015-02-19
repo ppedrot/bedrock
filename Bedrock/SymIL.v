@@ -475,7 +475,7 @@ Section spec_functions.
     IL_mem_satisfies cs P stn_st ->
     ST.himp cs P Q ->
     IL_mem_satisfies cs Q stn_st.
-  Proof.
+  Proof using Type.
     unfold IL_mem_satisfies; intros.
     eapply sepFormula_himp_imply in H0.
     2: eapply (refl_equal stn_st). unfold PropXRel.PropX_imply in *.
@@ -484,7 +484,7 @@ Section spec_functions.
   Theorem IL_mem_satisfies_pure : forall cs p Q stn_st,
     IL_mem_satisfies cs (ST.star (ST.inj p) Q) stn_st ->
     interp cs p.
-  Proof.
+  Proof using Type.
     unfold IL_mem_satisfies; intros.
     rewrite sepFormula_eq in H.
     PropXTac.propxFo; auto.
@@ -580,7 +580,7 @@ Section spec_functions.
     Theorem interp_satisfies : forall cs P stn st,
       PropX.interp cs (SepIL.SepFormula.sepFormula P (stn,st)) <->
       (HT.satisfies (memoryIn (IL.Mem st)) (IL.Mem st) /\ ST.satisfies cs P stn (memoryIn (IL.Mem st))).
-    Proof.
+    Proof using .
       clear. intros. rewrite sepFormula_eq. unfold sepFormula_def. simpl in *.
       intuition. eapply ST.HT.satisfies_memoryIn.
     Qed.
@@ -597,7 +597,7 @@ Section spec_functions.
     Lemma mem_set_relevant_memoryIn : forall m p v m',
       H.mem_set m p v = Some m' ->
       relevant (memoryIn m) = relevant (memoryIn m').
-    Proof.
+    Proof using .
       clear. do 5 intro. unfold relevant, memoryIn, HT.memoryIn. generalize H.all_addr.
       induction l; simpl; auto; intros.
       unfold H.mem_set, WriteByte, H.mem_get, ReadByte in *.
@@ -613,7 +613,7 @@ Section spec_functions.
     Lemma mem_set_word_relevant_memoryIn : forall (p v : Memory.W) x1 m p0,
       Memory.mem_set_word H.addr H.mem H.footprint_w H.mem_set p0 p v m =
       Some x1 -> relevant (memoryIn x1) = relevant (memoryIn m).
-    Proof.
+    Proof using .
       clear.
       unfold Memory.mem_set_word; do 2 intro. destruct (H.footprint_w p).
       repeat match goal with
@@ -630,6 +630,7 @@ Section spec_functions.
     Lemma smem_set'_present : forall p v ls m m',
       smem_set' ls p v m = Some m'
       -> exists v', smem_get' ls p m = Some v'.
+    Proof using .
       clear; induction ls; simpl; intuition.
       discriminate.
       destruct (H.addr_dec a p); subst; eauto.
@@ -641,6 +642,7 @@ Section spec_functions.
     Lemma smem_set_present : forall p v m m',
       smem_set p v m = Some m'
       -> exists v', smem_get p m = Some v'.
+    Proof using .
       intros; eapply smem_set'_present; eauto.
     Qed.
 
@@ -648,6 +650,7 @@ Section spec_functions.
       smem_set' ls p v m = Some m'
       -> disjoint' ls m m''
       -> disjoint' ls m' m''.
+    Proof using .
       clear; induction ls; simpl; intuition.
       destruct (H.addr_dec a p); subst.
       rewrite H0 in H; discriminate.
@@ -671,12 +674,14 @@ Section spec_functions.
       smem_set p v m = Some m'
       -> disjoint m m''
       -> disjoint m' m''.
+    Proof using .
       intros; eapply smem_set'_disjoint; eauto.
     Qed.
 
     Lemma parts : forall A (B : A -> Type) x ls (h1 h2 : B x) (t1 t2 : DepList.hlist B ls),
       DepList.HCons h1 t1 = DepList.HCons h2 t2
       -> h1 = h2 /\ t1 = t2.
+    Proof using .
       clear; intros.
       assert (DepList.hlist_hd (DepList.HCons h1 t1) = DepList.hlist_hd (DepList.HCons h2 t2)) by congruence.
       assert (DepList.hlist_tl (DepList.HCons h1 t1) = DepList.hlist_tl (DepList.HCons h2 t2)) by congruence.
@@ -686,6 +691,7 @@ Section spec_functions.
     Lemma memoryIn'_agree : forall ls m1 m2,
       List.Forall (fun p => m1 p = m2 p) ls
       -> memoryIn' m1 ls = memoryIn' m2 ls.
+    Proof using .
       clear; induction 1; simpl; intuition.
       f_equal; auto.
     Qed.
@@ -695,6 +701,7 @@ Section spec_functions.
         memoryIn' m ls = join' ls m1 m2
         -> smem_set' ls p v m1 = Some m1'
         -> memoryIn' (fun p' => if weq p' p then Some v else m p') ls = join' ls m1' m2.
+    Proof using .
       clear; induction 1; simpl; intuition.
       apply parts in H1; destruct H1.
       destruct (H.addr_dec x p); subst.
@@ -719,12 +726,13 @@ Section spec_functions.
       memoryIn m = join m1 m2
       -> smem_set p v m1 = Some m1'
       -> memoryIn (fun p' => if weq p' p then Some v else m p') = join m1' m2.
+    Proof using .
       intros; eapply memoryIn'_join; eauto using H.NoDup_all_addr.
     Qed.
 
     Lemma mep_correct : @MEVAL.PredEval.MemEvalPred_correct types pcT stT (IL.settings * IL.state)
       (tvType 0) (tvType 0) IL_mem_satisfies IL_ReadWord IL_WriteWord IL_ReadByte IL_WriteByte mep pred funcs.
-    Proof.
+    Proof using All.
       constructor; intros; destruct stn_st as [ stn st ];
         match goal with
           | [ H : match ?X with _ => _ end |- _ ] =>
@@ -829,7 +837,7 @@ Section spec_functions.
       (@MEVAL.PredEval.MemEvalPred_to_MemEvaluator _ pcT stT mep predIndex) funcs preds
       (IL.settings * IL.state) (tvType 0) (tvType 0) IL_mem_satisfies
       IL_ReadWord IL_WriteWord IL_ReadByte IL_WriteByte.
-    Proof.
+    Proof using All.
       intros.
       eapply MEVAL.PredEval.MemEvaluator_MemEvalPred_correct; simpl;
         try eauto using IL_mem_satisfies_himp, IL_mem_satisfies_pure, mep_correct.

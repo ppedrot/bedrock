@@ -32,6 +32,7 @@ Section TopSection.
       let local_vars := get_local_vars body (ArgVars f) (RetVar f) in
       let all_vars := ArgVars f ++ local_vars in
       CompileStmtSpec.syn_req all_vars (depth body) body.
+  Proof using .
     simpl; intros.
     unfold CompileStmtSpec.syn_req.
     destruct H; openhyp.
@@ -46,6 +47,7 @@ Section TopSection.
     -> NoDup ls2
     -> (forall x, In x ls1 -> ~In x ls2)
     -> NoDup (ls1 ++ ls2).
+  Proof using .
     induction 1; simpl; intuition.
     constructor; auto.
     intro.
@@ -56,12 +58,14 @@ Section TopSection.
   Lemma In_InA : forall A (x : A) ls,
     List.In x ls
     -> SetoidList.InA (@Logic.eq A) x ls.
+  Proof using .
     induction ls; simpl; intuition.
   Qed.
 
   Lemma NoDupA_NoDup : forall A ls,
     SetoidList.NoDupA (@Logic.eq A) ls
     -> List.NoDup ls.
+  Proof using .
     induction 1; intuition auto using In_InA.
   Qed.
 
@@ -71,6 +75,7 @@ Section TopSection.
   Require Import Bedrock.Platform.Cito.GeneralTactics.
   Require Import Bedrock.Platform.Cito.StringSetFacts.
   Lemma GoodFunc_NoDup_vars : forall f, GoodFunc f -> forall s r, NoDup (ArgVars f ++ get_local_vars s (ArgVars f) r).
+  Proof using .
     unfold GoodFunc; intuition.
     apply NoDup_app; auto.
     {
@@ -106,12 +111,14 @@ Module Make (Import E : ADT).
   Section TopSection.
 
     Lemma GoodFunc_Safe : forall f, GoodFunc f -> let s := Body f in forall fs vs h, Safe fs s (vs, h) -> forall vs', agree_in vs vs' (ArgVars f) -> Safe fs s (vs', h).
+    Proof using .
       intros.
       eapply NoUninitialized_Safe; eauto.
       destruct H; openhyp; eauto.
     Qed.
 
     Lemma GoodFunc_RunsTo : forall f, GoodFunc f -> let s := Body f in forall fs vs h v', RunsTo fs s (vs, h) v' -> forall vs', agree_in vs vs' (ArgVars f) -> exists vs'', RunsTo fs s (vs', h) (vs'', snd v') /\ sel vs'' (RetVar f) = sel (fst v') (RetVar f).
+    Proof using .
       intros.
       eapply NoUninitialized_RunsTo in H0; eauto.
       destruct H; intuition.

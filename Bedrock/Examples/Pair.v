@@ -21,16 +21,19 @@ Module Pair : PAIR.
     p =*> a * (p ^+ $4) =*> b.
 
   Theorem pair_extensional : forall a b p, HProp_extensional (pair a b p).
+  Proof using .
     reflexivity.
   Qed.
 
   Theorem pair_fwd : forall a b p,
     pair a b p ===> p =*> a * (p ^+ $4) =*> b.
+  Proof using .
     unfold pair; sepLemma.
   Qed.
 
   Theorem pair_bwd : forall a b p,
     p =*> a * (p ^+ $4) =*> b ===> pair a b p.
+  Proof using .
     unfold pair; sepLemma.
   Qed.
 End Pair.
@@ -67,6 +70,7 @@ Definition hints : TacPackage.
 Defined.
 
 Theorem pairOk : moduleOk pair.
+Proof using .
   (*TIME idtac "pair:verify". Time *)
   vcgen; abstract sep hints.
 Qed.

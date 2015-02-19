@@ -219,6 +219,7 @@ Definition m := bimport [[ "malloc"!"malloc" @ [mallocS] ]]
 
 Lemma length_nil : forall A,
   0 = length (@nil A).
+Proof using .
   reflexivity.
 Qed.
 
@@ -227,6 +228,7 @@ Hint Resolve length_nil.
 Lemma responseAll_nil : forall data rs acc,
   length (encodeAll rs) = 0
   -> responseAll data rs acc = acc.
+Proof using .
   destruct rs as [ | [ ] ]; simpl; intuition.
 Qed.
 
@@ -242,6 +244,7 @@ Hint Rewrite natToW_plus : Server.
 
 Lemma triple' : forall (x : W) y,
   x ^+ natToW (S (S (S y))) = x ^+ $3 ^+ natToW y.
+Proof using .
   intros; do 3 match goal with
                  | [ |- context[S ?X] ] => rewrite (natToW_S X)
                end; words.
@@ -249,6 +252,7 @@ Qed.
 
 Lemma triple : forall (x : W) (ws : list W),
   x ^+ natToW (S (S (S (length ws)))) = x ^+ $3 ^+ natToW (length ws).
+Proof using .
   intros; rewrite triple'; auto.
 Qed.
 
@@ -256,6 +260,7 @@ Hint Rewrite triple : Server.
 
 Lemma suffix_app' : forall (ls2 ls1 : list W),
   suffix (length ls1) (ls1 ++ ls2) = ls2.
+Proof using .
   induction ls1; simpl; intuition.
 Qed.
 
@@ -263,6 +268,7 @@ Lemma suffix_app : forall (ls1 ls2 : list W) (v : W),
   v = natToW (length ls1)
   -> goodSize (length ls1)
   -> suffix (wordToNat v) (ls1 ++ ls2) = ls2.
+Proof using .
   intros; subst; rewrite wordToNat_natToW_goodSize; auto; apply suffix_app'.
 Qed.
 
@@ -280,6 +286,7 @@ Lemma valueIsGe_set : forall ls posn V lower,
   -> wleb lower (sel V "value") = true
   -> goodSize (length ls)
   -> $1 = valueIsGe (ls ++ sel V "value" :: nil) posn lower.
+Proof using .
   intros; subst;
     match goal with
       | [ H : _ |- _ ] => apply wleb_true_fwd in H
@@ -300,6 +307,7 @@ Lemma not_done_yet : forall (pos len : W) (ws : list W) r,
   -> pos = natToW (length ws)
   -> len = length ws + length (encodeAll r)
   -> r <> nil.
+Proof using .
   destruct r; intuition (try discriminate); subst; simpl in *;
     rewrite plus_0_r in *; nomega.
 Qed.
@@ -337,6 +345,7 @@ Hint Extern 1 (natToW 1 = valueIsGe _ _ _) =>
 
 Lemma join3 : forall A x y z ls' (ls : list A),
   ((ls ++ x :: y :: z :: nil) ++ ls') = ls ++ x :: y :: z :: ls'.
+Proof using .
   induction ls; simpl; intuition.
 Qed.
 
@@ -345,6 +354,7 @@ Hint Rewrite join3 : Server.
 Lemma switch_sides : forall w n,
   wordToNat w = n
   -> natToW n = w.
+Proof using .
   intros; subst; apply natToWord_wordToNat.
 Qed.
 
@@ -356,6 +366,7 @@ Hint Immediate wleb_true.
 Lemma selN_beginning : forall (w : W) (ws' : list W) (ws : list W) i,
   (i < length ws)%nat
   -> Array.selN (ws ++ w :: ws') i = Array.selN ws i.
+Proof using .
   induction ws; destruct i; simpl; intuition.
 Qed.
 
@@ -363,6 +374,7 @@ Lemma sel_beginning : forall (ws : list W) (w : W) (ws' : list W) i,
   goodSize (length ws)
   -> i < natToW (length ws)
   -> Array.sel (ws ++ w :: ws') i = Array.sel ws i.
+Proof using .
   unfold Array.sel; intros; apply selN_beginning; nomega.
 Qed.
 
@@ -370,6 +382,7 @@ Lemma valueIsGe_skip : forall ws this posn lower,
   goodSize (length ws)
   -> (weqb (length ws) posn = true -> wleb lower this = true -> False)
   -> valueIsGe ws posn lower = valueIsGe (ws ++ this :: nil) posn lower.
+Proof using .
   unfold valueIsGe; intros; autorewrite with Server; simpl.
   destruct (le_lt_dec (length ws) (wordToNat posn));
     destruct (le_lt_dec (length ws + 1) (wordToNat posn)); auto; try omega; [
@@ -412,6 +425,7 @@ Hint Rewrite roundTrip_0 : N.
 Lemma wordToNat_inj : forall sz (w w' : word sz),
   wordToNat w = wordToNat w'
   -> w = w'.
+Proof using .
   intros ? ? ? H; apply (f_equal (natToWord sz)) in H;
     repeat rewrite natToWord_wordToNat in *; auto.
 Qed.
@@ -419,6 +433,7 @@ Qed.
 Lemma maxInRange'_alt : forall lower upper data acc,
   maxInRange' lower upper data acc
   = wmax (maxInRange lower upper data) acc.
+Proof using .
   induction data; simpl; unfold wmax in *; intuition; [
     ifs; nomega
     | rewrite IHdata; clear IHdata; ifs; (try nomega; apply wordToNat_inj; nomega) ].
@@ -426,12 +441,14 @@ Qed.
 
 Lemma maxInRange_alt : forall lower upper data,
   maxInRange lower upper data = maxInRange' lower upper data 0.
+Proof using .
   intros; rewrite maxInRange'_alt; unfold wmax; ifs; apply wordToNat_inj; nomega.
 Qed.
 
 Lemma wle_lt : forall u v : W,
   u < v
   -> u <= v.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -443,6 +460,7 @@ Lemma maxInRange'_skip : forall lower upper w ws acc,
     -> wleb (maxInRange' lower upper ws acc) w = true
     -> False)
   -> maxInRange' lower upper ws acc = maxInRange' lower upper (ws ++ w :: nil) acc.
+Proof using .
   induction ws; simpl; unfold wmax; intros; ifs; elimtype False; eauto using wleb_true.
 Qed.
 
@@ -452,6 +470,7 @@ Lemma maxInRange_skip : forall lower upper w ws,
     -> wleb (maxInRange lower upper ws) w = true
     -> False)
   -> maxInRange lower upper ws = maxInRange lower upper (ws ++ w :: nil).
+Proof using .
   intros; repeat rewrite maxInRange_alt in *; apply maxInRange'_skip; auto.
 Qed.
 
@@ -462,6 +481,7 @@ Lemma maxInRange'_set : forall lower upper w ws acc,
   -> wleb w upper = true
   -> wleb (maxInRange' lower upper ws acc) w = true
   -> w = maxInRange' lower upper (ws ++ w :: nil) acc.
+Proof using .
   induction ws; simpl; unfold wmax; intuition;
     ifs; repeat match goal with
                   | [ H : wleb _ _ = true |- _ ] => apply wleb_true_fwd in H
@@ -473,6 +493,7 @@ Lemma maxInRange_set : forall lower upper w ws,
   -> wleb w upper = true
   -> wleb (maxInRange lower upper ws) w = true
   -> w = maxInRange lower upper (ws ++ w :: nil).
+Proof using .
   intros; repeat rewrite maxInRange_alt in *; apply maxInRange'_set; auto.
 Qed.
 
@@ -480,6 +501,7 @@ Hint Immediate maxInRange_set.
 
 Lemma skipn_nil : forall A n,
   skipn n (@nil A) = nil.
+Proof using .
   destruct n; reflexivity.
 Qed.
 
@@ -488,6 +510,7 @@ Hint Rewrite skipn_nil : Server.
 Lemma eq0_le : forall w : W,
   wordToNat w = 0
   -> w <= natToW 0.
+Proof using .
   intros ? H; apply (f_equal natToW) in H;
     unfold natToW in H; rewrite natToWord_wordToNat in H; subst; nomega.
 Qed.
@@ -497,6 +520,7 @@ Hint Immediate eq0_le.
 Lemma le_any : forall (w : W) b,
   wordToNat w = 0
   -> w <= b.
+Proof using .
   intros; pre_nomega; rewrite H; omega.
 Qed.
 
@@ -505,6 +529,7 @@ Hint Immediate le_any.
 Lemma wleb_false_fwd : forall u v,
   wleb u v = false
   -> v < u.
+Proof using .
   unfold wleb; intros; ifs; try discriminate;
     assert (wordToNat u <> wordToNat v) by (intro; apply wordToNat_inj in H0; tauto); nomega.
 Qed.
@@ -515,6 +540,7 @@ Lemma collectBelow_skip1 : forall upper this ws lower base,
   wleb this upper = false
   -> collectBelow upper (skipn lower (ws ++ this :: nil)) base
   = collectBelow upper (skipn lower ws) base.
+Proof using .
   induction ws; destruct lower; simpl; intuition idtac; autorewrite with Server; auto;
     solve [ ifs; elimtype False; eauto
       | specialize (IHws 0); simpl in *; ifs ].
@@ -523,6 +549,7 @@ Qed.
 Lemma skipn_all : forall A n (ls1 : list A),
   (length ls1 <= n)%nat
   -> skipn n ls1 = nil.
+Proof using .
   induction n; destruct ls1; simpl; intuition.
 Qed.
 
@@ -531,6 +558,7 @@ Lemma collectBelow_skip2 : forall upper this ws (lower : W) base,
   -> goodSize (S (length ws))
   -> collectBelow upper (skipn (wordToNat lower) (ws ++ this :: nil)) base
   = collectBelow upper (skipn (wordToNat lower) ws) base.
+Proof using .
   intros; repeat (rewrite skipn_all; simpl; auto);
     match goal with
       | [ H : _ |- _ ] => apply wleb_false_fwd in H
@@ -547,6 +575,7 @@ Lemma collectBelow_skip : forall upper (lower : W) this base ws,
   -> goodSize (S (length ws))
   -> collectBelow upper (skipn (wordToNat lower) (ws ++ this :: nil)) base
   = collectBelow upper (skipn (wordToNat lower) ws) base.
+Proof using .
   intros; case_eq (wleb this upper); intros; try solve [ apply collectBelow_skip1; auto ];
     intros; case_eq (wleb lower (length ws)); intros; [
       elimtype False; eauto
@@ -558,6 +587,7 @@ Hint Rewrite collectBelow_skip using assumption : Server.
 Lemma skipn_app2 : forall A (ls2 : list A) n ls1,
   (n <= length ls1)%nat
   -> skipn n (ls1 ++ ls2) = skipn n ls1 ++ ls2.
+Proof using .
   induction n; destruct ls1; simpl; intuition.
 Qed.
 
@@ -565,6 +595,7 @@ Lemma collectBelow_set' : forall upper ws this acc,
   this <= upper
   -> collectBelow upper (ws ++ this :: nil) acc
   = this :: collectBelow upper ws acc.
+Proof using .
   induction ws; simpl; intros; ifs; nomega.
 Qed.
 
@@ -573,6 +604,7 @@ Lemma collectBelow_set : forall upper (lower : W) ws this acc,
   -> this <= upper
   -> collectBelow upper (skipn (wordToNat lower) (ws ++ this :: nil)) acc
   = this :: collectBelow upper (skipn (wordToNat lower) ws) acc.
+Proof using .
   intros; rewrite skipn_app2 by auto; apply collectBelow_set'; auto.
 Qed.
 
@@ -582,11 +614,13 @@ Lemma length_firstn_below : forall index (ls : list W),
   index < natToW (length ls)
   -> goodSize (length ls)
   -> length (firstn (wordToNat index) ls) = wordToNat index.
+Proof using .
   intros; rewrite firstn_length; apply min_l; nomega.
 Qed.
 
 Lemma natToW_wordToNat : forall w : W,
   natToW (wordToNat w) = w.
+Proof using .
   unfold natToW; intros; apply natToWord_wordToNat.
 Qed.
 
@@ -597,6 +631,7 @@ Hint Rewrite length_firstn_below using (auto; eapply containsArray_goodSize; eau
 Lemma le_wordToNat : forall u v : W,
   u <= v
   -> (wordToNat u <= wordToNat v)%nat.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -606,6 +641,7 @@ Lemma lt_wordToNat : forall (u: W) v,
   u < natToW v
   -> goodSize v
   -> (wordToNat u < v)%nat.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -621,6 +657,7 @@ Hint Rewrite sel_middle
 Lemma wlt_S : forall (ls1 : list W) v ls2,
   goodSize (length (ls1 ++ v :: ls2))
   -> natToW (length ls1) < natToW (length ls1) ^+ natToW (S (length ls2)).
+Proof using .
   intros; autorewrite with Server in *; rewrite <- natToW_plus; apply lt_goodSize; eauto.
 Qed.
 
@@ -631,19 +668,21 @@ Hint Rewrite wordToNat_natToW_goodSize
 
 Lemma firstn_app1 : forall A (ls1 ls2 : list A),
   firstn (length ls1) (ls1 ++ ls2) = ls1.
+Proof using .
   induction ls1; simpl; intuition.
 Qed.
 
 Hint Rewrite firstn_app1 : Server.
 
 Lemma wle_refl : forall w : W, w <= w.
+Proof using .
   intros; nomega.
 Qed.
 
 Hint Resolve wle_refl.
 
 Theorem ok : moduleOk m.
-Proof.
+Proof using .
   vcgen; abstract (parse0; for0; post; evaluate hints; repeat (parse1 finish; use_match);
     multi_ex; sep hints; finish).
 Qed.

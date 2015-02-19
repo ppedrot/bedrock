@@ -46,44 +46,53 @@ Module Usl : USL.
     * Ex n, Ex r, Ex junk, p =*> r * (p ^+ $4) =*> junk * usl' s n r.
 
   Theorem usl'_extensional : forall s n p, HProp_extensional (usl' s n p).
+  Proof using .
     destruct n; reflexivity.
   Qed.
 
   Theorem usl_extensional : forall s p, HProp_extensional (usl s p).
+  Proof using .
     reflexivity.
   Qed.
 
   Theorem usl'_set_extensional : forall n s s' p, s %= s' -> usl' s n p ===> usl' s' n p.
+  Proof using .
     induction n; sepLemma.
   Qed.
 
   Theorem usl_fwd : forall s p, usl s p ===> [| freeable p 2 |]
     * Ex n, Ex r, Ex junk, p =*> r * (p ^+ $4) =*> junk * usl' s n r.
+  Proof using .
     unfold usl; sepLemma.
   Qed.
 
   Theorem usl_bwd : forall s p, ([| freeable p 2 |]
     * Ex n, Ex r, Ex junk, p =*> r * (p ^+ $4) =*> junk * usl' s n r) ===> usl s p.
+  Proof using .
     unfold usl; sepLemma.
   Qed.
 
   Theorem nil_fwd : forall s n (p : W), p = 0 -> usl' s n p ===> [| s %= empty /\ n = O |].
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem nil_bwd : forall s n (p : W), p = 0 -> [| s %= empty /\ n = O |] ===> usl' s n p.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem cons_fwd : forall s n (p : W), p <> 0 -> usl' s n p ===>
     Ex n', Ex v, Ex p', (p ==*> v, p') * usl' (s %- v) n' p'
     * [| freeable p 2 /\ n = S n' /\ v %in s |].
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem cons_bwd : forall s n (p : W), p <> 0 ->
     (Ex n', Ex v, Ex p', (p ==*> v, p') * usl' (s %- v) n' p'
       * [| freeable p 2 /\ n = S n' /\ v %in s |]) ===> usl' s n p.
+  Proof using .
     destruct n; sepLemma;
       match goal with
         | [ H : S _ = S _ |- _ ] => injection H; sepLemma
@@ -188,12 +197,14 @@ Lemma contradictory_membership : forall (s : set) v x,
   x = natToW 1
   -> x = natToW 0
   -> s v.
+Proof using .
   intros; subst; discriminate.
 Qed.
 
 Hint Extern 1 => eapply contradictory_membership; eassumption.
 
 Theorem uslMOk : moduleOk uslM.
+Proof using .
 (*TIME idtac "tree-set:verify". Time *)
   vcgen; abstract (sep hints; auto).
 (*TIME Time *)Qed.

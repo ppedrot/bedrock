@@ -176,6 +176,7 @@ Section Insert.
         interp specs (pre st)
         -> interp specs (winv col ns res st))
       -> vcs (VerifCond (toCmd (writeExp col e) mn (im := im) H ns res pre)).
+    Proof using All.
       destruct e; wrap0.
 
       v.
@@ -209,8 +210,8 @@ Section Insert.
       -> forall specs st,
         interp specs (Postcondition (toCmd (writeExp col e) mn (im := im) H ns res pre) st)
         -> interp specs (winv col ns res st).
+    Proof using Type.
       destruct e; wrap0.
-
       v.
       v.
       v.
@@ -241,6 +242,7 @@ Section Insert.
       inBounds ilen (firstn (S (n - S m)) ls)
       -> (S m <= n)%nat
       -> inBounds ilen (firstn (n - m) ls).
+    Proof using Type.
       intros; replace (n - m) with (S (n - S m)) by omega; auto.
     Qed.
 
@@ -251,6 +253,7 @@ Section Insert.
       -> col = m - S n
       -> (S n <= m)%nat
       -> inBounds ilen (match ls with nil => nil | x :: ls' => x :: firstn (n + col) ls' end).
+    Proof using Type.
       intros; subst; replace m with (S (n + (m - S n))) in * |- by omega; auto.
     Qed.
 
@@ -295,6 +298,7 @@ Section Insert.
         /\ (forall specs st,
           interp specs (Postcondition (toCmd (writeExps col es0) mn (im := im) H ns res pre) st)
           -> interp specs (winv (length es0 + col) ns res st)).
+    Proof using Type.
       induction es0.
 
       wrap0.
@@ -346,6 +350,7 @@ Section Insert.
   Require Import Coq.Arith.Div2.
 
   Lemma div2_double : forall n, div2 (n + n) = n.
+  Proof using Type.
     apply div2_double'.
   Qed.
 
@@ -355,6 +360,7 @@ Section Insert.
     goodSize (4 * wordToNat bufSize)
     -> n = wordToNat bufSize * 4
     -> n = wordToNat (natToW 4 ^* bufSize).
+  Proof using Type.
     intros; subst.
     rewrite wordToNat_wmult.
     change (wordToNat (natToW 4)) with 4; omega.
@@ -364,6 +370,7 @@ Section Insert.
   Hint Immediate four_duh.
 
   Lemma inBounds_nil : forall n, inBounds n nil.
+  Proof using Type.
     intros; hnf; auto.
   Qed.
 
@@ -372,6 +379,7 @@ Section Insert.
   Lemma firstn_all : forall A (ls : list A) n,
     n = length ls
     -> firstn n ls = ls.
+  Proof using Type.
     intros; subst; induction ls; simpl; intuition.
   Qed.
 
@@ -398,6 +406,7 @@ Section Insert.
     freeable p (wordToNat size)
     -> goodSize (4 * wordToNat size)
     -> freeable8 p (wordToNat (natToW 4 ^* size)).
+  Proof using Type.
     intros; rewrite wordToNat_wmult; change (wordToNat (natToW 4)) with 4; hnf; eauto.
   Qed.
 

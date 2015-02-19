@@ -146,11 +146,13 @@ Section strong.
   Hypothesis PH : forall n, (forall m, m < n -> P m) -> P n.
 
   Lemma strong' : forall n m, m <= n -> P m.
+  Proof using All.
     induction n; simpl; intuition; apply PH; intuition.
     elimtype False; omega.
   Qed.
 
   Theorem strong : forall n, P n.
+  Proof using All.
     intros; eapply strong'; eauto.
   Qed.
 End strong.

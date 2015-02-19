@@ -49,22 +49,26 @@ Module Adt : ADT.
 
   Theorem lset_fwd : forall s c, lset s c ===> [| c <> 0 |] * [| freeable c 2 |]
     * Ex p, Ex junk, (c ==*> p, junk) * Ex n, lset' s n p.
+  Proof using .
     unfold lset; sepLemma.
   Qed.
 
   Theorem lset_bwd : forall s (c : W), ([| c <> 0 |] * [| freeable c 2 |]
     * Ex p, Ex junk, (c ==*> p, junk) * Ex n, lset' s n p) ===> lset s c.
+  Proof using .
     unfold lset; sepLemma.
   Qed.
 
   Theorem lset'_empty_fwd : forall s n (c : W), c = 0
     -> lset' s n c
     ===> [| n = O |] * [| s === %0 |].
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem lset'_empty_bwd : forall s n (c : W), c = 0
     -> [| n = O |] * [| s === %0 |] ===> lset' s n c.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -72,18 +76,21 @@ Module Adt : ADT.
     -> lset' s n c
     ===> Ex n', [| n = S n' |] * [| freeable c 2 |] * Ex x, [| s %has x |] * Ex p', (c ==*> x, p')
         * lset' (s %- x) n' p'.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
   Theorem lset'_nonempty_bwd : forall s n (c : W), c <> 0
     -> (Ex n', [| n = S n' |] * [| freeable c 2 |] * Ex x, [| s %has x |] * Ex p', (c ==*> x, p')
         * lset' (s %- x) n' p') ===> lset' s n c.
+  Proof using .
     destruct n; sepLemma.
     injection H0; sepLemma.
   Qed.
 
   Theorem lset'_monotone : forall n s s' p, s === s'
     -> lset' s n p ===> lset' s' n p.
+  Proof using .
     induction n; sepLemma.
     split; do 2 intro.
     apply (proj2 H) in H0.
@@ -255,6 +262,7 @@ Local Hint Extern 1 (@eq W _ _) => words.
 
 Theorem Singleton_bwd : forall A x y,
   Singleton A x y -> x = y.
+Proof using .
   destruct 1; auto.
 Qed.
 
@@ -268,7 +276,7 @@ Ltac sets' := try rewrite has_eq in *;
 Theorem Union_fwd : forall A x y z,
   x z \/ y z
   -> Union A x y z.
-Proof.
+Proof using .
   intuition; solve [ constructor; auto | constructor 2; auto ].
 Qed.
 
@@ -291,6 +299,7 @@ Ltac sets :=
                  end; sets').
 
 Theorem empty_bwd : forall x, %0 x -> False.
+Proof using .
   destruct 1.
 Qed.
 
@@ -298,6 +307,7 @@ Local Hint Resolve empty_bwd.
 
 Lemma cardinal_plus_O : forall s w, cardinal_plus s w 0
   -> cardinal_is s w.
+Proof using .
   destruct 1; intuition; eexists; eauto.
 Qed.
 
@@ -314,6 +324,7 @@ Lemma nuke_ok : forall w ls s,
   EnsembleListEquivalence (s %- w) ls
   -> s %has w
   -> EnsembleListEquivalence s (w :: ls).
+Proof using .
   intros.
   destruct H.
   split.
@@ -337,6 +348,7 @@ Lemma cardinal_plus_minus : forall s w r acc,
   cardinal_plus (s %- w) r (acc ^+ natToW 1)
   -> s %has w
   -> cardinal_plus s r acc.
+Proof using .
   destruct 1; intuition subst.
   destruct H1; intuition subst.
   eexists; split.
@@ -353,7 +365,7 @@ Lemma cardinal_is_bottom : forall r acc s,
   r = acc
   -> s === %0
   -> cardinal_plus s r acc.
-Proof.
+Proof using .
   intros; subst.
   exists 0; intuition.
   exists nil; intuition.
@@ -366,5 +378,6 @@ Qed.
 Local Hint Immediate cardinal_is_bottom.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract (sep hints; eauto; try apply lset'_monotone; sets).
 Qed.

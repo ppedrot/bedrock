@@ -37,6 +37,7 @@ Section boot.
     }}.
 
   Theorem ok : moduleOk boot.
+  Proof using .
     vcgen; abstract genesis.
   Qed.
 
@@ -46,10 +47,12 @@ Section boot.
   Definition m1 := link all m0.
 
   Lemma ok0 : moduleOk m0.
+  Proof using .
     link ExampleImpl.ok ok.
   Qed.
 
   Lemma ok1 : moduleOk m1.
+  Proof using .
     link all_ok ok0.
   Qed.
 
@@ -82,6 +85,7 @@ Section boot.
   Hypothesis mem_high : forall w, ($ (size * 4) <= w)%word -> st.(Mem) w = None.
 
   Theorem safe : sys_safe stn prog (w, st).
+  Proof using .
     safety ok1.
   Qed.
 End boot.

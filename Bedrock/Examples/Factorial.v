@@ -38,12 +38,14 @@ Definition fact := bmodule "fact" {{
 Lemma times_1 : forall (n m x : W), factR n x
   -> m = $1 ^* x
   -> factR n m.
+Proof using .
   intros; subst; replace ($1 ^* x) with x by W_eq; auto.
 Qed.
 
 Hint Resolve times_1.
 
 Theorem factOk : moduleOk fact.
+Proof using .
 (*TIME  Clear Timing Profile. *)
   vcgen; abstract (sep_auto; eauto; words).
 
@@ -65,6 +67,7 @@ Definition factDriver := bimport [[ "fact"!"fact" @ [factS] ]]
   }}.
 
 Theorem factR_4 : forall r, factR 4 r -> r = 24.
+Proof using .
   intros;
     repeat match goal with
              | [ H : factR _ _ |- _ ] => inversion H; clear H; subst; []
@@ -80,6 +83,7 @@ Qed.
 Hint Resolve factR_4.
 
 Theorem factDriverOk : moduleOk factDriver.
+Proof using .
 (*TIME  Clear Timing Profile. *)
   vcgen; abstract (sep_auto; words).
 (*TIME  Print Timing Profile. *)
@@ -88,5 +92,6 @@ Qed.
 Definition factProg := link fact factDriver.
 
 Theorem factProgOk : moduleOk factProg.
+Proof using .
   link factOk factDriverOk.
 Qed.

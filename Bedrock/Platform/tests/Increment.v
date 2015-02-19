@@ -93,6 +93,7 @@ Ltac u := solve [ t ].
 Opaque inbuf_size.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

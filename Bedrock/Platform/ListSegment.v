@@ -36,16 +36,19 @@ Module ListSegment : LIST_SEGMENT.
     end.
 
   Theorem lseg_extensional : forall ls (p p' : W), HProp_extensional (lseg ls p p').
+  Proof using .
     destruct ls; reflexivity.
   Qed.
 
   Theorem nil_bwd : forall (p p' : W),
     [| p = p' |] ===> lseg nil p p'.
+  Proof using .
     sepLemma.
   Qed.
 
   Theorem nil_bwd' : forall ls (p p' : W), p = p'
     -> [| ls = nil |] ===> lseg ls p p'.
+  Proof using .
     destruct ls; sepLemma.
   Qed.
 
@@ -53,6 +56,7 @@ Module ListSegment : LIST_SEGMENT.
     (Ex p'', lseg ls p p'' * [| freeable p'' 2 |]
       * [| p'' <> 0 |] * (p'' ==*> x, p'))
     ===> lseg (ls ++ x :: nil) p p'.
+  Proof using .
     induction ls; sepLemma.
     etransitivity; [ | apply IHls ]; sepLemma.
   Qed.
@@ -61,11 +65,13 @@ Module ListSegment : LIST_SEGMENT.
     (Ex ls', Ex x, Ex p'', [| ls = ls' ++ x :: nil |] * lseg ls' p p'' * [| freeable p'' 2 |]
       * [| p'' <> 0 |] * (p'' ==*> x, p'))
     ===> lseg ls p p'.
+  Proof using .
     sepLemma; etransitivity; [ | apply append_bwd' ]; sepLemma.
   Qed.
 
   Theorem sll_fwd : forall ls (p p' : W), p' = 0
     -> lseg ls p p' ===> sll ls p.
+  Proof using .
     induction ls; sepLemma; [
       etransitivity; [ | apply SinglyLinkedList.nil_bwd; auto ]
       | etransitivity; [ | apply SinglyLinkedList.cons_bwd; auto ] ]; sepLemma.

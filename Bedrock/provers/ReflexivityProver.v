@@ -28,7 +28,7 @@ Section ReflexivityProver.
   Lemma reflexivitySummarizeCorrect : forall uvars vars hyps,
     AllProvable fs uvars vars hyps ->
     reflexivityValid uvars vars (reflexivitySummarize hyps).
-  Proof.
+  Proof using Type.
     unfold reflexivityValid; auto.
   Qed.
 
@@ -36,11 +36,12 @@ Section ReflexivityProver.
     reflexivityValid uvars vars sum -> forall hyps,
     AllProvable fs uvars vars hyps ->
     reflexivityValid uvars vars (reflexivityLearn sum hyps).
-  Proof.
+  Proof using Type.
     unfold reflexivityValid; auto.
   Qed.
 
   Theorem reflexivityProverCorrect : ProverCorrect fs reflexivityValid reflexivityProve.
+  Proof using Type.
     unfold reflexivityProve; t.
   Qed.
 
@@ -51,6 +52,7 @@ Section ReflexivityProver.
    ; Prove := reflexivityProve
    |}.
   Definition reflexivityProver_correct : ProverT_correct reflexivityProver fs.
+  Proof using Type.
   eapply Build_ProverT_correct with (Valid := reflexivityValid);
     eauto using reflexivitySummarizeCorrect, reflexivityLearnCorrect, reflexivityProverCorrect.
   Qed.

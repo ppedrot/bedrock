@@ -28,6 +28,7 @@ Section ok.
     wordToNat w = n * 4
     -> natToW 4 <= w
     -> wordToNat w - 4 = (pred n) * 4.
+  Proof using .
     intros.
     nomega.
   Qed.
@@ -35,6 +36,7 @@ Section ok.
   Hint Immediate use_pred.
 
   Lemma roundTrip_4 : wordToNat (natToW 4) = 4.
+  Proof using .
     auto.
   Qed.
 
@@ -45,6 +47,7 @@ Section ok.
     -> wordToNat n = m * 4
     -> rv = natToW (pred m) ^+ (acc ^+ natToW 1)
     -> rv = natToW m ^+ acc.
+  Proof using .
     intros; subst.
     rewrite Minus.pred_of_minus.
     rewrite natToW_minus by nomega; words.
@@ -57,6 +60,7 @@ Section ok.
     -> n < natToW 4
     -> wordToNat n = m * 4
     -> rv = natToW m ^+ acc.
+  Proof using .
     intros; subst.
     assert (m0 = 0) by nomega.
     words.
@@ -69,6 +73,7 @@ Section ok.
     wordToNat w = n * 4
     -> rv = natToW n
     -> wordToNat rv = n.
+  Proof using .
     intros; subst.
     apply wordToNat_natToWord_idempotent.
     change (goodSize n).
@@ -81,6 +86,7 @@ Section ok.
   Hint Immediate switch_up.
 
   Theorem ok : moduleOk m.
+  Proof using .
     vcgen; abstract (sep_auto; eauto).
   Qed.
 End ok.

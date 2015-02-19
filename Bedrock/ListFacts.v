@@ -3,6 +3,8 @@ Require Import Coq.omega.Omega.
 Require Import Bedrock.Tactics.
 Require Import Bedrock.Reflection.
 
+Global Set Suggest Proof Using.
+
 Lemma skipn_length_gt : forall T (ls : list T) n,
   length ls <= n ->
   skipn n ls = nil.

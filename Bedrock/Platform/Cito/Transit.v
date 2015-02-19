@@ -59,7 +59,7 @@ Section ADTValue.
   Arguments ADTIn {_} _.
   Arguments ADTOut {_} _.
   Lemma combine_ret_decide_ret addr ret : combine_ret (fst (decide_ret addr ret)) (snd (decide_ret addr ret)) = ret.
-  Proof.
+  Proof using Type.
     destruct ret; simpl; eauto.
   Qed.
   Require Import Bedrock.Platform.Cito.SemanticsFacts7.
@@ -73,7 +73,7 @@ Section ADTValue.
   Arguments ADTOut {_} _.
 
   Lemma RunsTo_TransitTo lhs f args env spec v v' : let f_w := eval (fst v) f in snd env f_w = Some (Foreign spec) -> RunsTo env (Syntax.Call lhs f args) v v' -> exists inputs outputs ret_w ret_a, TransitTo spec (List.map (eval (fst v)) args) inputs outputs ret_w ret_a (snd v) (snd v') /\ match_ret (fst v') lhs ret_w.
-  Proof.
+  Proof using Type.
     simpl.
     intros.
     inv_clear H0.
@@ -139,17 +139,17 @@ Section ADTValue.
 
   Require Import Coq.Lists.List.
   Lemma fst_decide_ret_combine_ret ret_w ret_a : fst (decide_ret ret_w (combine_ret ret_w ret_a)) = ret_w.
-  Proof.
+  Proof using Type.
     destruct ret_a; simpl; eauto.
   Qed.
   Lemma snd_decide_ret_combine_ret ret_w ret_a : snd (decide_ret ret_w (combine_ret ret_w ret_a)) = ret_a.
-  Proof.
+  Proof using Type.
     destruct ret_a; simpl; eauto.
   Qed.
   Require Import Bedrock.Platform.Cito.SemanticsFacts6.
 
   Lemma TransitTo_RunsTo lhs f args env spec v v' : let f_w := eval (fst v) f in snd env f_w = Some (Foreign spec) -> forall inputs outputs ret_w ret_a, TransitTo spec (List.map (eval (fst v)) args) inputs outputs ret_w ret_a (snd v) (snd v') -> fst v' = upd_option (fst v) lhs ret_w -> RunsTo env (Syntax.Call lhs f args) v v'.
-  Proof.
+  Proof using Type.
     simpl.
     intros.
     destruct v; destruct v'; simpl in *.
@@ -200,7 +200,7 @@ Section ADTValue.
   Qed.
 
   Lemma Safe_TransitSafe : forall f args env spec v, let f_w := eval (fst v) f in snd env f_w = Some (Foreign spec) -> forall lhs, Safe env (Syntax.Call lhs f args) v -> exists inputs, TransitSafe spec (List.map (eval (fst v)) args) inputs (snd v).
-  Proof.
+  Proof using Type.
     simpl; intros.
     inv_clear H0.
     rewrite H in H4; discriminate.
@@ -225,6 +225,7 @@ Section ADTValue.
   Qed.
 
   Lemma TransitSafe_Safe f args env spec v : let f_w := eval (fst v) f in snd env f_w = Some (Foreign spec) -> forall inputs, TransitSafe spec (List.map (eval (fst v)) args) inputs (snd v) -> forall lhs, Safe env (Syntax.Call lhs f args) v.
+  Proof using Type.
     simpl; intros.
     unfold TransitSafe in *.
     openhyp.

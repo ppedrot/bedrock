@@ -14,14 +14,14 @@ Section ADTValue.
   Notation Sca := (@SCA ADTValue).
 
   Lemma is_true_is_false : forall (st : State) e, is_true st e -> is_false st e -> False.
-  Proof.
+  Proof using Type.
     intros.
     unfold is_true, is_false in *.
     rewrite H in *; discriminate.
   Qed.
 
   Lemma safe_if_true : forall (env : Env) e t f st, Safe env (If e t f) st -> is_true st e -> Safe env t st.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     eauto.
@@ -37,6 +37,7 @@ Section ADTValue.
   Defined.
 
   Definition option_value_dec (v : option Value) : {w | v = Some (SCA _ w)} + {a | v = Some (ADT a)} + {v = None}.
+  Proof using Type.
     destruct (option_dec v).
     destruct s; subst.
     destruct (value_dec  x).
@@ -49,7 +50,7 @@ Section ADTValue.
   Qed.
 
   Lemma is_true_is_bool : forall st e, is_true st e -> is_bool st e.
-  Proof.
+  Proof using Type.
     intros.
     unfold is_true, is_bool in *.
     rewrite H in *.
@@ -57,7 +58,7 @@ Section ADTValue.
   Qed.
 
   Lemma is_false_is_bool : forall st e, is_false st e -> is_bool st e.
-  Proof.
+  Proof using Type.
     intros.
     unfold is_false, is_bool in *.
     rewrite H in *.
@@ -65,7 +66,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_if_is_bool : forall (env : Env) e t f st, Safe env (If e t f) st -> is_bool st e.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     eapply is_true_is_bool; eauto.
@@ -73,7 +74,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_if_false : forall (env : Env) e t f st, Safe env (If e t f) st -> is_false st e -> Safe env f st.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     exfalso; eapply is_true_is_false; eauto.
@@ -102,19 +103,19 @@ Section ADTValue.
   Goal is_disjoint (assigned (Seq (Assign "x" (Var "a")) (Label "y" ("a", "b")))) (of_list ["aa"; "bb"; "x"]) = false. Proof. exact eq_refl. Qed.
 
   Lemma is_disjoint_sound ls1 ls2 : is_disjoint ls1 ls2 = true -> Disjoint ls1 ls2.
-  Proof.
+  Proof using .
     intros Hdisj.
     eapply inter_is_empty_iff in Hdisj; eauto.
   Qed.
 
   Lemma is_disjoint_complete ls1 ls2 : Disjoint ls1 ls2 -> is_disjoint ls1 ls2 = true.
-  Proof.
+  Proof using .
     intros Hdisj.
     eapply inter_is_empty_iff; eauto.
   Qed.
 
   Lemma is_disjoint_iff ls1 ls2 : is_disjoint ls1 ls2 = true <-> Disjoint ls1 ls2.
-  Proof.
+  Proof using .
     split; intros H.
     eapply is_disjoint_sound; eauto.
     eapply is_disjoint_complete; eauto.
@@ -132,12 +133,12 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics2.
   Require Import Bedrock.Platform.Cito.GeneralTactics4.
   Lemma no_reachable_nil key (k : key) : not_reachable k [] [].
-  Proof.
+  Proof using Type.
     unfold not_reachable; intros; rewrite nth_error_nil in *; discriminate.
   Qed.
 
   Lemma not_reachable_cons_sca key (k : key) ks ins k' w : not_reachable k' ks ins -> not_reachable k' (k :: ks) (SCA ADTValue w :: ins).
-  Proof.
+  Proof using Type.
     unfold not_reachable; intros Hnr.
     intros i Hk'.
     destruct i as [|i]; simpl in *.
@@ -148,7 +149,7 @@ Section ADTValue.
   Qed.
 
   Lemma not_reachable_cons_neq key (k : key) ks ins k' v : not_reachable k' ks ins -> k' <> k -> not_reachable k' (k :: ks) (v :: ins).
-  Proof.
+  Proof using Type.
     unfold not_reachable; intros Hnr Hne.
     intros i Hk'.
     destruct i as [|i]; simpl in *.
@@ -159,14 +160,14 @@ Section ADTValue.
   Qed.
 
   Lemma not_reachable_cons_elim key (k : key) ks v vs k' : not_reachable k' (k :: ks) (v :: vs) -> not_reachable k' ks vs.
-  Proof.
+  Proof using Type.
     unfold not_reachable; intros Hnr.
     intros i Hk'.
     specialize (Hnr (S i)); simpl in *.
     eauto.
   Qed.
   Lemma not_not_reachable key (k : key) ks a ins : ~ not_reachable k (k :: ks) (ADT a :: ins).
-  Proof.
+  Proof using Type.
     unfold not_reachable.
     nintro.
     specialize (H 0); simpl in *.
@@ -174,7 +175,7 @@ Section ADTValue.
     discriminate.
   Qed.
   Lemma not_in_not_reachable key (k : key) ks ins : ~ List.In k ks -> not_reachable k ks ins.
-  Proof.
+  Proof using Type.
     unfold not_reachable; intros Hni.
     intros i Hk.
     contradict Hni.
@@ -192,7 +193,7 @@ Section ADTValue.
           nth_error ks i = Some k /\
           nth_error ins i = Some (ADT a) /\
           nth_error outs i = Some (Some v))).
-  Proof.
+  Proof using Type.
     induction ks; destruct ins; destruct outs; simpl in *; try solve [intros; discriminate].
     intros h k v Hnd Hlkin Hlkout.
     split.
@@ -301,7 +302,7 @@ Section ADTValue.
     length ks = length outs ->
     StringMap.find k (add_remove_many ks ins outs st) = Some (ADT a)->
     exists a', StringMap.find k st = Some (ADT a').
-  Proof.
+  Proof using Type.
     intros Hnd Hmm Hl Hf.
     eapply find_Some_add_remove_many in Hf; eauto.
     2 : eapply mapM_length; eauto.
@@ -313,41 +314,41 @@ Section ADTValue.
   Qed.
 
   Lemma is_in_iff a ls : is_in a ls = true <-> List.In a ls.
-  Proof.
+  Proof using .
     unfold is_in; split; intros H; destruct (in_dec string_dec a ls); eauto; discriminate.
   Qed.
   Lemma iff_false_iff b P : (b = true <-> P) -> (b = false <-> ~ P).
-  Proof.
+  Proof using .
     split; intros; destruct b; intuition.
   Qed.
   Lemma iff_not_true_iff b P : (b = true <-> P) -> (b <> true <-> ~ P).
-  Proof.
+  Proof using .
     split; intros; destruct b; intuition.
   Qed.
   Lemma iff_negb_iff b P : (b = true <-> P) -> (negb b = true <-> ~ P).
-  Proof.
+  Proof using .
     split; intros; destruct b; intuition.
   Qed.
   Lemma iff_negb_not_true_iff b P : (b = true <-> P) -> (negb b <> true <-> P).
-  Proof.
+  Proof using .
     split; intros; destruct b; intuition.
   Qed.
   Lemma not_is_in_iff a ls : is_in a ls = false <-> ~ List.In a ls.
-  Proof.
+  Proof using .
     eapply iff_false_iff; eapply is_in_iff.
   Qed.
   Lemma negb_is_in_iff a ls : negb (is_in a ls) = true <-> ~ List.In a ls.
-  Proof.
+  Proof using .
     eapply iff_negb_iff; eapply is_in_iff.
   Qed.
 
   Lemma is_some_p_iff A p (o : option A) : is_some_p p o = true <-> match o with | Some a => p a = true | None => False end.
-  Proof.
+  Proof using .
     destruct o as [a|]; simpl in *; intuition.
   Qed.
 
   Lemma is_mapsto_adt_iff x st : is_mapsto_adt x st = true <-> exists a : ADTValue, StringMap.find x st = Some (ADT a).
-  Proof.
+  Proof using Type.
     unfold is_mapsto_adt.
     etransitivity.
     eapply is_some_p_iff.
@@ -366,17 +367,17 @@ Section ADTValue.
   Qed.
 
   Lemma is_mapsto_adt_false_iff x st : is_mapsto_adt x st = false <-> ~ exists a : ADTValue, StringMap.find x st = Some (ADT a).
-  Proof.
+  Proof using Type.
     eapply iff_false_iff; eapply is_mapsto_adt_iff.
   Qed.
 
   Lemma not_mapsto_adt_iff x st : not_mapsto_adt x st = true <-> ~ exists a : ADTValue, StringMap.find x st = Some (ADT a).
-  Proof.
+  Proof using Type.
     eapply iff_negb_iff; eapply is_mapsto_adt_iff.
   Qed.
 
   Lemma not_mapsto_adt_not_true_iff x st : not_mapsto_adt x st <> true <-> exists a : ADTValue, StringMap.find x st = Some (ADT a).
-  Proof.
+  Proof using Type.
     eapply iff_negb_not_true_iff; eapply is_mapsto_adt_iff.
   Qed.
 
@@ -388,7 +389,7 @@ Section ADTValue.
        exists i,
          nth_error ks i = Some k /\
          nth_error vs i = Some v).
-  Proof.
+  Proof using .
     induction ks; destruct vs; simpl in *; intros k v Hnd Hl; (split; [intros Hf | intros Hex]); try discriminate.
     destruct Hex as [i [Hk Hi]]; rewrite nth_error_nil in *; discriminate.
     rename a into k'.
@@ -423,24 +424,27 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.ListFacts3.
 
   Lemma NoDup_ArgVars : forall spec, NoDup (ArgVars spec).
+  Proof using .
     intros; destruct spec; simpl; eapply is_no_dup_sound; eauto.
   Qed.
 
   Lemma not_in_no_adt k m : ~ StringMap.In k m -> ~ exists a : ADTValue, StringMap.find k m = Some (ADT a).
-  Proof.
+  Proof using Type.
     intros; not_not; openhyp; eapply find_Some_in; eauto.
   Qed.
 
   Lemma NoDup_not_in : forall A (x : A) xs, NoDup (x :: xs) -> ~ List.In x xs.
+  Proof using .
     inversion 1; subst; eauto.
   Qed.
 
   Lemma not_incl_spec : forall spec, ~ List.In (RetVar spec) (ArgVars spec).
+  Proof using .
     intros; destruct spec; simpl; eapply negb_is_in_iff; eauto.
   Qed.
 
   Lemma in_args_not_assigned spec x : List.In x (ArgVars spec) -> ~ StringSet.In x (assigned (Body spec)).
-  Proof.
+  Proof using .
     destruct spec; simpl in *; nintro.
     eapply is_disjoint_iff; eauto.
     split; eauto.
@@ -448,7 +452,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_seq_1 : forall (env : Env) a b st, Safe env (Seq a b) st -> Safe env a st.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     openhyp.
@@ -456,7 +460,7 @@ Section ADTValue.
   Qed.
 
   Lemma safe_seq_2 : forall (env : Env) a b st, Safe env (Seq a b) st -> forall st', RunsTo env a st st' -> Safe env b st'.
-  Proof.
+  Proof using Type.
     intros.
     inversion H; subst.
     openhyp.
@@ -466,7 +470,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics3.
 
   Lemma safe_while_is_bool (env : Env) e s st : Safe env (While e s) st -> is_bool st e.
-  Proof.
+  Proof using Type.
     intros H.
     inversion H; unfold_all; subst.
     eapply is_true_is_bool; eauto.
@@ -474,21 +478,21 @@ Section ADTValue.
   Qed.
 
   Lemma is_mapsto_adt_eq_sca x w st : is_mapsto_adt x (StringMap.add x (SCA ADTValue w) st) = false.
-  Proof.
+  Proof using Type.
     unfold is_mapsto_adt.
     rewrite StringMapFacts.add_eq_o in * by eauto.
     eauto.
   Qed.
 
   Lemma is_mapsto_adt_neq x (v : Value) st x' : x' <> x -> is_mapsto_adt x' (StringMap.add x v st) = is_mapsto_adt x' st.
-  Proof.
+  Proof using Type.
     unfold is_mapsto_adt; intros.
     rewrite StringMapFacts.add_neq_o in * by eauto.
     eauto.
   Qed.
 
   Lemma not_mapsto_adt_find x st v : not_mapsto_adt x st = true -> StringMap.find x st = Some v -> exists w, v = SCA ADTValue w.
-  Proof.
+  Proof using Type.
     intros Hnmt Hfx.
     unfold not_mapsto_adt in *.
     unfold is_mapsto_adt in *.
@@ -499,7 +503,7 @@ Section ADTValue.
   Qed.
 
   Lemma wrap_output_not_sca coutput i w : nth_error (wrap_output coutput) i <> Some (Some (SCA ADTValue w)).
-  Proof.
+  Proof using Type.
     unfold wrap_output.
     rewrite ListFacts.map_nth_error_full.
     destruct (option_dec (nth_error coutput i)) as [s | e]; simpl in *.
@@ -509,7 +513,7 @@ Section ADTValue.
   Qed.
 
   Lemma find_none_not_mapsto_adt x (st : State) : find x st = None -> not_mapsto_adt x st = true.
-  Proof.
+  Proof using Type.
     intros Hf.
     unfold not_mapsto_adt, is_mapsto_adt.
     rewrite Hf.
@@ -525,7 +529,7 @@ Section ADTValue.
   Hint Extern 0 (_ == _) => reflexivity.
 
   Lemma add_remove_many_Equal ks : forall types vs st1 st2, st1 == st2 -> @add_remove_many ADTValue ks types vs st1 == add_remove_many ks types vs st2.
-  Proof.
+  Proof using Type.
     induction ks; destruct types; destruct vs; simpl; try solve [intuition].
     intros st1 st2 Heq.
     rename a into k.
@@ -543,12 +547,12 @@ Section ADTValue.
 
   Global Add Morphism (@add_remove_many ADTValue)
       with signature eq ==> eq ==> eq ==> Equal ==> Equal as add_remove_many_m.
-  Proof.
+  Proof using Type.
     intros; eapply add_remove_many_Equal; eauto.
   Qed.
 
   Lemma add_remove_many_add_comm ks : forall vs types k v (st : State), ~ List.In k ks -> add_remove_many ks types vs (add k v st) == add k v (add_remove_many ks types vs st).
-  Proof.
+  Proof using Type.
     induction ks; destruct vs; destruct types; simpl; try solve [intuition].
     intros k' v' st Hnin .
     intuition.
@@ -563,7 +567,7 @@ Section ADTValue.
   Qed.
 
   Lemma add_remove_many_remove_comm ks : forall vs types k (st : State), ~ List.In k ks -> add_remove_many ks types vs (remove k st) == remove k (add_remove_many ks types vs st).
-  Proof.
+  Proof using Type.
     induction ks; destruct vs; destruct types; simpl; try solve [intuition].
     intros k' st Hnin .
     intuition.
@@ -589,7 +593,7 @@ Section ADTValue.
     end.
 
   Lemma output_eqv_refl A types : forall (output : list A), length types = length output -> output_eqv types output output.
-  Proof.
+  Proof using Type.
     induction types; destruct output; simpl; intuition.
     destruct a; eauto.
   Qed.
@@ -597,7 +601,7 @@ Section ADTValue.
   Definition not_mapsto_adt_types (k : string) ks types := forall i, nth_error ks i = Some k -> ~ exists a : ADTValue, nth_error types i = Some (ADT a).
 
   Lemma not_in_not_mapsto_adt_types k ks types : ~ List.In k ks -> not_mapsto_adt_types k ks types.
-  Proof.
+  Proof using Type.
     intros Hnin.
     unfold not_mapsto_adt_types in *.
     intros i Hnth Hex.
@@ -606,7 +610,7 @@ Section ADTValue.
   Qed.
 
   Lemma not_mapsto_adt_types_cons_neq_elim ks types k k' type : not_mapsto_adt_types k (k' :: ks) (type :: types) -> k <> k' -> not_mapsto_adt_types k ks types.
-  Proof.
+  Proof using Type.
     intros H Hne.
     unfold not_mapsto_adt_types in *.
     intros i Hnth Hex.
@@ -614,7 +618,7 @@ Section ADTValue.
   Qed.
 
   Lemma not_mapsto_adt_types_cons_neq_intro ks types k k' type : not_mapsto_adt_types k ks types -> k <> k' -> not_mapsto_adt_types k (k' :: ks) (type :: types).
-  Proof.
+  Proof using Type.
     intros H Hne.
     unfold not_mapsto_adt_types in *.
     intros i Hnth [a Ha].
@@ -625,7 +629,7 @@ Section ADTValue.
   Qed.
 
   Lemma not_mapsto_adt_types_adt k ks a types : ~ not_mapsto_adt_types k (k :: ks) (ADT a :: types).
-  Proof.
+  Proof using Type.
     unfold not_mapsto_adt_types.
     intros H.
     eapply (H 0); simpl in *; eauto.
@@ -635,7 +639,7 @@ Section ADTValue.
   Arguments ADT {ADTValue} _.
 
   Lemma not_mapsto_adt_types_sca k ks w types : not_mapsto_adt_types k ks types -> not_mapsto_adt_types k (k :: ks) (SCA w :: types).
-  Proof.
+  Proof using Type.
     intros H.
     unfold not_mapsto_adt_types in *.
     intros i Hnth [a Ha].
@@ -645,14 +649,14 @@ Section ADTValue.
   Qed.
 
   Lemma not_mapsto_adt_types_nil k types : not_mapsto_adt_types k nil types.
-  Proof.
+  Proof using Type.
     unfold not_mapsto_adt_types; intros.
     rewrite nth_error_nil in *.
     discriminate.
   Qed.
 
   Lemma mapM_not_mapsto_adt_types ks : forall types k st, not_mapsto_adt k st = true -> mapM (sel st) ks = Some types -> not_mapsto_adt_types k ks types.
-  Proof.
+  Proof using Type.
     induction ks; destruct types; simpl; try discriminate; intros k st Hnadt Hmm.
     - eapply not_mapsto_adt_types_nil.
     - rename k into k'.
@@ -674,7 +678,7 @@ Section ADTValue.
   Qed.
 
   Lemma add_remove_many_eq_output_eqv ks : forall types st1 st2 vs1 vs2 k, remove k (add_remove_many ks types vs1 st1) == remove k (add_remove_many ks types vs2 st2) -> not_mapsto_adt_types k ks types -> length ks = length types -> length ks = length vs1 -> length ks = length vs2 -> NoDup ks -> output_eqv types vs1 vs2.
-  Proof.
+  Proof using Type.
     induction ks; destruct types; destruct vs1; destruct vs2; simpl; try solve [intros; try discriminate; intuition eauto]; intros k Heq Hnadt Hlent Hlen1 Hlen2 Hnd.
     {
       inject Hlent.
@@ -737,7 +741,7 @@ Section ADTValue.
   Qed.
 
   Lemma add_add_remove_many_eq_elim types k ks v1 vs1 v2 vs2 (st : State) : not_mapsto_adt k st = true -> List.NoDup ks -> add k v1 (add_remove_many ks types vs1 st) == add k v2 (add_remove_many ks types vs2 st) -> mapM (sel st) ks = Some types -> length ks = length vs1 -> length ks = length vs2 -> v1 = v2 /\ output_eqv types vs1 vs2.
-  Proof.
+  Proof using Type.
     intros Hnadt Hnd Heq Hlen1 Hlen2.
     eapply add_eq_elim in Heq.
     destruct Heq as [Hveq Hmeq].
@@ -748,7 +752,7 @@ Section ADTValue.
   Qed.
 
   Lemma not_in_add_remove_many' ks : forall types outs x (st1 st2 : State), ~ List.In x ks -> find x st1 = find x st2 -> find x (add_remove_many ks types outs st1) = find x st2.
-  Proof.
+  Proof using Type.
     induction ks; destruct types; destruct outs; simpl; try solve [intuition].
     intros x st1 st2 Hnin Hst.
     eapply Decidable.not_or in Hnin.
@@ -771,6 +775,7 @@ Section ADTValue.
   Qed.
 
   Lemma not_in_add_remove_many ks : forall types outs x (st : State), ~ List.In x ks -> find x (add_remove_many ks types outs st) = find x st.
+  Proof using Type.
     intros; eapply not_in_add_remove_many'; eauto.
   Qed.
 

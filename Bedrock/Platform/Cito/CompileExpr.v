@@ -108,6 +108,7 @@ Section ExprComp.
   Lemma evalInstrs_read_var : forall sm x s,
     evalInstrs sm x (Assign Rv (var_slot s) :: nil)
     = evalInstrs sm x (Assign Rv (LvMem (Imm ((Regs x Sp ^+ natToW vars_start) ^+ natToW (variablePosition vars s)))) :: nil).
+  Proof using Type.
     Transparent evalInstrs.
     simpl.
     intros.
@@ -124,6 +125,7 @@ Section ExprComp.
     forall x ls,
       StringSet.In x (SSP.of_list ls)
       -> List.In x ls.
+  Proof using .
     intros.
     eapply SSP.of_list_1 in H.
     eapply InA_eq_In_iff; eauto.
@@ -133,6 +135,7 @@ Section ExprComp.
   Lemma evalInstrs_write_temp : forall sm x base',
     evalInstrs sm x (Assign (temp_slot base') Rv :: nil)
     = evalInstrs sm x (Assign (LvMem (Imm (Regs x Sp ^+ $8 ^+ $ (4 * length vars) ^+ $4 ^* natToW base'))) Rv :: nil).
+  Proof using Type.
     Transparent evalInstrs.
     simpl.
     intros.
@@ -155,6 +158,7 @@ Section ExprComp.
   Lemma evalInstrs_binop_temp : forall sm x base' b,
     evalInstrs sm x (IL.Binop Rv (temp_slot base') b Rv :: nil)
     = evalInstrs sm x (IL.Binop Rv (LvMem (Imm (Regs x Sp ^+ $8 ^+ $ (4 * length vars) ^+ $4 ^* natToW base'))) b Rv :: nil).
+  Proof using Type.
     Transparent evalInstrs.
     simpl.
     intros.
@@ -176,6 +180,7 @@ Section ExprComp.
   Lemma selN_updN_eq : forall a p v,
     p < length a
     -> selN (updN a p v) p = v.
+  Proof using .
     induction a; simpl; intuition.
     destruct p; simpl; intuition.
   Qed.
@@ -184,6 +189,7 @@ Section ExprComp.
     p < length a
     -> goodSize (length a)
     -> Array.sel (Array.upd a p v) p = v.
+  Proof using .
     unfold Array.sel, Array.upd; intros.
     apply selN_updN_eq; auto.
     rewrite wordToNat_natToWord_idempotent; auto.
@@ -194,6 +200,7 @@ Section ExprComp.
   Lemma selN_updN_ne : forall a p v p',
     p <> p'
     -> selN (updN a p v) p' = selN a p'.
+  Proof using .
     induction a; simpl; intuition.
     destruct p, p'; simpl; intuition.
   Qed.
@@ -202,6 +209,7 @@ Section ExprComp.
     -> forall v base' a,
       base < base'
       -> Array.sel (upd_sublist a base' v) base = Array.sel a base.
+  Proof using .
     induction v; simpl; intuition.
     rewrite IHv; auto.
     rewrite sel_selN by auto.
@@ -213,6 +221,7 @@ Section ExprComp.
   Lemma upd_sublist_unchanged : forall p ws a base,
     p < base
     -> Array.selN (upd_sublist a base ws) p = Array.selN a p.
+  Proof using .
     induction ws; simpl; intuition.
     rewrite IHws by omega.
     apply selN_updN_ne; omega.
@@ -222,6 +231,7 @@ Section ExprComp.
     length a1 = length a2
     -> (forall p, p < length a1 -> selN a1 p = selN a2 p)
     -> a1 = a2.
+  Proof using .
     induction a1; destruct a2; simpl; intuition.
     injection H; clear H; intros.
     apply IHa1 in H; clear IHa1; subst.
@@ -243,6 +253,7 @@ Section ExprComp.
     -> (forall p, p >= limit -> Array.selN a' p = Array.selN a p)
     -> exists changed, a' = upd_sublist a base changed
       /\ length changed <= limit - base.
+  Proof using .
     induction n; simpl; intros.
 
     exists nil.
@@ -290,12 +301,14 @@ Section ExprComp.
     -> (forall p, p >= limit -> Array.selN a' p = Array.selN a p)
     -> exists changed, a' = upd_sublist a base changed
       /\ length changed <= limit - base.
+  Proof using .
     intros; eapply get_changed'; eauto.
   Qed.
 
   Lemma upd_sublist_unchanged_high : forall p ws a base,
     p >= base + length ws
     -> Array.selN (upd_sublist a base ws) p = Array.selN a p.
+  Proof using .
     induction ws; simpl; intuition.
     rewrite IHws by omega.
     apply selN_updN_ne; omega.
@@ -304,6 +317,7 @@ Section ExprComp.
   Lemma evalCond_temp : forall sm x base' t0,
     evalCond (temp_slot base') t0 Rv sm x
     = evalCond (LvMem (Imm (Regs x Sp ^+ $8 ^+ $ (4 * length vars) ^+ $4 ^* natToW base'))) t0 Rv sm x.
+  Proof using Type.
     unfold evalCond; simpl; intros.
     replace (Regs x Sp ^+ natToW (temp_start + 4 * base'))
       with (Regs x Sp ^+ $ (8) ^+ $ (4 * length vars) ^+ $4 ^* natToW base'); auto.
@@ -324,6 +338,7 @@ Section ExprComp.
     -> base + depth expr <= temp_size
     -> interp specs (Postcondition (do_compile expr base pre) (sm, st))
     -> exists st', interp specs (pre (sm, st')) /\ runs_to expr base (sm, st') st.
+  Proof using Type.
     induction expr; simpl; propxFo.
 
     do 2 esplit.
@@ -1525,6 +1540,7 @@ Section ExprComp.
     -> Subset (free_vars expr) (of_list vars)
     -> base + depth expr <= temp_size
     -> vcs (VerifCond (body expr base pre)).
+  Proof using Type.
     induction expr; wrap0; simpl in *.
 
     apply H in H2; clear H; post.

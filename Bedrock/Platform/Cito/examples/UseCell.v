@@ -61,6 +61,7 @@ Definition m := cmodule "use_cell" {{
 }}.
 
 Lemma good : IsGoodModule m.
+Proof using .
   good_module.
 Qed.
 
@@ -120,6 +121,7 @@ Import LinkSpecMake.
 Require Import Bedrock.Platform.Cito.GeneralTactics2.
 
 Lemma specs_good : specs_equal specs modules imports.
+Proof using .
   split; intros.
 
   unfold label_mapsto, specs in *.
@@ -168,12 +170,14 @@ Require Import Bedrock.Platform.Cito.WordFacts2 Bedrock.Platform.Cito.WordFacts5
 Require Import Bedrock.Platform.Cito.WordMapFacts.
 
 Lemma map_add_same_key : forall elt m k v1 v2, @addw elt k v2 (addw k v1 m) == addw k v2 m.
+Proof using .
   unfold WordMap.Equal; intros.
   repeat rewrite add_o.
   destruct (UWFacts.WFacts.P.F.eq_dec k y); intuition.
 Qed.
 
 Lemma add_remove : forall elt m k v, ~ @Inw elt k m -> WordMap.remove k (addw k v m) == m.
+Proof using .
   unfold WordMap.Equal; intros.
   rewrite remove_o.
   rewrite add_o.
@@ -192,6 +196,7 @@ Require Import Bedrock.Platform.Cito.GeneralTactics4.
 Import SemanticsMake.
 
 Lemma vcs_good : and_all (vc body empty_precond) specs.
+Proof using .
   unfold empty_precond, body; simpl; unfold imply_close, and_lift; simpl.
   split.
   {
@@ -433,11 +438,13 @@ Local Hint Immediate vcs_good.
 Hint Resolve specs_good.
 
 Lemma body_safe : forall stn fs v, env_good_to_use modules imports stn fs -> Safe (from_bedrock_label_map (Labels stn), fs stn) (Body f) v.
+Proof using .
   cito_safe f empty_precond vcs_good; eauto.
   eapply specs_equal_agree; eauto.
 Qed.
 
 Lemma body_runsto : forall stn fs v v', env_good_to_use modules imports stn fs -> RunsTo (from_bedrock_label_map (Labels stn), fs stn) (Body f) v v' -> sel (fst v') (RetVar f) = value /\ snd v' == snd v.
+Proof using .
   cito_runsto f empty_precond vcs_good; eauto.
   eapply specs_equal_agree; eauto.
 Qed.
@@ -450,6 +457,7 @@ Import LinkSpecMake2.CompileFuncSpecMake.InvMake.SemanticsMake.
 Require Import Bedrock.Platform.Cito.GeneralTactics3.
 
 Theorem top_ok : moduleOk top.
+Proof using .
   vcgen.
 
   sep_auto.
@@ -504,5 +512,6 @@ Qed.
 Definition all := link top (compile_to_bedrock modules imports).
 
 Theorem all_ok : moduleOk all.
+Proof using .
   link0 top_ok.
 Qed.

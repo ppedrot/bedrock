@@ -102,6 +102,7 @@ Definition m := bimport [[ "sys"!"abort" @ [abortS],
   }}.
 
 Theorem dematerialize_buffer : forall p n, p =?>8 (n * 4) ===> p =?> n.
+Proof using .
   unfold buffer; sepLemma; apply decomission_array8; auto.
 Qed.
 
@@ -120,5 +121,6 @@ Ltac t :=
 Local Hint Extern 1 (@eq W _ _) => words.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.

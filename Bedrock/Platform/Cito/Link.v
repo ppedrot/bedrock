@@ -95,6 +95,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Coq.Setoids.Setoid.
 
     Lemma Disjoint_MNames_impl_MNames : StringSetFacts.Disjoint (to_set (List.map impl_MName modules)) (to_set (List.map MName modules)).
+    Proof using Type.
       unfold StringSetFacts.Disjoint.
       intros.
       nintro.
@@ -113,6 +114,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Existing Instance Compat_rel_Reflexive.
 
     Lemma final_imports_Compat_total_exports : Compat (final_imports modules imports) (LinkSpecMake2.impl_exports modules).
+    Proof using (ImportsGoodModuleName modules).
       unfold final_imports.
       symmetry.
       eapply Compat_update.
@@ -125,6 +127,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Notation foreign_imports := LinkSpecMake2.imports.
 
     Lemma final_imports_diff_total_exports : final_imports modules imports - LinkSpecMake2.impl_exports modules == foreign_imports imports.
+    Proof using (ImportsGoodModuleName modules).
       unfold final_imports.
       rewrite <- update_diff_same.
       rewrite diff_same.
@@ -142,6 +145,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     (* Interface *)
 
     Theorem result_ok : moduleOk result.
+    Proof using All.
       unfold result.
       eapply linkOk.
       eapply LinkModuleImplsMake.module_ok; eauto.
@@ -178,6 +182,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem result_imports : Imports result === LinkSpecMake2.imports imports.
+    Proof using All.
       simpl.
       rewrite XCAP_union_update.
       repeat rewrite XCAP_diff_diff.
@@ -196,6 +201,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem result_exports : Exports result === LinkSpecMake2.all_exports modules imports.
+    Proof using All.
       simpl.
       rewrite XCAP_union_update.
       unfold impls.
@@ -208,6 +214,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Theorem result_module_names : SS.Equal (Modules result) (union (to_set (List.map impl_MName modules)) (to_set (List.map MName modules))).
+    Proof using All.
       simpl.
       unfold impls.
       rewrite LinkModuleImplsMake.module_module_names; eauto.

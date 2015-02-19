@@ -122,6 +122,7 @@ Definition m := bimport [[ "malloc"!"malloc" @ [mallocS], "malloc"!"free" @ [fre
 
 
 Lemma inc_nil : inc nil = nil.
+Proof using .
   auto.
 Qed.
 
@@ -131,6 +132,7 @@ Lemma determine_inc : forall arr arr',
   length arr' = length arr
   -> (forall j, Array8.selN arr' j = inc1 (Array8.selN arr j))
   -> arr' = inc arr.
+Proof using .
   induction arr; destruct arr'; simpl; intuition; f_equal.
   apply (H0 O).
   apply IHarr; auto.
@@ -147,6 +149,7 @@ Lemma final_bound : forall (len i : W) len' j,
   -> i <= natToW len'
   -> (j >= wordToNat i)%nat
   -> (j >= len')%nat.
+Proof using .
   intros.
   assert (natToW len' = i) by eauto using squeeze.
   subst.
@@ -169,6 +172,7 @@ Lemma reveal_middle : forall (ls1 ls2 : list B) i len,
   -> len = natToW (length (ls1 ++ ls2))
   -> goodSize (length (ls1 ++ ls2))
   -> exists x, exists ls2', ls2 = x :: ls2'.
+Proof using .
   intros; subst.
   eapply reveal_middle'.
   instantiate (1 := ls1).
@@ -194,6 +198,7 @@ Hint Rewrite length_addendum : sepFormula.
 
 Lemma sum_cons' : forall acc1 bs acc2,
   fold_left (fun n b => n ^+ BtoW b) bs (acc1 ^+ acc2) = acc1 ^+ fold_left (fun n b => n ^+ BtoW b) bs acc2.
+Proof using .
   induction bs; simpl; intuition idtac.
   rewrite <- wplus_assoc.
   apply IHbs.
@@ -201,6 +206,7 @@ Qed.
 
 Lemma sum_cons : forall b bs,
   sum (b :: bs) = BtoW b ^+ sum bs.
+Proof using .
   unfold sum; simpl.
   intros.
   rewrite wplus_comm; apply sum_cons'.
@@ -210,6 +216,7 @@ Hint Rewrite sum_cons : sepFormula.
 
 Lemma selN_middle : forall post mid pre,
   Array8.selN (pre ++ mid :: post) (length pre) = mid.
+Proof using .
   induction pre; simpl; intuition.
 Qed.
 
@@ -217,6 +224,7 @@ Lemma sel_middle : forall i pre mid post,
   i = natToW (length pre)
   -> goodSize (length pre)
   -> Array8.sel (pre ++ mid :: post) i = mid.
+Proof using .
   unfold Array8.sel; intros; subst.
   autorewrite with N.
   apply selN_middle.
@@ -227,6 +235,7 @@ Hint Rewrite sel_middle using solve [ eauto 1 ] : sepFormula.
 Lemma goodSize_split : forall A (ls1 ls2 : list A),
   goodSize (length (ls1 ++ ls2))
   -> goodSize (length ls1).
+Proof using .
   intros; rewrite app_length in *; eapply goodSize_weaken; eauto.
 Qed.
 
@@ -238,6 +247,7 @@ Lemma all_done : forall len i A (done rem : list A),
   -> i = natToW (length done)
   -> goodSize (length (done ++ rem))
   -> rem = nil.
+Proof using .
   intros; subst.
   rewrite app_length in *.
   pre_nomega.
@@ -248,12 +258,14 @@ Lemma all_done : forall len i A (done rem : list A),
 Qed.
 
 Lemma sum_nil : sum nil = $0.
+Proof using .
   auto.
 Qed.
 
 Hint Rewrite sum_nil : sepFormula.
 
 Lemma length_inc : forall ls, length (inc ls) = length ls.
+Proof using .
   intros; apply map_length.
 Qed.
 
@@ -261,6 +273,7 @@ Hint Rewrite length_inc : sepFormula.
 
 Lemma goodSize8 : forall n, n = 8
   -> goodSize n.
+Proof using .
   intros; subst; auto.
 Qed.
 
@@ -308,5 +321,6 @@ Ltac t := solve [
       end; sep hints; finish ].
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.

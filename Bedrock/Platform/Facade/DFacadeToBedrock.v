@@ -104,7 +104,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Bedrock.Platform.Cito.Option.
 
     Lemma env_good_to_use_cenv_impls_env modules stn fs : env_good_to_use modules imports stn fs -> cenv_impls_env (from_bedrock_label_map (Labels stn), fs stn) (GLabelMap.map (@Axiomatic _) imports).
-    Proof.
+    Proof using Type.
       intros Hgu.
       unfold env_good_to_use, cenv_impls_env in *.
       destruct Hgu as [Hsgu [Hinj Hfsgu] ].
@@ -170,7 +170,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Bedrock.Platform.Facade.CompileRunsTo.
     Require Import Bedrock.Platform.Cito.StringMapFacts.
     Lemma empty_related vs : @CompileRunsTo.related ADTValue (StringMap.empty _) (vs, (WordMap.empty _)).
-    Proof.
+    Proof using .
       unfold related.
       split.
       {
@@ -187,7 +187,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Import StringMapFacts.FMapNotations.
 
     Lemma related_Equal st1 st2 vs1 vs2 h1 h2 : @related ADTValue st1 (vs1, h1) -> st2 == st1 -> (forall k, vs2 k = vs1 k) -> WordMap.Equal h2 h1 -> related st2 (vs2, h2).
-    Proof.
+    Proof using .
       intros Hr Heq Hvs Hh.
       unfold related in *; simpl in *.
       split.
@@ -216,7 +216,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
 
     Require Import Coq.Setoids.Setoid.
     Global Add Morphism (@CompileRunsTo.related ADTValue) with signature StringMap.Equal ==> Logic.eq ==> iff as related_Equal_m.
-    Proof.
+    Proof using .
       intros st1 st2 Heq cst.
       destruct cst as [vs h] in *.
       split; intros.
@@ -242,6 +242,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Import StringMapFacts StringMap.StringMap.
 
     Lemma related_add_adt st vs h x (a : ADTValue) w : related st (vs, h) -> w = vs x -> ~ WordMap.In w h -> not_mapsto_adt x st = true -> related (add x (ADT a) st) (vs, WordMap.add w a h).
+    Proof using .
       intros Hr ? Hninw Hninx.
       subst.
 
@@ -337,6 +338,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Lemma related_add st vs h x v w : @related ADTValue st (vs, h) -> w = vs x -> word_scalar_match (w, v) -> not_in_heap w v h -> not_mapsto_adt x st = true  -> related (add x v st) (vs, store_pair h (w, v)).
+    Proof using .
       intros Hr ? Hmatch Hninw Hninx.
       subst.
       destruct v as [w | a].
@@ -384,7 +386,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         vs = fst cst ->
         h = snd cst ->
         CompileRunsTo.related st cst.
-    Proof.
+    Proof using .
       induction ks; destruct values; destruct pairs; simpl; try solve [intros; try discriminate]; intros st h vs cst Hnd Hst Hh Hgs Hdp Hfst Hsnd ? ?; subst; destruct cst as [vs h]; simpl in *.
       {
         unfold make_heap in *; simpl in *.
@@ -440,7 +442,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         vs = fst cst ->
         h = snd cst ->
         CompileRunsTo.related st cst.
-    Proof.
+    Proof using .
       intros; eapply make_map_make_heap_related'; eauto.
       rewrite <- make_heap_make_heap' by eauto.
       eauto.
@@ -458,7 +460,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       w2 = Locals.sel (fst cst) argvar2 ->
       snd cst == make_heap ((w1, v1) :: (w2, v2) :: nil) ->
       Safe cenv stmt cst.
-    Proof.
+    Proof using Type.
       destruct cenv as [l2w w2spec]; simpl in *.
       destruct cst as [vs h]; simpl in *.
       intros Hegtu ? ? ? Hpre Hdisj Hgs ? ? Hheq.
@@ -512,7 +514,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
       WordMap.Equal h (make_heap pairs) /\
       disjoint_ptrs pairs /\
       good_scalars pairs.
-    Proof.
+    Proof using .
       intros Hst Hnoleak Hr ? ? Hh ? .
       subst.
       destruct cst as [vs h']; simpl in *.
@@ -623,7 +625,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         snd cst' == make_heap pairs /\
         disjoint_ptrs pairs /\
         good_scalars pairs.
-    Proof.
+    Proof using Type.
       destruct cenv as [l2w w2spec]; simpl in *.
       destruct cst as [vs h]; simpl in *.
       destruct cst' as [vs' h']; simpl in *.
@@ -713,6 +715,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Require Import Bedrock.sep.Locals.
 
     Theorem is_state_in2 : forall vs sp args e_stack h F, locals ("rp" :: "extra_stack" :: args) vs e_stack sp * is_heap h * mallocHeap 0 * F ===> is_state sp (Locals.sel vs "rp") (wordToNat (Locals.sel vs "extra_stack")) e_stack args (vs, h) nil * mallocHeap 0 * F.
+    Proof using Type.
       intros; sepLemma.
       etransitivity; [ | apply is_state_in'' ]; auto.
       sepLemma.
@@ -728,6 +731,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     ===> Ex vs', locals ("rp" :: "extra_stack" :: args) vs' e_stack' sp
     * is_heap h * [| sel vs' "extra_stack" = e_stack |]
     * [| saved_vars vs' args pairs |].
+  Proof using Type.
     unfold is_state, locals, Inv.has_extra_stack; simpl.
     intros.
     apply Himp_ex_c.
@@ -775,6 +779,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
                                           ===> Ex vs', locals ("rp" :: "extra_stack" :: args) vs' e_stack' sp
                                                        * is_heap h * [| sel vs' "extra_stack" = e_stack |]
                                                        * [| saved_vars vs' args pairs |].
+  Proof using Type.
     unfold Himp; intros.
     etransitivity.
     2 : eapply is_state_out''; eauto.
@@ -806,6 +811,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
                                                                                      ===> Ex vs', locals ("rp" :: "extra_stack" :: args) vs' e_stack' sp * is_heap h
                                                                                                   * [| sel vs' "extra_stack" = e_stack|]
                                                                                                   * mallocHeap 0 * F.
+  Proof using Type.
     intros Hfstpairs.
     intros.
     eapply Himp_trans; [ do 2 (apply Himp_star_frame; [ | apply Himp_refl ]); apply is_state_out''' | ]; eauto.
@@ -818,6 +824,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Import LinkSpecMake2.CompileFuncSpecMake.InvMake.SemanticsMake.
 
     Theorem output_module_ok : moduleOk output_module.
+    Proof using Type.
       clear_all.
       vcgen.
 
@@ -917,7 +924,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Import MakeWrapperMake.LinkMake.LinkModuleImplsMake.
 
     Theorem output_module_impl_ok : moduleOk output_module_impl.
-    Proof.
+    Proof using Type.
 
       match goal with
         | |- moduleOk (compile_to_bedrock ?Modules ?Imports ) =>

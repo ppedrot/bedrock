@@ -597,14 +597,14 @@ Section LittleEndianSettings.
 
   Theorem implode_explode_le : forall w,
     implode_le (explode_le w) = w.
-  Proof.
+  Proof using .
     unfold implode_le, explode_le.
     intros. repeat rewrite combine_split. reflexivity.
   Qed.
 
   Theorem explode_implode_le : forall b,
     explode_le (implode_le b) = b.
-  Proof.
+  Proof using .
     unfold implode_le, explode_le.
     intros. destruct b. destruct p. destruct p.
     repeat (rewrite split1_combine || rewrite split2_combine).
@@ -627,6 +627,7 @@ Section LittleEndianSettings.
     -> forall w, Labels leSettings (mn, Global g) = Some w
       -> forall st, interp (specs m leSettings) (pre (leSettings, st))
         -> safe leSettings (snd (labelsOf (Blocks m))) (w, st).
+  Proof using -(m memHigh).
     intros; eapply safety; intuition eauto.
     apply labelsOf_inj with (Blocks m) w0; auto.
     simpl; eapply labelsOf_agree; eauto.

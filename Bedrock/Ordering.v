@@ -1,5 +1,7 @@
 Require Import Coq.Lists.List.
 
+Global Set Suggest Proof Using.
+
 Section ListLexOrder.
   Variable T : Type.
   Variable cmp : T -> T -> comparison.

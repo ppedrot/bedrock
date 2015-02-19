@@ -42,6 +42,7 @@ Qed.
 Hint Resolve gen_ns_NoDup.
 
 Lemma behold_the_array_ls : forall len p, p =?> len ===> Ex ls, [| length ls = len |] * array ls p.
+Proof using .
   intros; unfold array; rewrite <- (gen_ns_len len); eapply Himp_trans; [ eapply behold_the_array | rewrite gen_ns_len; sepLemma; rewrite length_toArray; rewrite gen_ns_len ]; eauto.
 Qed.
 

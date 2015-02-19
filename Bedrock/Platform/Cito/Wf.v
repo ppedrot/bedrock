@@ -42,10 +42,12 @@ Section ExistsR.
     end.
 
   Theorem ExistsR_Exists : forall ls, ExistsR ls -> List.Exists P ls.
+  Proof using Type.
     induction ls; simpl; intuition.
   Qed.
 
   Theorem Exists_ExistsR : forall ls, List.Exists P ls -> ExistsR ls.
+  Proof using Type.
     induction 1; simpl; intuition.
   Qed.
 End ExistsR.
@@ -57,6 +59,7 @@ Section ExistsR_weaken.
   Hypothesis P_Q : forall x, P x -> Q x.
 
   Theorem ExistsR_weaken : forall ls, ExistsR P ls -> ExistsR Q ls.
+  Proof using All.
     induction ls; simpl; intuition.
   Qed.
 End ExistsR_weaken.
@@ -138,6 +141,7 @@ Section ADTValue.
     (forall x, ~unwritten x)
     -> expReads unwritten e x
     -> False.
+  Proof using .
     induction e; simpl; intuition eauto.
   Qed.
 
@@ -146,6 +150,7 @@ Section ADTValue.
   Lemma reads_trivial' : forall x s unwritten,
     (forall x, ~unwritten x)
     -> ~reads unwritten s x.
+  Proof using .
     induction s; simpl; intuition; eauto.
     eapply IHs2.
     2: eauto.
@@ -155,6 +160,7 @@ Section ADTValue.
 
   Lemma reads_trivial : forall x s,
     ~reads (fun _ => False) s x.
+  Proof using .
     intros; apply reads_trivial'; auto.
   Qed.
 
@@ -162,6 +168,7 @@ Section ADTValue.
     (forall x, ~ExistsR (fun e => expReads unwritten e x) es)
     -> (forall x, sel vs' x <> sel vs x -> unwritten x)
     -> map (eval vs) es = map (eval vs') es.
+  Proof using .
     induction es; simpl; intuition.
     f_equal.
     eapply eval_irrel; eauto.
@@ -173,6 +180,7 @@ Section ADTValue.
     -> (forall x, sel vs'' x <> sel (fst st) x -> unwritten x)
     -> exists vs''', RunsTo fs s (vs'', snd st) (vs''', snd st')
       /\ (forall x, sel vs''' x <> sel (fst st') x -> unwritten x /\ ~writes s x).
+  Proof using Type.
     induction 1; simpl; intuition;
       repeat match goal with
                | [ x := _ |- _ ] => subst x
@@ -292,6 +300,7 @@ Section ADTValue.
     -> forall fs vs a vs' a', RunsTo (ADTValue := ADTValue) fs s (vs, a) (vs', a')
       -> forall vs'', agree_on vs vs'' arg_vars
         -> exists vs''', RunsTo fs s (vs'', a) (vs''', a') /\ sel vs''' rvar = sel vs' rvar.
+  Proof using Type.
     intros.
     eapply prove_NoUninitializedRunsTo' in H1; eauto.
     Focus 2.
@@ -325,6 +334,7 @@ Section ADTValue.
     -> forall fs vs a, Safe (ADTValue := ADTValue) fs s (vs, a)
       -> forall vs', (forall x, sel vs' x <> sel vs x -> unwritten x)
         -> Safe fs s (vs', a).
+  Proof using Type.
     intros; apply (@Safe_coind _ fs (fun s st =>
       exists unwritten,
         (forall x, ~reads unwritten s x)
@@ -407,6 +417,7 @@ Section ADTValue.
     -> forall fs vs a, Safe (ADTValue := ADTValue) fs s (vs, a)
       -> forall vs', agree_on vs vs' arg_vars
         -> Safe fs s (vs', a).
+  Proof using Type.
     intros.
     eapply prove_NoUninitializedSafe' in H0; eauto.
     simpl; intros.

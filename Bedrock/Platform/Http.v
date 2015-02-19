@@ -417,6 +417,7 @@ Lemma in_bounds : forall (pos len : W) n,
   pos < len
   -> n = wordToNat len
   -> pos < natToW n.
+Proof using .
   intros; subst; rewrite natToW_wordToNat; auto.
 Qed.
 
@@ -426,6 +427,7 @@ Lemma simplify_arith : forall pos len : W,
   (exists clen : W, pos < clen
     /\ clen <= len)
   -> wordToNat pos + wordToNat (len ^- pos) = wordToNat len.
+Proof using .
   post; pre_nomega; rewrite wordToNat_wminus; nomega.
 Qed.
 
@@ -434,6 +436,7 @@ Hint Rewrite simplify_arith using solve [ eauto 3 ] : sepFormula.
 Lemma simplify_arith' : forall pos len : W,
   pos <= len
   -> wordToNat pos + wordToNat (len ^- pos) = wordToNat len.
+Proof using .
   post; nomega.
 Qed.
 
@@ -445,6 +448,7 @@ Lemma size_ok : forall n (opos len : W),
   n = wordToNat len
   -> opos <= len
   -> (wordToNat opos <= n)%nat.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -456,6 +460,7 @@ Lemma lt_le_trans : forall a b c : W,
   a < b
   -> b <= c
   -> a <= c.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -493,6 +498,7 @@ Ltac t := easy || prove_irrel || t'.
 Local Hint Extern 1 (@eq W _ _) => words.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract t.
 Qed.
 

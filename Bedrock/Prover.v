@@ -146,6 +146,7 @@ Section composite.
   Variable pr_correct : ProverT_correct pr funcs.
 
   Theorem composite_ProverT_correct : ProverT_correct composite_ProverT funcs.
+  Proof using All.
 
     refine (
       {| Valid := fun uvars vars (facts : Facts composite_ProverT) =>

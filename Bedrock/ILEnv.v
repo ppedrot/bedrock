@@ -221,7 +221,7 @@ Section func_ext.
         exprD funcs uvars vars (fPlus l r) (tvType 0) = Some (wplus lv rv)
       | _ , _ => True
     end.
-  Proof.
+  Proof using Type.
     intros; simpl; unfold eq_ind_r; simpl;
       repeat match goal with
                | [ |- match ?X with
@@ -236,7 +236,7 @@ Section func_ext.
         exprD funcs uvars vars (fMinus l r) tvWord = Some (wminus lv rv)
       | _ , _ => True
     end.
-  Proof.
+  Proof using Type.
     intros; simpl; unfold eq_ind_r; simpl;
       repeat match goal with
                | [ |- match ?X with
@@ -251,7 +251,7 @@ Section func_ext.
         exprD funcs uvars vars (fMult l r) tvWord = Some (wmult lv rv)
       | _ , _ => True
     end.
-  Proof.
+  Proof using Type.
     intros; simpl; unfold eq_ind_r; simpl;
       repeat match goal with
                | [ |- match ?X with

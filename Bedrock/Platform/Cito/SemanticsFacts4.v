@@ -78,6 +78,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.GeneralTactics4.
 
   Lemma strengthen_runsto : forall env_op s v v', RunsTo env_op s v v' -> forall env_ax, strengthen env_op env_ax -> Safe env_ax s v -> RunsTo env_ax s v v'.
+  Proof using Type.
     induction 1; simpl; intros; unfold_all.
 
     Focus 7.
@@ -198,6 +199,7 @@ Section ADTValue.
   Require Import Bedrock.Platform.Cito.ListFacts4.
 
   Lemma strengthen_safe : forall env_ax s v, Safe env_ax s v -> forall env_op, strengthen env_op env_ax -> Safe env_op s v.
+  Proof using Type.
     intros.
     eapply (Safe_coind (fun s v => Safe env_ax s v)); [ .. | eauto ]; generalize H0; clear; intros.
 

@@ -124,6 +124,7 @@ Section Cond.
 
   Lemma blocks_first : forall b Base pre Tru Fals,
     exists bl, exists rest, blocks Base pre b Tru Fals = (pre, bl) :: rest.
+  Proof using Type.
     induction b; simpl; intuition eauto;
       match goal with
         | [ H : context[blocks _ _ ?B _ _] |- context[blocks ?Base ?pre ?B ?Tru ?False] ] =>
@@ -133,6 +134,7 @@ Section Cond.
 
   Lemma length_size : forall b Base pre Tru Fals,
     length (blocks Base pre b Tru Fals) = size b.
+  Proof using Type.
     induction b; simpl; intuition; rewrite app_length; struct.
   Qed.
 
@@ -189,6 +191,7 @@ Section Cond.
       -> LabelMap.MapsTo (modName, Local (Base + N_of_nat n)) pre' imps)
     -> List.Forall (fun p => blockOk imps (fst p) (snd p))
     (blocks Base pre b Tru Fals).
+  Proof using Type.
     induction b; simpl; intuition; repeat match goal with
                                             | [ |- List.Forall _ _ ] => (constructor || apply Forall_app); simpl
                                           end.
@@ -284,6 +287,7 @@ Section Cond.
     -> k <> (modName, Local exit)
     -> (exit < base + N_of_nat (length bls1))%N
     -> LabelMap.MapsTo k v (imps imports modName (bls1 ++ bls2) base exit post).
+  Proof using All.
     intros; eapply imps_app_1; eauto.
   Qed.
 
@@ -292,24 +296,28 @@ Section Cond.
     -> k <> (modName, Local exit)
     -> (exit < base)%N
     -> LabelMap.MapsTo k v (imps imports modName (bls1 ++ bls2) base exit post).
+  Proof using All.
     intros; eapply imps_app_2; eauto.
   Qed.
 
   Lemma interp_eta : forall specs (pre : assert) st,
     interp specs (pre st)
     -> interp specs (pre (fst st, snd st)).
+  Proof using .
     destruct st; auto.
   Qed.
 
   Lemma ex_up : forall A (e : option A),
     (e = None -> False)
     -> exists v, e = Some v.
+  Proof using .
     destruct e; intuition eauto.
   Qed.
 
   Hint Resolve interp_eta ex_up bexpSafe_really.
 
   Definition Cond_ (b : bexp) (Then Else : cmd imports modName) : cmd imports modName.
+  Proof using All.
     red; refine (fun pre =>
       let cout1 := Then (fun stn_st => pre stn_st /\ [|bexpTrue b (fst stn_st) (snd stn_st)|])%PropX in
       let cout2 := Else (fun stn_st => pre stn_st /\ [|bexpFalse b (fst stn_st) (snd stn_st)|])%PropX in
