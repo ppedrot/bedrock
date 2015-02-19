@@ -4,6 +4,7 @@
 *.depend
 Makefile.coq
 *.vo
+*.vio
 *.glob
 *.v.d
 deps.dot
