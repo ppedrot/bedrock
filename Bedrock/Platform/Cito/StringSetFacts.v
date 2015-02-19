@@ -9,4 +9,4 @@ Include (Properties M).
 Require Import FSetFacts.
 Include (Facts M).
 Require Import FSetFacts1.
-Include (UWFacts_fun K M).
+Module Include bug_4066_workaround := UWFacts_fun K M.
