@@ -1,4 +1,5 @@
 Require Import Omega.
+Require Import Arith.
 Require Import DepList AutoSep Malloc.
 
 Set Implicit Arguments.
@@ -701,9 +702,16 @@ Section boot.
     Precondition := fun _ => st ~> ![ 0 =?> (heapSize + 50 + globalsSize) ] st
   |}.
 
+  Lemma wiggle : forall P Q R,
+    P * (Q * R) ===> Q * P * R.
+  Proof using .
+    sepLemma.
+  Qed.
+
   Theorem genesis :
     0 =?> (heapSize + 50 + globalsSize)
     ===> (Ex vs, locals ("rp" :: nil) vs 49 (heapSize * 4)%nat) * 0 =?> heapSize * ((heapSize + 50) * 4)%nat =?> globalsSize.
+  Proof using -(heapSize heapSizeUpperBound).
     descend; intros; eapply Himp_trans; [ apply allocated_split | ].
     instantiate (1 := heapSize); auto.
     apply Himp_trans with (0 =?> heapSize *
@@ -714,7 +722,6 @@ Section boot.
     instantiate (1 := 50); auto.
     apply Himp_star_frame.
     apply allocated_shift_base.
-    Require Import Arith.
     rewrite mult_comm.
     simpl.
     unfold natToW.
@@ -727,11 +734,6 @@ Section boot.
     unfold natToW.
     words.
     omega.
-
-    Lemma wiggle : forall P Q R,
-      P * (Q * R) ===> Q * P * R.
-      sepLemma.
-    Qed.
 
     eapply Himp_trans; [ apply wiggle | ].
     repeat (apply Himp_star_frame; try apply Himp_refl).

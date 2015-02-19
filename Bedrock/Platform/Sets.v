@@ -229,6 +229,7 @@ Module Make(M : S).
 
     Lemma starL_del_fwd : forall v ls, In v ls
       -> starL P ls ===> P v * starL P (nuke v ls).
+    Proof using .
       induction ls; unfold setify in *; simpl in *; intuition subst.
       destruct (eq_dec v v); apply Himp_refl || tauto.
       destruct (eq_dec v a); subst; try apply Himp_refl.
@@ -241,6 +242,7 @@ Module Make(M : S).
     Lemma In_nuke : forall v x ls,
       In x (nuke v ls)
       -> In x ls.
+    Proof using .
       induction ls; simpl; intuition;
         match goal with
           | [ _ : context[if ?E then _ else _] |- _ ] => destruct E; subst; simpl in *; intuition
@@ -252,6 +254,7 @@ Module Make(M : S).
     Lemma NoDup_nuke : forall v ls,
       NoDup ls
       -> NoDup (nuke v ls).
+    Proof using .
       induction 1; simpl; intuition;
         match goal with
           | [ |- context[if ?E then _ else _] ] => destruct E; subst
@@ -263,6 +266,7 @@ Module Make(M : S).
     Lemma setify_cases : forall v ls b,
       v %in fold_left add ls b
       -> In v ls \/ v %in b.
+    Proof using .
       induction ls; simpl; intuition.
       apply IHls in H; intuition sets.
     Qed.
@@ -270,6 +274,7 @@ Module Make(M : S).
     Lemma setify_In : forall v ls,
       v %in setify ls
       -> In v ls.
+    Proof using .
       intros; apply setify_cases in H; intuition.
     Qed.
 
@@ -277,28 +282,31 @@ Module Make(M : S).
       v %in b
       -> b %= setify ls
       -> In v ls.
+    Proof using .
       intros; apply setify_In; sets.
     Qed.
 
     Hint Immediate setify_In'.
+
+    Lemma add_to_del : forall b b' v,
+      ~v %in b'
+      -> b %= b' %+ v
+      -> b %- v %= b'.
+    Proof using .
+      sets.
+    Qed.
 
     Lemma setify_nuke' : forall v ls, NoDup ls
       -> forall b b', In v ls
       -> ~v %in b'
       -> b %= fold_left add ls b'
       -> b %- v %= fold_left add (nuke v ls) b'.
+    Proof using .
       induction 1; simpl; intuition subst;
         match goal with
           | [ |- context[if ?E then _ else _] ] => destruct E; subst; intuition
         end.
       assert (b %= fold_left add l b' %+ v) by (eapply equiv_trans; [ eassumption | apply add_something ]); auto.
-
-      Lemma add_to_del : forall b b' v,
-        ~v %in b'
-        -> b %= b' %+ v
-        -> b %- v %= b'.
-        sets.
-      Qed.
 
       apply add_to_del; auto.
       intro.
@@ -402,6 +410,7 @@ Module Make(M : S).
       Hypothesis HP' : forall x, P x ===>* P' x.
 
       Theorem starS_weaken_weak : forall b, starS P b ===>* starS P' b.
+      Proof using All.
         unfold HimpWeak in *; propxFo.
         do 4 esplit; eauto.
         split.
