@@ -261,6 +261,7 @@ Section correctness.
   Lemma div4_correct' : forall n0 n m, (n < n0)%nat
     -> div4 n = Some m
     -> n = 4 * m.
+  Proof using .
     induction n0; simpl; intuition.
     destruct n; simpl in *.
     injection H0; omega.
@@ -274,6 +275,7 @@ Section correctness.
 
   Lemma div4_correct : forall n m, div4 n = Some m
     -> n = 4 * m.
+  Proof using .
     intros; eapply div4_correct'; eauto.
   Qed.
 
@@ -284,6 +286,7 @@ Section correctness.
       exprD funcs uvars vars base wordT = Some wb
       /\ exprD funcs uvars vars offset wordT = Some wo
       /\ w = wb ^+ $4 ^* wo.
+  Proof using Type.
     destruct e; simpl; intuition; try discriminate.
     repeat (deconstruct' ltac:(simpl in *); []).
     case_eq (exprD funcs uvars vars e wordT); intros;
@@ -311,6 +314,7 @@ Section correctness.
   Theorem ptsto32m'_in : forall a cs stn vs offset m,
     interp cs (ptsto32m _ a offset vs stn m)
     -> interp cs (ptsto32m' _ a offset vs stn m).
+  Proof using .
     induction vs.
 
     auto.
@@ -375,6 +379,7 @@ Section correctness.
     interp cs (ptsto32m' _ base (offset * 4) ws stn m)
     -> (i < length ws)%nat
     -> smem_get_word (implode stn) (base ^+ $ ((offset + i) * 4)) m = Some (selN ws i).
+  Proof using .
     induction ws.
 
     simpl length.
@@ -420,6 +425,7 @@ Section correctness.
     -> smem_get' dom a m1 = Some w1
     -> smem_get' dom a m2 = Some w2
     -> False.
+  Proof using .
     induction dom; simpl; intuition.
     discriminate.
     destruct (H.addr_dec a0 a); subst; try congruence.
@@ -433,6 +439,7 @@ Section correctness.
     -> smem_get_word addrs a m1 = Some w1
     -> smem_get_word addrs a m2 = Some w2
     -> False.
+  Proof using .
     unfold smem_get_word; intros.
     destruct (H.footprint_w a) as [ [ [ ] ] ].
     case_eq (smem_get a0 m1); [ intros ? Heq | intros Heq ]; rewrite Heq in *; try discriminate.
@@ -445,6 +452,7 @@ Section correctness.
     -> base ^+ $ (i * 4) = base
     -> interp cs (ptsto32m' _ base 0 ws stn m)
     -> False.
+  Proof using .
     destruct ws; simpl length; intros.
 
     elimtype False; omega.
@@ -464,12 +472,14 @@ Section correctness.
   Qed.
 
   Lemma pow2_pos : forall n, (pow2 n > 0)%nat.
+  Proof using .
     induction n; simpl; omega.
   Qed.
 
   Lemma pow2_monotone : forall n m,
     (n < m)%nat
     -> (pow2 n < pow2 m)%nat.
+  Proof using .
     induction 1; simpl; intuition.
     specialize (pow2_pos n).
     omega.
@@ -477,6 +487,7 @@ Section correctness.
 
   Lemma pow2_mult : forall m n,
     pow2 n * pow2 m = pow2 (n + m).
+  Proof using .
     induction n; simpl; intuition.
     repeat rewrite <- IHn.
     repeat rewrite <- plus_n_O.
@@ -487,6 +498,7 @@ Section correctness.
   Lemma array_bound : forall cs ws base stn m,
     interp cs (array ws base stn m)
     -> (length ws < pow2 32)%nat.
+  Proof using .
     intros.
     destruct (lt_dec (length ws) (pow2 32)); auto.
     elimtype False.
@@ -512,6 +524,7 @@ Section correctness.
     interp cs (array ws base stn m)
     -> i < $ (length ws)
     -> smem_get_word (implode stn) (base ^+ $4 ^* i) m = Some (sel ws i).
+  Proof using .
     unfold sel; intros; rewrite <- (@smem_read_correct'' cs base stn ws 0 (wordToNat i) m).
     f_equal.
     simpl plus.
@@ -549,7 +562,7 @@ Section correctness.
         ST.HT.smem_get_word (IL.implode stn) p m = Some v
       | _ => False
     end.
-  Proof.
+  Proof using Type.
     simpl; intuition.
     do 3 (destruct args; simpl in *; intuition; try discriminate).
     generalize (deref_correct uvars vars pe); destr ltac:(simpl in *) (deref pe); intro Hderef.
@@ -588,6 +601,7 @@ Section correctness.
   Theorem ptsto32m'_out : forall a cs stn vs offset m,
     interp cs (ptsto32m' _ a offset vs stn m)
     -> interp cs (ptsto32m _ a offset vs stn m).
+  Proof using .
     induction vs.
 
     auto.
@@ -653,6 +667,7 @@ Section correctness.
     -> interp cs (ptsto32m' _ base (offset * 4) ws stn m)
     -> exists m', smem_set_word (explode stn) (base ^+ $4 ^* $ (offset + i)) v m = Some m'
       /\ ST.satisfies cs (ptsto32m' _ base (offset * 4) (updN ws i v)) stn m'.
+  Proof using .
     induction ws; simpl length; intros.
 
     inversion H.
@@ -744,6 +759,7 @@ Section correctness.
     -> interp cs (array ws base stn m)
     -> exists m', smem_set_word (explode stn) (base ^+ $4 ^* i) v m = Some m'
       /\ ST.satisfies cs (array (upd ws i v) base) stn m'.
+  Proof using .
     intros.
     destruct (@smem_write_correct'' cs base stn v ws (wordToNat i) m 0).
 
@@ -789,7 +805,7 @@ Section correctness.
           | Some sm' => ST.satisfies cs pr stn sm'
         end
     end.
-  Proof.
+  Proof using Type.
     simpl; intuition.
     do 3 (destruct args; simpl in *; intuition; try discriminate).
     generalize (deref_correct uvars vars pe); destr ltac:(simpl in *) (deref pe); intro Hderef.

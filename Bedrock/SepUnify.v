@@ -37,7 +37,7 @@ Module Make (U : SynUnifier) (SH : SepHeap).
         (SH.impuresD pcT stT
           (MM.mmap_add n (map (@U.exprInstantiate _ s) e)
                          (impuresInstantiate acc))).
-    Proof.
+    Proof using Type.
       clear. intros. eapply MM.PROPS.map_induction with (m := acc); intros.
       { unfold MM.mmap_add, impuresInstantiate, MM.mmap_map.
         repeat rewrite MF.find_Empty by auto using MF.map_Empty.
@@ -55,7 +55,7 @@ Module Make (U : SynUnifier) (SH : SepHeap).
     Lemma sheapInstantiate_Equiv : forall a b,
       MM.mmap_Equiv a b ->
       MM.mmap_Equiv (impuresInstantiate a) (impuresInstantiate b).
-    Proof.
+    Proof using Type.
       clear. unfold impuresInstantiate, MM.mmap_Equiv, MM.mmap_map, FM.Equiv; intuition;
       try solve [ repeat match goal with
                            | [ H : FM.In _ (FM.map _ _) |- _ ] => apply MF.FACTS.map_in_iff in H
@@ -75,7 +75,7 @@ Module Make (U : SynUnifier) (SH : SepHeap).
         (SH.impuresD pcT stT (impuresInstantiate m'))
         (SH.starred (fun v => SH.SE.Func n (map (U.exprInstantiate s) v)) e
           (SH.impuresD pcT stT (impuresInstantiate m))).
-    Proof.
+    Proof using Type.
       clear. intros.
         unfold impuresInstantiate, MM.mmap_map.
         rewrite SH.impuresD_Add with (i := FM.map (map (map (U.exprInstantiate s))) m) (f := n) (argss := map (map (U.exprInstantiate s)) e).
@@ -98,7 +98,7 @@ Module Make (U : SynUnifier) (SH : SepHeap).
       forall D R F l,
         applyD (exprD funcs U G) D (map (U.exprInstantiate s) l) R F =
         applyD (exprD funcs U G) D l R F.
-    Proof.
+    Proof using Type.
       clear. induction D; destruct l; simpl; auto.
       rewrite U.Subst_equations_exprInstantiate; eauto.
       destruct (exprD funcs U G e a); eauto.
@@ -110,7 +110,7 @@ Module Make (U : SynUnifier) (SH : SepHeap).
       SH.SE.heq funcs preds U G cs
         (SH.starred (fun v : list (expr types) => SH.SE.Func x (map (U.exprInstantiate s) v)) e P)
         (SH.starred (SH.SE.Func x) e P).
-    Proof.
+    Proof using Type.
       clear. induction e; intros; repeat rewrite SH.starred_def; simpl; repeat rewrite <- SH.starred_def; SEP_FACTS.heq_canceler.
         rewrite IHe. SEP_FACTS.heq_canceler. unfold SH.SE.heq. simpl.
         match goal with
@@ -126,7 +126,7 @@ Module Make (U : SynUnifier) (SH : SepHeap).
       SH.SE.heq funcs preds U G cs
         (SH.impuresD pcT stT (impuresInstantiate h))
         (SH.impuresD pcT stT h).
-    Proof.
+    Proof using Type.
       clear. intros. eapply MM.PROPS.map_induction with (m := h); intros.
       { unfold sheapInstantiate, MM.mmap_map. repeat rewrite SH.impuresD_Empty; eauto using MF.map_Empty. reflexivity. }
       { rewrite sheapInstantiate_add; eauto. rewrite SH.starred_base. symmetry.
@@ -137,7 +137,7 @@ Module Make (U : SynUnifier) (SH : SepHeap).
     Lemma Func_forget_exprInstantiate : forall n e,
       U.Subst_equations funcs U G s ->
       SH.SE.heq funcs preds U G cs (SH.SE.Func n (map (U.exprInstantiate s) e)) (SH.SE.Func n e).
-    Proof. clear.
+    Proof using Type. clear.
       unfold SH.SE.heq. simpl. intros.
       destruct (nth_error preds n); try reflexivity.
       rewrite applyD_forget_exprInstantiate; auto. reflexivity.

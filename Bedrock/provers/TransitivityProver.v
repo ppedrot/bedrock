@@ -82,6 +82,7 @@ Section Grouper.
     Forall (R x) l
     -> R x y
     -> Forall (R y) l.
+  Proof using -(A A_seq R).
     induction 1; t.
   Qed.
 
@@ -90,6 +91,7 @@ Section Grouper.
   Lemma groupEqualTo_groupEqual : forall x xs,
     Forall (R x) xs
     -> groupEqual xs.
+  Proof using -(A A_seq R).
     induction 1; t.
   Qed.
 
@@ -101,6 +103,7 @@ Section Grouper.
     InR y g
     -> Forall (R x) g
     -> R x y.
+  Proof using -(A A_seq R).
     induction 2; t.
   Qed.
 
@@ -110,7 +113,7 @@ Section Grouper.
 
   Lemma in_seq_correct : forall (a : A) (ls : list A),
     in_seq ls a = true -> InR a ls.
-  Proof.
+  Proof using -(A A_seq R Rtrans).
     induction ls; t.
   Qed.
 
@@ -120,6 +123,7 @@ Section Grouper.
     Forall groupEqual grps
     -> Forall (R x) xs
     -> Forall groupEqual (groupWith grps xs x).
+  Proof using All.
     induction 1; t. eauto 10.
       apply in_seq_correct in H3. eauto 7.
   Qed.
@@ -130,6 +134,7 @@ Section Grouper.
     groupsEqual grps
     -> R x y
     -> groupsEqual (addEquality grps x y).
+  Proof using All.
     induction 1; t;
       match goal with
         | [ H : _ |- _ ] => apply A_seq_correct in H || apply in_seq_correct in H
@@ -139,6 +144,7 @@ Section Grouper.
   Theorem inSameGroup_sound : forall grps, groupsEqual grps
     -> forall x y, inSameGroup grps x y = true
       -> R x y.
+  Proof using All.
     induction 1; t;
       repeat match goal with
         | [ H : _ |- _ ] => apply A_seq_correct in H || apply in_seq_correct in H
@@ -170,12 +176,13 @@ Section TransitivityProver.
     -> forall t, typeof (typeof_funcs fs) uvars vars e1 = Some t
       -> forall v, exprD fs uvars vars e1 t = Some v
         -> eqD e1 e2.
+  Proof using Type.
     t.
   Qed.
 
   Lemma nth_error_nil : forall T n,
     nth_error (@nil T) n = None.
-  Proof.
+  Proof using .
     destruct n; simpl; auto.
   Qed.
 
@@ -266,11 +273,13 @@ Section TransitivityProver.
   Ltac eqD := unfold eqD; intros; repeat eqD1; t.
 
   Theorem eqD_sym : forall x y : expr types, eqD x y -> eqD y x.
+  Proof using Type.
     unfold eqD; intros.
     eqD.
   Qed.
 
   Theorem eqD_trans : forall x y z : expr types, eqD x y -> eqD y z -> eqD x z.
+  Proof using Type.
     eqD.
   Qed.
 
@@ -279,6 +288,7 @@ Section TransitivityProver.
   Theorem groupsOf_sound : forall hyps,
     AllProvable fs uvars vars hyps
     -> groupsEqual eqD (groupsOf hyps).
+  Proof using Type.
     induction hyps. intuition. simpl in *. constructor.
 
     intro. simpl in H. destruct H.
@@ -323,6 +333,7 @@ Section TransitivityProver.
   Admitted.
 
   Theorem transitivityProverCorrect : ProverCorrect fs transitivityValid transitivityProve.
+  Proof using Type.
     admit.
 (*
     unfold transitivityProver; hnf; intros;
@@ -350,6 +361,7 @@ Section TransitivityProver.
    |}.
 
   Definition transitivityProver_correct : ProverT_correct transitivityProver fs.
+  Proof using Type.
   eapply Build_ProverT_correct with (Valid := transitivityValid);
     eauto using transitivityValid_extensible, transitivitySummarizeCorrect, transitivityLearnCorrect, transitivityProverCorrect.
   Qed.

@@ -59,7 +59,7 @@ Section All2.
 
   Theorem all2_Forall2 : forall a b,
     all2 a b = true -> Forall2 a b.
-  Proof.
+  Proof using All.
     induction a; destruct b; simpl; intros; try congruence; try solve [ econstructor ].
       specialize (@F_P a y). destruct (F a y); eauto; try congruence; econstructor; eauto.
   Qed.
@@ -68,7 +68,7 @@ Section All2.
 
   Theorem Forall2_all2 : forall a b,
     Forall2 a b -> all2 a b = true.
-  Proof.
+  Proof using P_F.
     induction 1; simpl; auto.
     rewrite P_F; auto.
   Qed.

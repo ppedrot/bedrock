@@ -52,7 +52,7 @@ Module SymIL_Correct.
       stateD funcs preds meta_env vars_env cs stn_st ss ->
       SymMem ss = Some sh ->
       interp cs (![ MEVAL.SEP.sexprD funcs preds meta_env vars_env (SH.sheapD sh)] stn_st).
-    Proof.
+    Proof using Type.
       clear. destruct stn_st; destruct ss; destruct SymRegs; destruct p; simpl; intros.
       rewrite H0 in *. intuition.
     Qed.
@@ -90,7 +90,7 @@ Module SymIL_Correct.
       evalLoc (snd stn_st) locD = res' ->
       sym_evalLoc loc ss = res ->
       exprD funcs meta_env vars_env res tvWord = Some res'.
-    Proof.
+    Proof using Type.
       destruct loc; unfold stateD; destruct ss; destruct SymRegs; destruct p; intros; destruct stn_st; simpl in *;
         t_correct; try solve [ eauto
                              | destruct r; simpl in *;
@@ -109,7 +109,7 @@ Module SymIL_Correct.
       exists val,
         evalRvalue (fst stn_st) (snd stn_st) rvD = Some val /\
         exprD funcs meta_env vars_env res tvWord = Some val.
-    Proof.
+    Proof using All.
       Opaque stateD sym_locD.
       destruct rv; t_correct.
       { destruct s; t_correct.
@@ -132,7 +132,7 @@ Module SymIL_Correct.
       exists st',
         evalLvalue (fst stn_st) (snd stn_st) lvD valD = Some st' /\
         stateD funcs preds meta_env vars_env cs (fst stn_st, st') ss'.
-    Proof.
+    Proof using All.
       destruct lv; t_correct.
       { Transparent stateD. unfold stateD in *. t_correct. Opaque stateD.
         case_eq (sym_setReg r val (SymRegs ss)); intros.
@@ -181,7 +181,7 @@ Module SymIL_Correct.
       exists st',
         evalInstr (fst stn_st) (snd stn_st) instrD = Some st' /\
         stateD funcs preds meta_env vars_env cs (fst stn_st, st') ss'.
-    Proof.
+    Proof using All.
       destruct instr; t_correct; simpl;
         repeat match goal with
                  | [ H : exists x, _ |- _ ] => destruct H
@@ -217,7 +217,7 @@ Module SymIL_Correct.
             | None => True
           end
       end.
-    Proof.
+    Proof using All.
       unfold sym_assertTest, Structured.evalCond; destruct stn_st; simpl in *;
         repeat match goal with
                  | [ H : exists x, _ |- _ ] => destruct H
@@ -351,7 +351,7 @@ Module SymIL_Correct.
                 end
             end
         end.
-    Proof.
+    Proof using All.
       Opaque stateD.
       induction is; simpl; intros;
         repeat match goal with
@@ -389,7 +389,7 @@ Module SymIL_Correct.
     Lemma skip_to_nil : forall T U (F : T -> U) vars env X,
       map F env = skipn (length vars) X ->
       map F nil = skipn (length (vars ++ env)) X.
-    Proof.
+    Proof using .
       clear. induction vars; simpl; intros; subst.
       induction env; eauto.
       destruct X; auto.
@@ -398,10 +398,10 @@ Module SymIL_Correct.
       Provable funcs U G P ->
       AllProvable funcs U G Ps ->
       AllProvable funcs U G (P :: Ps).
-    Proof. simpl; intuition. Qed.
+    Proof using Type. simpl; intuition. Qed.
     Lemma AllProvable_nil : forall U G,
       AllProvable funcs U G nil.
-    Proof. simpl; intuition. Qed.
+    Proof using Type. simpl; intuition. Qed.
     Hint Resolve AllProvable_cons AllProvable_nil : env_resolution.
     Hint Resolve Learn_correct : env_resolution.
     Hint Resolve skip_to_nil : env_resolution.
@@ -410,7 +410,7 @@ Module SymIL_Correct.
       map F env = skipn (length vars) X ->
       map F Y = skipn (length (vars ++ env)) X ->
       Y = nil.
-    Proof.
+    Proof using .
       clear. intros. destruct Y; auto.
       eapply skip_to_nil in H. rewrite <- H in H0. simpl in *; congruence.
     Qed.
@@ -422,7 +422,7 @@ Module SymIL_Correct.
       {| SymMem := SymMem ss
         ; SymRegs := SymRegs ss
         ; SymPures := P :: SymPures ss |}.
-    Proof.
+    Proof using Type.
       Transparent stateD.
       clear. intros; shatter_state ss; destruct stn_st; simpl in *. intuition.
       destruct SymMem; intuition.
@@ -445,7 +445,7 @@ Module SymIL_Correct.
     Lemma stateD_weaken_vars : forall uvars vars cs stn_st ss' env,
       stateD funcs preds uvars vars cs stn_st ss' ->
       stateD funcs preds uvars (vars ++ env) cs stn_st ss'.
-    Proof.
+    Proof using Type.
       Transparent stateD.
       clear. intros. destruct stn_st; shatter_state ss'; simpl in *.
       repeat match goal with
@@ -460,7 +460,7 @@ Module SymIL_Correct.
     Lemma stateD_weaken_uvars : forall uvars vars cs stn_st ss' env,
       stateD funcs preds uvars vars cs stn_st ss' ->
       stateD funcs preds (uvars ++ env) vars cs stn_st ss'.
-    Proof.
+    Proof using Type.
       Transparent stateD.
       clear. intros. destruct stn_st; shatter_state ss'; simpl in *.
       repeat match goal with
@@ -481,7 +481,7 @@ Module SymIL_Correct.
       sym_locD (types' := ts) X A C Y = Some Z ->
       forall B D,
         sym_locD X (A ++ B) (C ++ D) Y = Some Z.
-    Proof.
+    Proof using .
       clear. destruct Y; simpl; intros; think; auto;
       erewrite exprD_weaken; eauto.
     Qed.
@@ -490,7 +490,7 @@ Module SymIL_Correct.
       sym_lvalueD (types' := ts) X A C Y = Some Z ->
       forall B D,
         sym_lvalueD X (A ++ B) (C ++ D) Y = Some Z.
-    Proof.
+    Proof using .
       clear. destruct Y; simpl; intros; think; auto.
       erewrite sym_locD_weaken; eauto.
       erewrite sym_locD_weaken; eauto.
@@ -499,7 +499,7 @@ Module SymIL_Correct.
       sym_rvalueD (types' := ts) X A C Y = Some Z ->
       forall B D,
         sym_rvalueD X (A ++ B) (C ++ D) Y = Some Z.
-    Proof.
+    Proof using .
       clear. destruct Y; simpl; intros; think; auto.
       erewrite sym_lvalueD_weaken; eauto.
       erewrite exprD_weaken; eauto.
@@ -509,7 +509,7 @@ Module SymIL_Correct.
       sym_instrD (types' := ts) X A C Y = Some Z ->
       forall B D,
       sym_instrD X (A ++ B) (C ++ D) Y = Some Z.
-    Proof.
+    Proof using .
       clear; destruct Y; simpl; intros; think; auto;
         repeat ((erewrite sym_lvalueD_weaken by eauto) ||
                 (erewrite sym_rvalueD_weaken by eauto)); auto.
@@ -519,7 +519,7 @@ Module SymIL_Correct.
       sym_instrsD (types' := ts) X A C Y = Some Z ->
       forall B D,
       sym_instrsD X (A ++ B) (C ++ D) Y = Some Z.
-    Proof.
+    Proof using .
       clear. induction Y; simpl; intros; think; auto.
       erewrite sym_instrD_weaken; eauto.
     Qed.
@@ -528,7 +528,7 @@ Module SymIL_Correct.
       istreamD (types' := ts) X A C Y Z P L ->
       forall B D,
       istreamD X (A ++ B) (C ++ D) Y Z P L.
-    Proof.
+    Proof using .
       clear. induction Y; simpl; intros; think; auto.
       repeat match goal with
                | [ H : match ?X with _ => _ end |- _ ] =>
@@ -545,7 +545,7 @@ Module SymIL_Correct.
       typeof_env (types := ts) L = X ->
       length Y = length X ->
       typeof_env (types := ts) nil = skipn (length L) Y.
-    Proof.
+    Proof using .
       clear. intros. subst.
       erewrite ListFacts.skipn_length_gt; auto. unfold typeof_env in *. rewrite map_length in H0. omega.
     Qed.
@@ -553,7 +553,7 @@ Module SymIL_Correct.
 
     Lemma all2_tvar_seq_dec_true : forall a b,
       Folds.all2 Expr.tvar_seqb a b = true -> a = b.
-    Proof.
+    Proof using .
       clear; induction a; destruct b; simpl; intros; try congruence.
       consider (tvar_seqb a t). intros. erewrite IHa; auto.
     Qed.
@@ -565,7 +565,7 @@ Module SymIL_Correct.
         | SafeUntil qs' _ _ => exists qs'', qs' = appendQ qs'' qs
 (*        | Unsafe qs'  *)
       end.
-    Proof.
+    Proof using Type.
       clear.
       induction path; simpl; intros.
       { inversion H. subst. exists QBase.
@@ -724,7 +724,7 @@ Module SymIL_Correct.
             | Some (st') =>
               stateD funcs preds meta_env vars_env cs (stn, st') ss'
           end).
-    Proof.
+    Proof using All.
       Opaque stateD.
       induction path; simpl; intros; sym_eval_prover IHpath; try contradiction.
     Qed.
@@ -743,12 +743,12 @@ Module SymIL_Correct.
           exists st' : state,
           stateD funcs preds meta_env vars_env cs (stn, st') ss' /\
           istreamD funcs meta_env vars_env is' stn st' sound_or_safe).
-    Proof.
+    Proof using All.
       induction path; simpl; intros; sym_eval_prover IHpath; try contradiction.
     Qed.
 
     Lemma appendQ_QBase_r : forall a, appendQ a QBase = a.
-    Proof. clear. induction a; simpl; intros; think; auto. Qed.
+    Proof using . clear. induction a; simpl; intros; think; auto. Qed.
 (*
     Theorem evalStream_correct : forall sound_or_safe cs stn path facts ss qs env_q uvars vars res,
       sym_evalStream Prover meval learnHook facts path (appendQ qs env_q) uvars vars ss = res ->

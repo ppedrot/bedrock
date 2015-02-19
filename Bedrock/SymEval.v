@@ -36,7 +36,7 @@ Section over_types.
   Theorem quantD_app : forall qs' qs meta_env vars_env k,
     quantD meta_env vars_env (appendQ qs qs') k <->
     quantD meta_env vars_env qs' (fun meta_env vars_env => quantD meta_env vars_env qs k).
-  Proof.
+  Proof using Type.
     clear; induction qs; simpl; intros; try rewrite IHqs; try reflexivity.
   Qed.
 
@@ -62,7 +62,7 @@ Section over_types.
       k (meta_env ++ a) (vars_env ++ b) ->
       k' (meta_env ++ a) (vars_env ++ b)) ->
     quantD meta_env vars_env qs k'.
-  Proof.
+  Proof using Type.
     clear. induction qs; simpl; intros; try (eapply IHqs; [ eauto | ]); simpl in *; intros; instantiate; simpl in *;
     repeat match goal with
              | [ |- existsEach _ _ ] => eapply existsEach_sem
@@ -85,13 +85,13 @@ Section over_types.
 
   Theorem gatherEx_appendQ : forall q1 q2,
     gatherEx (appendQ q1 q2) = gatherEx q2 ++ gatherEx q1.
-  Proof.
+  Proof using .
     induction q1; simpl; intros; think; repeat (rewrite app_nil_r || rewrite app_ass); auto.
   Qed.
 
   Theorem gatherAll_appendQ : forall q1 q2,
     gatherAll (appendQ q1 q2) = gatherAll q2 ++ gatherAll q1.
-  Proof.
+  Proof using .
     induction q1; simpl; intros; think; repeat (rewrite app_nil_r || rewrite app_ass); auto.
   Qed.
 
@@ -109,7 +109,7 @@ Section over_types.
 
   Lemma quantD_qex_QEx : forall U G a b P,
     quantD U G (QEx a b) P <-> quantD U G (qex a b) P.
-  Proof. clear.
+  Proof using Type. clear.
     destruct a; simpl in *; split; intros; auto.
     { eapply quantD_impl; eauto; intros. simpl in *. rewrite app_nil_r in *. auto. }
     { eapply quantD_impl; eauto; intros. simpl in *. rewrite app_nil_r in *. auto. }
@@ -117,7 +117,7 @@ Section over_types.
 
   Lemma quantD_qall_QAll : forall U G a b P,
     quantD U G (QAll a b) P <-> quantD U G (qall a b) P.
-  Proof. clear.
+  Proof using Type. clear.
     destruct a; simpl in *; split; intros; auto.
     { eapply quantD_impl; eauto; intros. simpl in *. rewrite app_nil_r in *. auto. }
     { eapply quantD_impl; eauto; intros. simpl in *. rewrite app_nil_r in *. auto. }
@@ -125,30 +125,30 @@ Section over_types.
 
   Lemma appendQ_assoc : forall a b c,
     appendQ (appendQ a b) c = appendQ a (appendQ b c).
-  Proof.
+  Proof using .
     clear. induction a; simpl; intros; try f_equal; eauto.
   Qed.
 
   Lemma appendQ_QAll : forall a b v,
     appendQ a (QAll v b) = appendQ (appendQ a (QAll v QBase)) b.
-  Proof. clear.
+  Proof using . clear.
     induction a; simpl; intros; try rewrite IHa; eauto.
   Qed.
   Lemma appendQ_QEx : forall a b v,
     appendQ a (QEx v b) = appendQ (appendQ a (QEx v QBase)) b.
-  Proof. clear.
+  Proof using . clear.
     induction a; simpl; intros; try rewrite IHa; eauto.
   Qed.
 
   Lemma QAll_inj_False : forall a b,
     QAll a b = b -> False.
-  Proof. clear.
+  Proof using . clear.
     induction b; simpl; intros; try congruence; auto.
   Qed.
 
   Lemma QEx_inj_False : forall a b,
     QEx a b = b -> False.
-  Proof. clear.
+  Proof using . clear.
     induction b; simpl; intros; try congruence; auto.
   Qed.
 
@@ -161,7 +161,7 @@ Section over_types.
 
   Lemma qsize_appendQ : forall a b,
     qsize (appendQ a b) = qsize a + qsize b.
-  Proof.
+  Proof using .
     clear; induction a; simpl in *; auto.
   Qed.
 
@@ -174,7 +174,7 @@ Section over_types.
   Lemma appendQ_proper : forall a b c,
     appendQ a b = appendQ c b ->
     a = c.
-  Proof.
+  Proof using .
     clear. induction a; destruct c; simpl; intros; try congruence;
     repeat match goal with
              | [ H : QAll _ _ = QAll _ _ |- _ ] => inversion H; clear H; subst
@@ -544,7 +544,7 @@ Module SymbolicEvaluator (SH : SepHeap).
       Theorem fold_args_correct : forall es v,
         fold_args es = Some v ->
         exists k, In k es /\ F k = Some v.
-      Proof.
+      Proof using Type.
         clear. induction es.
         simpl; congruence.
         simpl. case_eq (F a); intros.
@@ -573,7 +573,7 @@ Module SymbolicEvaluator (SH : SepHeap).
           es = pre ++ k :: post /\
           F_upd k = Some k' /\
           es' = pre ++ k' :: post.
-      Proof.
+      Proof using Type.
         clear. induction es.
         simpl; congruence.
         simpl. case_eq (F_upd a); intros.
@@ -668,7 +668,7 @@ Module SymbolicEvaluator (SH : SepHeap).
 
       Lemma in_split : forall T (x : T) ls,
         In x ls -> exists a b, ls = a ++ x :: b.
-      Proof.
+      Proof using .
         clear. induction ls. destruct 1.
         intros. destruct H. subst. exists nil. simpl; eauto.
         apply IHls in H. do 2 destruct H. subst; eauto. exists (a :: x0). simpl; eauto.
@@ -693,7 +693,7 @@ Module SymbolicEvaluator (SH : SepHeap).
                 ; SH.pures := SH.pures SH
                 ; SH.other := SH.other SH
               |}))))) stn_st.
-      Proof.
+      Proof using (funcs mem_satisfies_himp predAt).
         intros.
         assert (SEP.heq funcs preds uvars vars cs
           (SH.sheapD SH)
@@ -717,7 +717,7 @@ Module SymbolicEvaluator (SH : SepHeap).
 
       Theorem MemEvaluator_MemEvalPred_correct : @MemEvaluator_correct types pcT stT MemEvalPred_to_MemEvaluator
         funcs preds stn_st ptrT valT mem_satisfies ReadWord WriteWord ReadByte WriteByte.
-      Proof.
+      Proof using All.
         constructor; simpl.
 
         { intros. revert H. case_eq (FM.find predIndex (SH.impures SH)); try congruence; intros.
@@ -934,7 +934,7 @@ Module SymbolicEvaluator (SH : SepHeap).
 
       Theorem MemEvaluator_correct_composite : @MemEvaluator_correct types pcT stT (MemEvaluator_composite evalL evalR)
         funcs preds stn_st ptrT valT mem_satisfies ReadWord WriteWord ReadByte WriteByte.
-      Proof.
+      Proof using All.
         unfold MemEvaluator_composite. econstructor; intros; simpl in *;
         repeat match goal with
                  | [ H : match ?X with None => _ | Some _ => _ end = Some _ |- _ ] => revert H; case_eq X; intros

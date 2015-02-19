@@ -37,6 +37,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Require Import Bedrock.Platform.Cito.Option.
 
     Lemma NoDup_cons : forall ls k1 v1 k2 v2, NoDupKey ((k1, v1) :: ls) -> InPair (k2, v2) ls -> ~ E.eq k1 k2.
+    Proof using Type.
       unfold InPair.
       intros.
       inversion H; subst.
@@ -54,6 +55,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma update_with_empty : forall m, update m (@empty _) = m.
+    Proof using Type.
       unfold update; intros.
       rewrite fold_1.
       rewrite elements_empty.
@@ -61,7 +63,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma In_find_list_Some_left : forall k v ls, NoDupKey ls -> InPair (k, v) ls -> find_list k ls = Some v.
-    Proof.
+    Proof using Type.
       induction ls; simpl; intros.
       eapply InA_nil in H0; intuition.
       inversion H0; subst.
@@ -85,7 +87,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma In_find_list_Some_right : forall ls k v, NoDupKey ls -> find_list k ls = Some v -> InPair (k, v) ls.
-    Proof.
+    Proof using Type.
       induction ls; simpl; intros.
       unfold find_list in *; simpl in *.
       discriminate.
@@ -103,12 +105,14 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma In_find_list_Some : forall ls k v, NoDupKey ls -> (InPair (k, v) ls <-> find_list k ls = Some v).
+    Proof using Type.
       split; intros.
       eapply In_find_list_Some_left; eauto.
       eapply In_find_list_Some_right; eauto.
     Qed.
 
     Lemma In_find_Some : forall k v m, InPair (k, v) (elements m) <-> find k m = Some v.
+    Proof using Type.
       split; intros.
       eapply find_1.
       eapply elements_2; eauto.
@@ -117,6 +121,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma None_not_Some : forall a, a = None <-> ~ exists v, a = Some v.
+    Proof using Type.
       split; intros.
       intuition.
       openhyp.
@@ -129,6 +134,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma option_univalence : forall A a b, a = b <-> forall (v : A), a = Some v <-> b = Some v.
+    Proof using .
       split; intros.
       subst; split; eauto.
       destruct (option_dec a).
@@ -145,6 +151,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma find_list_elements : forall m k, find_list k (elements m) = find k m.
+    Proof using Type.
       intros.
       eapply option_univalence.
       intros.
@@ -160,7 +167,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma In_find_list_not_None_left : forall ls k, InA E.eq k (List.map (@fst _ _) ls) -> find_list k ls <> None.
-    Proof.
+    Proof using Type.
       induction ls; simpl; intros.
       eapply InA_nil in H; intuition.
       inversion H; subst.
@@ -175,7 +182,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma In_find_list_not_None_right : forall ls k, find_list k ls <> None -> InA E.eq k (List.map (@fst _ _) ls).
-    Proof.
+    Proof using Type.
       induction ls; simpl; intros.
       intuition.
       unfold find_list in *; destruct a; simpl in *.
@@ -184,6 +191,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma In_find_list_not_None : forall ls k, InA E.eq k (List.map (@fst _ _) ls) <-> find_list k ls <> None.
+    Proof using Type.
       intros.
       split.
       eapply In_find_list_not_None_left.
@@ -193,10 +201,12 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Lemma ex_up : forall A (e : option A),
                     (e = None -> False)
                     -> exists (v : A), e = Some v.
+    Proof using .
       destruct e; intuition eauto.
     Qed.
 
     Lemma In_find_not_None : forall k m, find k m <> None <-> In k m.
+    Proof using Type.
       unfold In.
       split; intros.
       eapply ex_up in H.
@@ -212,6 +222,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma In_In_keys : forall k m, In k m <-> InA E.eq k (keys m).
+    Proof using Type.
       split; intros.
       eapply In_find_not_None in H.
       eapply In_find_list_not_None.
@@ -225,6 +236,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma add_4 : forall m x y e, ~ E.eq x y -> find y (add x e m) = find y m.
+    Proof using Type.
       intros.
       eapply option_univalence.
       split; intros.
@@ -237,14 +249,17 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma map_3 : forall B (f : elt -> B) k m, In k m -> In k (map f m).
+    Proof using Type.
       intros; eapply map_in_iff; eauto.
     Qed.
 
     Lemma map_4 : forall B (f : elt -> B) k m, In k (map f m) -> In k m.
+    Proof using Type.
       intros; eapply map_in_iff; eauto.
     Qed.
 
     Lemma find_map : forall B (f : elt -> B) k v m, find k m = Some v -> find k (map f m) = Some (f v).
+    Proof using Type.
       intros.
       eapply find_2 in H.
       eapply find_1.
@@ -252,6 +267,7 @@ Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
     Qed.
 
     Lemma MapsTo_In : forall k v m, MapsTo k v m -> In k m.
+    Proof using Type.
       intros; eexists; eauto.
     Qed.
 
@@ -287,6 +303,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Require Import Bedrock.Platform.Cito.GeneralTactics2.
 
     Lemma eqke_eq : equiv_2 eqke eq.
+    Proof using Type.
       split; intros.
       unfold eq_key_elt in *.
       openhyp.
@@ -297,10 +314,12 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma InA_eqke_InA_eq : equiv_2 (InA eqke) (InA eq).
+    Proof using Type.
       intros; eapply equiv_InA; eapply eqke_eq.
     Qed.
 
     Lemma InA_eqke_In : forall ls p, InA eqke p ls <-> List.In p ls.
+    Proof using Type.
       intros; eapply equiv_2_trans.
       eapply InA_eqke_InA_eq.
       unfold equiv_2; intros; eapply InA_eq_In_iff.
@@ -309,6 +328,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Notation fst := (@fst _ _).
 
     Lemma In_fst_elements_In : forall m k, List.In k (List.map fst (elements m)) <-> In k m.
+    Proof using Type.
       split; intros.
       eapply InA_eq_In_iff in H.
       eapply In_In_keys in H; eauto.
@@ -317,6 +337,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma InA_eqk_elim : forall ls k v, InA eqk (k, v) ls -> exists v', InA eqke (k, v') ls.
+    Proof using Type.
       induction ls; simpl; intros.
       eapply InA_nil in H; intuition.
       destruct a; simpl in *.
@@ -335,6 +356,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma NoDupKey_NoDup_fst : forall ls, NoDupKey ls <-> NoDup (List.map fst ls).
+    Proof using Type.
       induction ls; simpl; intros.
       split; intros; econstructor.
       destruct a; simpl in *.
@@ -370,6 +392,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma MapsTo_to_map : forall k v ls, NoDupKey ls -> List.In (k, v) ls -> MapsTo k v (to_map ls).
+    Proof using Type.
       unfold to_map; intros.
       eapply of_list_1.
       eauto.
@@ -377,6 +400,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma MapsTo_to_map_elim : forall k v ls, NoDupKey ls -> MapsTo k v (to_map ls) -> List.In (k, v) ls.
+    Proof using Type.
       unfold to_map; intros.
       eapply InA_eqke_In; eauto.
       eapply of_list_1.
@@ -387,6 +411,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Definition InKey k ls := List.In k (List.map fst ls).
 
     Lemma In_to_map : forall ls k, In k (to_map ls) <-> InKey k ls.
+    Proof using Type.
       unfold to_map.
       unfold InKey.
       induction ls; simpl; intros.
@@ -407,6 +432,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma NoDupKey_unapp1 : forall ls1 ls2, NoDupKey (ls1 ++ ls2) -> NoDupKey ls1.
+    Proof using Type.
       induction ls1; simpl; intuition.
       econstructor.
       econstructor.
@@ -419,12 +445,14 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma NoDupKey_unapp2 : forall ls1 ls2, NoDupKey (ls1 ++ ls2) -> NoDupKey ls2.
+    Proof using Type.
       induction ls1; simpl; intuition.
       eapply IHls1.
       inversion H; subst; eauto.
     Qed.
 
     Lemma inkey_app_or : forall k ls1 ls2, InKey k (ls1 ++ ls2) <-> InKey k ls1 \/ InKey k ls2.
+    Proof using Type.
       unfold InKey.
       split; intros.
       eapply in_map_iff in H.
@@ -449,6 +477,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Definition DisjointKey ls1 ls2 := forall k, ~ (InKey k ls1 /\ InKey k ls2).
 
     Lemma NoDupKey_app : forall ls1 ls2, NoDupKey ls1 -> NoDupKey ls2 -> DisjointKey ls1 ls2 -> NoDupKey (ls1 ++ ls2).
+    Proof using Type.
       unfold DisjointKey.
       induction ls1; simpl; intros.
       eauto.
@@ -490,6 +519,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
       List.filter f ls1.
 
     Lemma diff_NoDupKey : forall ls1 ls2, NoDupKey ls1 -> NoDupKey (diff_map ls1 ls2).
+    Proof using Type.
       unfold diff_map.
       induction ls1; simpl; intros.
       eauto.
@@ -513,6 +543,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma diff_In : forall ls1 ls2 x, InKey x (diff_map ls1 ls2) -> InKey x ls1 /\ ~ InKey x ls2.
+    Proof using Type.
       unfold InKey.
       unfold diff_map.
       intros.
@@ -531,6 +562,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma diff_DisjointKey : forall ls1 ls2, DisjointKey (diff_map ls1 ls2) ls2.
+    Proof using Type.
       unfold DisjointKey.
       intros.
       intuition.
@@ -542,6 +574,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Definition Equal_map ls1 ls2 := forall k, find_list k ls1 = find_list k ls2.
 
     Lemma NoDupKey_diff_union : forall ls1 ls2, NoDupKey ls1 -> NoDupKey ls2 -> NoDupKey (diff_map ls1 ls2 ++ ls2).
+    Proof using Type.
       intros.
       eapply NoDupKey_app.
       eapply diff_NoDupKey.
@@ -551,6 +584,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma In_of_list : forall k ls, NoDupKey ls -> (In k (of_list ls) <-> InKey k ls).
+    Proof using Type.
       unfold InKey, In.
       split; intros.
       openhyp.
@@ -569,6 +603,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma of_list_app : forall ls1 ls2, NoDupKey (ls1 ++ ls2) -> Equal (of_list (ls1 ++ ls2)) (update (of_list ls1) (of_list ls2)).
+    Proof using Type.
       induction ls1; simpl; intros.
       unfold Equal.
       intros.
@@ -638,6 +673,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma of_list_diff : forall ls1 ls2, NoDupKey ls1 -> NoDupKey ls2 -> Equal (of_list (diff_map ls1 ls2)) (diff (of_list ls1) (of_list ls2)).
+    Proof using Type.
       induction ls1; simpl; intros.
       unfold Equal.
       intros.
@@ -728,6 +764,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma diff_union : forall ls1 ls2, NoDupKey ls1 -> NoDupKey ls2 ->  incl ls2 ls1 -> Equal_map (diff_map ls1 ls2 ++ ls2) ls1.
+    Proof using Type.
       unfold Equal_map.
       intros.
       unfold find_list.
@@ -782,6 +819,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma InKey_InA_eqk : forall k v ls, InKey k ls <-> InA eqk (k, v) ls.
+    Proof using Type.
       unfold InKey.
       split; intros.
       eapply in_map_iff in H.
@@ -800,6 +838,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma NoDupKey_app_DisjointKey : forall ls1 ls2, NoDupKey (ls1 ++ ls2) -> DisjointKey ls1 ls2.
+    Proof using Type.
       unfold DisjointKey.
       unfold InKey.
       induction ls1; simpl; intuition.
@@ -818,6 +857,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma NoDup_app_find_list : forall ls1 ls2 k v, NoDupKey (ls1 ++ ls2) -> find_list k ls1 = Some v -> find_list k (ls1 ++ ls2) = Some v.
+    Proof using Type.
       unfold find_list.
       intros.
       erewrite <- of_list_1b.
@@ -843,6 +883,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma NoDup_app_find_list_2 : forall ls1 ls2 k v, NoDupKey (ls1 ++ ls2) -> find_list k ls2 = Some v -> find_list k (ls1 ++ ls2) = Some v.
+    Proof using Type.
       unfold find_list.
       intros.
       erewrite <- of_list_1b; eauto.
@@ -856,6 +897,7 @@ Module UWFacts_fun (E : UsualDecidableType) (Import M : WSfun E).
     Qed.
 
     Lemma find_list_neq : forall ls k v k', NoDupKey ls -> ~ E.eq k' k -> find_list k' ls = find_list k' (ls ++ (k, v) :: nil).
+    Proof using Type.
       unfold E.eq.
       unfold find_list.
       unfold eqb.

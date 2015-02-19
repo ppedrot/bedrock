@@ -80,6 +80,7 @@ Module FreeList : FREE_LIST.
   Qed.
 
   Theorem nil_bwd : forall n p, p = 0 -> [| n = 0 |] ===> freeList n p.
+  Proof using .
     destruct n; sepLemma.
   Qed.
 
@@ -88,6 +89,7 @@ Module FreeList : FREE_LIST.
       * [| noWrapAround p (2 + wordToNat sz) |]
       * (p ==*> sz, p') * (p ^+ $8) =?> wordToNat sz * freeList n' p')
     ===> freeList n p.
+  Proof using .
     destruct n; sepLemma; match goal with
                             | [ H : S _ = S _ |- _ ] => injection H
                           end; sepLemma.
@@ -140,6 +142,7 @@ Lemma freeable_fwd : forall p sz,
   freeable p sz
   -> fwd
   -> p =?> sz ===> Ex u, Ex v, p =*> u * (p ^+ $4) =*> v * (p ^+ $8) =?> (sz-2).
+Proof using .
   intuition idtac; destruct (expose2N (BigEnough H)) as [? Heq];
     rewrite Heq; sepLemma; apply allocated_shift_base; omega || words.
 Qed.
@@ -148,6 +151,7 @@ Lemma expose2_bwd : forall p (sz : W),
   $2 <= sz
   -> bwd
   -> (Ex u, Ex v, p =*> u * (p ^+ $4) =*> v * (p ^+ $8) =?> (wordToNat sz-2)) ===> p =?> wordToNat sz.
+Proof using .
   intros; destruct (expose2' H) as [? Heq];
     rewrite Heq; sepLemma; apply allocated_shift_base; omega || words.
 Qed.
@@ -155,6 +159,7 @@ Qed.
 Lemma expose3_fwd : forall p (sz : W),
   sz >= $3
   -> p =?> wordToNat sz ===> Ex u, Ex v, Ex w, p =*> u * (p ^+ $4) =*> v * (p ^+ $8) =*> w * (p ^+ $12) =?> (wordToNat sz-3).
+Proof using .
   intros; destruct (expose3' H) as [? Heq]; rewrite Heq; sepLemma;
     apply allocated_shift_base; omega || words.
 Qed.
@@ -737,6 +742,7 @@ Section ok.
   Hint Rewrite wordToNat_wminus using nomega : N.
 
   Theorem ok : moduleOk m.
+  Proof using .
     vcgen; try t.
 
     Opaque mult.

@@ -81,6 +81,7 @@ Section ArrayBoundProver.
     end.
 
   Lemma plus_monotone : forall ls n, (fold_left plus ls n >= n)%nat.
+  Proof using .
     induction ls; simpl; intuition.
     specialize (IHls (n + a)); omega.
   Qed.
@@ -88,6 +89,7 @@ Section ArrayBoundProver.
   Lemma repr_nth_error : forall A (v : A) r ls n,
     nth_error r.(footprint) n = Some (Some v)
     -> nth_error (repr r ls) n = Some v.
+  Proof using .
     destruct r; simpl; induction footprint; simpl; intuition.
     destruct n; simpl in *; discriminate.
     destruct n; simpl in *.
@@ -106,6 +108,7 @@ Section ArrayBoundProver.
              | Some dv => length dv = length ev
            end
        end.
+  Proof using Type.
     induction sz; destruct e; simpl size; simpl deupd; simpl exprD; intuition eauto; try discriminate;
       try solve [ destruct (equiv_dec t listWT); auto
         | match goal with
@@ -149,6 +152,7 @@ Section ArrayBoundProver.
                           /\ (P = (iv < $ (length av)))
                   end
     end.
+  Proof using Type.
     destruct e; simpl factIn; simpl exprD; intuition; try duh.
     do 5 (destruct f; try duh).
     do 3 (destruct l; try duh).
@@ -211,7 +215,7 @@ Section ArrayBoundProver.
       boundValid sum
       -> forall hyp, Provable funcs uvars vars hyp
         -> boundValid (boundLearn1 sum hyp).
-    Proof.
+    Proof using Type.
       unfold Provable, boundLearn1, boundValid; intros.
       specialize (factIn_correct uvars vars hyp).
       destruct (exprD funcs uvars vars hyp tvProp); try tauto.
@@ -230,13 +234,14 @@ Section ArrayBoundProver.
       boundValid sum
       -> forall hyps, AllProvable funcs uvars vars hyps
         -> boundValid (boundLearn sum hyps).
-    Proof.
+    Proof using Type.
       induction hyps; simpl; intuition.
     Qed.
 
     Theorem boundSummarizeCorrect : forall hyps,
       AllProvable funcs uvars vars hyps
       -> boundValid (boundSummarize hyps).
+    Proof using Type.
       intros; apply boundLearnCorrect; hnf; auto.
     Qed.
 
@@ -244,6 +249,7 @@ Section ArrayBoundProver.
       boundValid sum
       -> hypMatches p sum = true
       -> pairValid p.
+    Proof using Type.
       induction sum as [ | [ ] ]; simpl; intuition.
       apply orb_prop in H0; intuition.
       apply andb_prop in H1; intuition.
@@ -258,6 +264,7 @@ Section ArrayBoundProver.
   Hint Resolve boundLearnCorrect boundSummarizeCorrect.
 
   Theorem boundProverCorrect : ProverCorrect funcs boundValid boundProve.
+  Proof using Type.
     hnf; intros.
     unfold boundProve in H0.
     hnf.
@@ -286,6 +293,7 @@ Section ArrayBoundProver.
   Lemma boundValid_weaken : forall (u g : env types) (f : boundSummary)
     (ue ge : list (sigT (tvarD types))),
     boundValid u g f -> boundValid (u ++ ue) (g ++ ge) f.
+  Proof using Type.
     induction 1; simpl; intuition; constructor; auto.
     hnf in H; hnf.
     do 2 destruct H.
@@ -302,6 +310,7 @@ Section ArrayBoundProver.
       ; Prove := boundProve |}.
 
   Definition boundProver_correct : ProverT_correct boundProver funcs.
+  Proof using Type.
     eapply Build_ProverT_correct with (Valid := boundValid); eauto.
   Qed.
 

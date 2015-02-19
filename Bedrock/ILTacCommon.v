@@ -211,7 +211,7 @@ Section canceller.
     end ->
     himp cs (@SEP.sexprD _ _ _ funcs preds meta_env nil l)
             (@SEP.sexprD _ _ _ funcs preds meta_env nil r).
-  Proof. intros. eapply ApplyCancelSep_with_eq'; eauto. Qed.
+  Proof using Type. intros. eapply ApplyCancelSep_with_eq'; eauto. Qed.
 
   Lemma ApplyCancelSep :
     forall (algos_correct : ILAlgoTypes.AllAlgos_correct funcs preds algos),
@@ -247,7 +247,7 @@ Section canceller.
     end ->
     himp cs (@SEP.sexprD _ _ _ funcs preds meta_env nil l)
             (@SEP.sexprD _ _ _ funcs preds meta_env nil r).
-  Proof.
+  Proof using Type.
     intros. consider (canceller preds algos (typeof_env meta_env) hyps l r); intros; auto.
     eapply ApplyCancelSep_with_eq; eauto.
   Qed.

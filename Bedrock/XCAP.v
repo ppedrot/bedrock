@@ -72,6 +72,7 @@ Section moduleOk.
     LabelMap.MapsTo l pre (LabelMap.fold (fun l x m => LabelMap.add l (fst x) m) (Blocks m) mp)
     -> LabelMap.MapsTo l pre mp
       \/ exists bl, LabelMap.MapsTo l (pre, bl) (Blocks m).
+  Proof using Type.
     intros.
     rewrite LabelMap.fold_1 in H.
     apply LabelMap.elements_1 in H.
@@ -99,6 +100,7 @@ Section moduleOk.
   Lemma allPreconditions_cases : forall l pre, LabelMap.MapsTo l pre allPreconditions
     -> LabelMap.MapsTo l pre (Imports m)
     \/ exists bl, LabelMap.MapsTo l (pre, bl) (Blocks m).
+  Proof using Type.
     intros.
     apply allPreconditions_cases' in H; firstorder.
   Qed.
@@ -150,6 +152,7 @@ Section moduleOk.
       -> forall (P' : A -> A -> Prop) x',
         (forall y, P x y -> P' x' y)
         -> SetoidList.InA P' x' ls.
+    Proof using .
       induction 1; simpl; intuition.
     Qed.
 
@@ -164,6 +167,7 @@ Section moduleOk.
                         else pre
                     end
         end) bls (Some v) = Some v.
+    Proof using Type.
       induction bls; simpl; intuition.
     Qed.
 
@@ -178,6 +182,7 @@ Section moduleOk.
                         else pre
                     end
         end) bls (Some v) = Some v.
+    Proof using Type.
       intros; rewrite LabelMap.fold_1; apply specs_nochange'.
     Qed.
 
@@ -192,6 +197,7 @@ Section moduleOk.
                         else pre
                     end
         end) imps (Some v) = Some v.
+    Proof using Type.
       induction imps; simpl; intuition.
     Qed.
 
@@ -208,6 +214,7 @@ Section moduleOk.
                         else pre
                     end
         end) imps None = Some pre.
+    Proof using inj.
       intros; apply LabelMap.elements_1 in H; rewrite LabelMap.fold_1;
         generalize (LabelMap.elements_3w imps); induction H; simpl; intuition.
 
@@ -240,6 +247,7 @@ Section moduleOk.
                         else pre
                     end
         end) imps None = None.
+    Proof using inj.
       intros.
       assert (forall pre, ~SetoidList.InA (LabelMap.eq_key_elt (elt:=assert)) (l, pre) (LabelMap.elements imps)).
       intros; intro.
@@ -271,6 +279,7 @@ Section moduleOk.
                         else pre
                     end
         end) bls None = Some pre.
+    Proof using inj.
       intros; apply LabelMap.elements_1 in H; rewrite LabelMap.fold_1;
         generalize (LabelMap.elements_3w bls); induction H; simpl; intuition.
 
@@ -294,6 +303,7 @@ Section moduleOk.
     Lemma specsOk : forall l pre, LabelMap.MapsTo l pre allPreconditions
       -> exists w, Labels stn l = Some w
         /\ specs0 w = Some pre.
+    Proof using All.
       unfold specs0; intros.
       destruct (allPreconditions_cases H) as [ | [ ] ]; clear H.
 
@@ -331,6 +341,7 @@ Section moduleOk.
         end) imps None = Some pre
       -> exists l, LabelMap.MapsTo l pre imps
         /\ Labels stn l = Some w.
+    Proof using Type.
       intros.
       assert (exists l : LabelMap.key,
         SetoidList.InA (@LabelMap.eq_key_elt _) (l, pre) (LabelMap.elements imps) /\ Labels stn l = Some w).
@@ -367,6 +378,7 @@ Section moduleOk.
       -> preOpt = Some pre
       \/ exists l, exists bl, LabelMap.MapsTo l (pre, bl) bls
         /\ Labels stn l = Some w.
+    Proof using Type.
       intros.
       assert (preOpt = Some pre
         \/ exists l, exists bl,
@@ -399,6 +411,7 @@ Section moduleOk.
       -> exists l, Labels stn l = Some w
         /\ (LabelMap.MapsTo l pre (Imports m)
           \/ exists bl, LabelMap.MapsTo l (pre, bl) (Blocks m)).
+    Proof using Type.
       unfold specs0, specs'; intros.
       apply specs_hit in H; intuition.
       apply specs'_hit in H0.
@@ -415,6 +428,7 @@ Section moduleOk.
               /\ exists pre', (LabelMap.MapsTo l' pre' (Imports m)
                 \/ exists bl', LabelMap.MapsTo l' (pre', bl') (Blocks m))
               /\ interp specs0 (pre' (stn, snd st'')).
+    Proof using All.
       induction 1; simpl; intuition; subst; simpl in *.
       eauto 10.
 
@@ -455,6 +469,7 @@ Section moduleOk.
           /\ exists pre', LabelMap.MapsTo l' pre' (Imports m)
             /\ interp specs0 (pre' (stn, snd st')))
         \/ step stn prog st' <> None.
+    Proof using All.
       intros.
       eapply safety' in H; eauto.
       2: destruct st; auto.
@@ -495,6 +510,7 @@ Section moduleOk.
   Lemma it's_really_empty : forall k v,
     LabelMap.MapsTo k v (Imports m)
     -> False.
+  Proof using closed.
     intros; apply LabelMap.elements_1 in H.
     rewrite LabelMap.cardinal_1 in closed.
     inversion H.
@@ -509,6 +525,7 @@ Section moduleOk.
     -> forall w, Labels stn (mn, Global g) = Some w
       -> forall st, interp specs (pre (stn, st))
         -> safe stn prog (w, st).
+  Proof using All.
     intros; hnf; intros.
     apply (ExportsSound ok) in H; destruct H.
     eapply safety'' in H; eauto.
@@ -566,6 +583,7 @@ Section link.
   Theorem MapsTo_union : forall A k v (mp1 mp2 : LabelMap.t A),
     LabelMap.MapsTo k v (union mp1 mp2)
     -> LabelMap.MapsTo k v mp1 \/ LabelMap.MapsTo k v mp2.
+  Proof using .
     unfold union; intros.
     rewrite LabelMap.fold_1 in H.
     generalize (@LabelMap.elements_2 _ mp1).
@@ -587,12 +605,14 @@ Section link.
       -> LabelMap.MapsTo k v imps')
     -> blockOk imps p bl
     -> blockOk imps' p bl.
+  Proof using .
     unfold blockOk; intuition.
   Qed.
 
   Lemma fold_mono1 : forall A F ls b,
     List.fold_left (fun (a : bool) (x : A) => a || F x) ls b = false
     -> b = false.
+  Proof using .
     induction ls; simpl; intuition.
     apply IHls in H.
     destruct b; simpl in *; congruence.
@@ -601,6 +621,7 @@ Section link.
   Lemma fold_mono2 : forall A F ls b,
     List.fold_left (fun (a : bool) (x : A) => a || F x) ls b = false
     -> List.Forall (fun x => F x = false) ls.
+  Proof using .
     induction ls; simpl; intuition.
     specialize (fold_mono1 _ _ _ H).
     destruct b; try discriminate.
@@ -613,6 +634,7 @@ Section link.
       \/ exists bl, LabelMap.MapsTo k (v, bl) (Blocks m'))
     -> noSelfImport m'
     -> LabelMap.MapsTo k v (allPreconditions m').
+  Proof using ImportsAgree.
     unfold allPreconditions, noSelfImport; intros.
     repeat rewrite LabelMap.fold_1 in *.
     generalize (fun k v (H : SetoidList.InA (@LabelMap.eq_key_elt _) (k, v) (LabelMap.elements (Blocks m))) => H0 k v (LabelMap.elements_2 H));
@@ -747,6 +769,7 @@ Section link.
     List.Forall P (LabelMap.elements bls1)
     -> List.Forall P (LabelMap.elements bls2)
     -> List.Forall P (LabelMap.elements (union bls1 bls2)).
+  Proof using .
     intros; unfold union.
     rewrite LabelMap.fold_1.
     generalize dependent bls2.
@@ -774,6 +797,7 @@ Section link.
   Theorem MapsTo_union1 : forall A k v (mp1 mp2 : LabelMap.t A),
     LabelMap.MapsTo k v mp1
     -> LabelMap.MapsTo k v (union mp1 mp2).
+  Proof using .
     unfold union; intros.
     rewrite LabelMap.fold_1.
     generalize (@LabelMap.elements_1 _ mp1 _ _ H); clear H.
@@ -800,6 +824,7 @@ Section link.
     LabelMap.MapsTo k v mp2
     -> (forall v', LabelMap.MapsTo k v' mp1 -> v' = v)
     -> LabelMap.MapsTo k v (union mp1 mp2).
+  Proof using .
     unfold union; intros.
     rewrite LabelMap.fold_1.
     generalize (@LabelMap.elements_3w _ mp1).
@@ -825,6 +850,7 @@ Section link.
   Theorem NoDups_Forall : forall (bls1 bls2 : LabelMap.t (assert * block)) i,
     LabelMap.fold (fun k v b => b || LabelMap.mem k bls2) bls1 i = false
     -> List.Forall (fun p => ~LabelMap.In (fst p) bls2) (LabelMap.elements bls1).
+  Proof using ImportsAgree.
     intros; rewrite LabelMap.fold_1 in *.
     generalize dependent bls2.
     generalize dependent i.
@@ -847,6 +873,7 @@ Section link.
       mp1 mp')
     -> (LabelMap.In k mp' -> ~LabelMap.In k mp2)
     -> (LabelMap.MapsTo k v mp1 \/ LabelMap.MapsTo k v mp') /\ ~LabelMap.In k mp2.
+  Proof using ImportsAgree.
     intros; rewrite LabelMap.fold_1 in *.
 
     assert ((SetoidList.InA (@LabelMap.eq_key_elt _) (k, v) (LabelMap.elements mp1) \/ LabelMap.MapsTo k v mp') /\
@@ -887,6 +914,7 @@ Section link.
   Lemma MapsTo_diff : forall A B k v (mp1 : LabelMap.t A) (mp2 : LabelMap.t B),
     LabelMap.MapsTo k v (diff mp1 mp2)
     -> LabelMap.MapsTo k v mp1 /\ ~LabelMap.In k mp2.
+  Proof using ImportsAgree.
     intros.
     apply MapsTo_diff' in H; intuition.
     apply LabelMap.empty_1 in H; tauto.
@@ -895,6 +923,7 @@ Section link.
   Qed.
 
   Lemma linkOk' : noSelfImport link.
+  Proof using (ImportsAgree m1Ok m2Ok).
     destruct m1Ok; clear m1Ok.
     destruct m2Ok; clear m2Ok.
     red; simpl.
@@ -970,6 +999,7 @@ Section link.
         | Some pre' => snd p = pre' /\ P
       end) l P
     -> P.
+  Proof using .
     induction l; simpl; intuition; simpl in *.
 
     destruct (LabelMap.find a0 exp).
@@ -982,6 +1012,7 @@ Section link.
     -> LabelMap.MapsTo k v imp
     -> LabelMap.find k exp = Some p
     -> v = p.
+  Proof using .
     clear ImportsAgree; unfold importsOk; intros.
 
     rewrite LabelMap.fold_1 in *.
@@ -1004,6 +1035,7 @@ Section link.
     -> ~LabelMap.In k mp2
     -> SetoidList.NoDupA (@LabelMap.eq_key _) (LabelMap.elements mp1)
     -> LabelMap.MapsTo k v (diff mp1 mp2).
+  Proof using .
     intros; unfold diff.
     rewrite LabelMap.fold_1.
     apply LabelMap.elements_1 in H.
@@ -1033,6 +1065,7 @@ Section link.
   Lemma use_NoDups : forall k0 v,
     LabelMap.find k0 (Blocks m2) = Some v
     -> forall v', LabelMap.MapsTo k0 v' (Blocks m1) -> v' = v.
+  Proof using (NoDups m1Ok m2Ok).
     intros.
     elimtype False.
     apply LabelMap.find_2 in H.
@@ -1053,6 +1086,7 @@ Section link.
         | Some pre' => snd p = pre' /\ P
       end) ls P
     -> P.
+  Proof using .
     induction ls; simpl in *; intuition; simpl in *.
     destruct (LabelMap.find a0 imp1).
     apply IHls in H; tauto.
@@ -1060,6 +1094,7 @@ Section link.
   Qed.
 
   Theorem linkOk : moduleOk link.
+  Proof using All.
     destruct m1Ok.
     destruct m2Ok.
 

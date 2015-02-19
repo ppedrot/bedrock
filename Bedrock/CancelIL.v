@@ -212,12 +212,12 @@ Section canceller.
 
   Lemma AllProvable_and_sem : forall U G P Ps,
     AllProvable_and funcs U G P Ps <-> (AllProvable funcs U G Ps /\ P).
-  Proof. induction Ps; simpl; intros; intuition auto. Qed.
+  Proof using Type. induction Ps; simpl; intros; intuition auto. Qed.
   Lemma app_inj_length : forall T (a b c d : list T),
     a ++ b = c ++ d ->
     length a = length c ->
     a = c /\ b = d.
-  Proof.
+  Proof using .
     induction a; destruct c; simpl; intros; think; try solve [ intuition ].
     inversion H; subst.  eapply IHa in H3. intuition; subst; auto. omega.
   Qed.
@@ -225,7 +225,7 @@ Section canceller.
     WellTyped_env a c ->
     WellTyped_env b d ->
     WellTyped_env (types := ts) (a ++ b) (c ++ d).
-  Proof. clear.
+  Proof using . clear.
     intros. unfold WellTyped_env in *. unfold typeof_env in *. subst.
     rewrite map_app. reflexivity.
   Qed.
@@ -238,7 +238,7 @@ Section canceller.
   Lemma consistent_app : forall ts a b c,
     consistent (ts := ts) (a ++ b) c ->
     consistent a (firstn (length a) c) /\ consistent b (skipn (length a) c).
-  Proof. clear.
+  Proof using . clear.
     induction a; simpl; intros; auto.
     destruct a. destruct o. destruct c; try contradiction. destruct s. destruct (equiv_dec x x0); try contradiction.
     destruct H. eapply IHa in H0. intuition.
@@ -247,20 +247,20 @@ Section canceller.
   Lemma consistent_Some : forall ts a c,
     consistent (ts := ts) (map (fun x => existT _ (projT1 x) (Some (projT2 x))) a) c ->
     a = c.
-  Proof.
+  Proof using .
     induction a; destruct c; simpl; intros; try contradiction; auto.
     destruct s. destruct a; simpl in *. destruct (equiv_dec x0 x); try contradiction.
     unfold equiv in e. intuition; subst. f_equal; eauto.
   Qed.
   Lemma skipn_length : forall T a (b : list T),
     length (skipn a b) = length b - a.
-  Proof. induction a; destruct b; simpl; intros; auto. Qed.
+  Proof using . induction a; destruct b; simpl; intros; auto. Qed.
 
   Lemma himp_remove_pure_p : forall cs U G p P Q,
     (Provable funcs U G p ->
       SH.SE.himp funcs preds U G cs P Q) ->
     SH.SE.himp funcs preds U G cs (SEP.Star (@SEP.Inj _ _ _ p) P) Q.
-  Proof. clear.
+  Proof using Type. clear.
     intros. unfold SH.SE.himp. simpl. unfold Provable in *.
     destruct (exprD funcs U G p tvProp); eapply himp_star_pure_c; intuition.
   Qed.
@@ -268,7 +268,7 @@ Section canceller.
     (AllProvable funcs U G ps ->
       SH.SE.himp funcs preds U G cs P Q) ->
     SH.SE.himp funcs preds U G cs (SH.starred (@SEP.Inj _ _ _) ps P) Q.
-  Proof. clear.
+  Proof using Type. clear.
     induction ps; intros.
     { rewrite SH.starred_nil. apply H. exact I. }
     { rewrite SH.starred_cons. apply himp_remove_pure_p. intros.
@@ -278,7 +278,7 @@ Section canceller.
     Provable funcs U G p ->
     SH.SE.himp funcs preds U G cs P Q ->
     SH.SE.himp funcs preds U G cs P (SEP.Star (@SEP.Inj _ _ _ p) Q).
-  Proof. clear.
+  Proof using Type. clear.
     intros. unfold SH.SE.himp. simpl. unfold Provable in *.
     destruct (exprD funcs U G p tvProp); eapply himp_star_pure_cc; intuition.
   Qed.
@@ -286,7 +286,7 @@ Section canceller.
     AllProvable funcs U G ps ->
     SH.SE.himp funcs preds U G cs P Q ->
     SH.SE.himp funcs preds U G cs P (SH.starred (@SEP.Inj _ _ _) ps Q).
-  Proof. clear.
+  Proof using Type. clear.
     induction ps; intros.
     { rewrite SH.starred_nil. apply H0. }
     { rewrite SH.starred_cons. simpl in *. apply himp_remove_pure_c; intuition. }
@@ -324,7 +324,7 @@ Section canceller.
     end ->
     himp cs (@SEP.sexprD _ _ _ funcs preds meta_env nil l)
             (@SEP.sexprD _ _ _ funcs preds meta_env nil r).
-  Proof.
+  Proof using Type.
     Opaque UNF.backward UNF.forward Env.repr.
     intros. unfold canceller in *.
     assert (PC : ProverT_correct
@@ -644,7 +644,7 @@ Section canceller.
     end ->
     himp cs (@SEP.sexprD _ _ _ funcs preds meta_env nil l)
             (@SEP.sexprD _ _ _ funcs preds meta_env nil r).
-  Proof. intros. eapply ApplyCancelSep_with_eq'; eauto. Qed.
+  Proof using Type. intros. eapply ApplyCancelSep_with_eq'; eauto. Qed.
 
   Lemma ApplyCancelSep :
     forall (algos_correct : ILAlgoTypes.AllAlgos_correct funcs preds algos),
@@ -680,7 +680,7 @@ Section canceller.
     end ->
     himp cs (@SEP.sexprD _ _ _ funcs preds meta_env nil l)
             (@SEP.sexprD _ _ _ funcs preds meta_env nil r).
-  Proof.
+  Proof using Type.
     intros. consider (canceller (typeof_env meta_env) hyps l r); intros; auto.
     eapply ApplyCancelSep_with_eq; eauto.
   Qed.

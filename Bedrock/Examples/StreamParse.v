@@ -106,6 +106,7 @@ Section Parse.
   Lemma suffix_remains : forall n ws,
     (n < length ws)%nat
     -> suffix n ws = selN ws n :: suffix (S n) ws.
+  Proof using .
     induction n; destruct ws; simpl; intuition.
     rewrite IHn; auto.
   Qed.
@@ -180,6 +181,7 @@ Section Parse.
     -> ~In "rp" ns
     -> forall p' offset, bexpTrue (guard p' offset) stn st
       -> Regs st Rv <= sel V size.
+  Proof using . (* ? - manually done - broken proof *)
     clear H; induction p' as [ | [ ] ]; simpl; intuition eauto.
 
     prep_locals; evaluate auto_ext; tauto.
@@ -196,6 +198,7 @@ Section Parse.
       Regs st Rv = $ (offset + wordToNat (sel V pos) + length p')
       -> goodSize (offset + wordToNat (sel V pos) + Datatypes.length p')
       -> bexpSafe (guard p' offset) stn st.
+  Proof using . (* ? - manually done - broken proof *)
     clear H; induction p' as [ | [ ] ]; simpl; intuition.
 
     prep_locals; evaluate auto_ext.
@@ -244,6 +247,7 @@ Section Parse.
       -> sel V size = $ (length ws)
       -> goodSize (offset + wordToNat (sel V pos) + length p')
       -> matches p' (suffix (offset + wordToNat (sel V pos)) ws).
+  Proof using . (* ? - manually done - broken proof *)
     clear H; induction p' as [ | [ ] ]; simpl; intuition.
 
     specialize (bexpTrue_bound _ H H0 H1 _ _ H8).
@@ -300,6 +304,7 @@ Section Parse.
   Lemma suffix_none : forall n ls,
     (n >= length ls)%nat
     -> suffix n ls = nil.
+  Proof using .
     induction n; destruct ls; simpl; intuition.
   Qed.
 
@@ -315,6 +320,7 @@ Section Parse.
       -> (offset + wordToNat (sel V pos) <= length ws)%nat
       -> goodSize (offset + wordToNat (sel V pos) + length p')
       -> ~matches p' (suffix (offset + wordToNat (sel V pos)) ws).
+  Proof using . (* ? - manually done *)
     clear H; induction p' as [ | [ ] ]; simpl; intuition.
 
     prep_locals; evaluate auto_ext.
@@ -385,6 +391,7 @@ Section Parse.
       -> okVarName pos p'
       -> evalInstrs stn st (reads p' offset) = None
       -> False.
+  Proof using . (* ? - manually done *)
     clear H; induction p' as [ | [ ] ]; simpl; intuition.
 
     eapply IHp'; eauto.
@@ -477,6 +484,7 @@ Section Parse.
       -> exists V',
         interp specs (![array ws (sel V stream) * locals ("rp" :: ns) V' r (Regs st Sp) * fr] (stn, st'))
         /\ Regs st' Sp = Regs st Sp.
+  Proof using . (* ? - manually done *)
     clear H; induction p' as [ | [ ] ]; simpl; intuition.
 
     injection H6; intros; subst.
@@ -572,6 +580,7 @@ Section Parse.
       -> exists V',
         interp specs (![array ws (sel V stream) * locals ("rp" :: ns) V' r (Regs st Sp) * fr] (stn, st'))
         /\ Regs st' Sp = Regs st Sp.
+  Proof using Type.
     eauto using reads_exec'.
   Qed.
 
@@ -583,6 +592,7 @@ Section Parse.
     -> sel V' size = length ws'
     -> interp specs (![array ws' (sel V' stream) * locals ("rp" :: ns) V' r' sp * fr'] (stn, st)
        ---> [| forall x, In x ns -> sel V' x = sel V x |])%PropX.
+  Proof using . (* ? - manually done - broken proof *)
     clear H; intros.
     assert (Hlocals : exists FR, interp specs (![array (toArray ("rp" :: ns) V) sp * FR] (stn, st)))
       by (eexists; unfold locals in H; step auto_ext); destruct Hlocals as [ FR Hlocals ].
@@ -607,6 +617,7 @@ Section Parse.
     -> length ws' = length ws
     -> interp specs (![array ws' streamV * locals ("rp" :: ns) V' r' sp * fr'] (stn, st)
        ---> [| ws' = ws |])%PropX.
+  Proof using . (* ? - manually done - broken proof *)
     clear H; intros.
     assert (Hlocals : interp specs (![array ws streamV * (locals ("rp" :: ns) V r sp * fr)] (stn, st)))
        by step auto_ext.
@@ -636,6 +647,7 @@ Section Parse.
     -> interp specs (![array ws' (sel V' stream) * locals ("rp" :: ns) V' r' sp * fr'] (stn, st)
        /\ [| sel V' size = length ws' |]
        ---> [| ws' = ws /\ sel V' stream = sel V stream /\ sel V' size = sel V size /\ sel V' pos = sel V pos |])%PropX.
+  Proof using . (* ? - manually done *)
     intros.
     apply Imply_I.
     eapply Inj_E; [ eapply And_E2; apply Env; simpl; eauto | ]; intro.
@@ -669,6 +681,7 @@ Section Parse.
 
   Theorem splessReads : forall p' offset,
     spless (reads p' offset).
+  Proof using Type.
     induction p' as [ | [ ] ]; simpl; intuition.
   Qed.
 
@@ -691,6 +704,7 @@ Section Parse.
       Assign
       (LvMem (Sp + S (S (S (S (variablePosition ns (fst p0))))))%loc)
       (RvImm (snd p0))) (binds p' (suffix (offset + wordToNat (sel V pos)) ws))) = Some st'.
+  Proof using . (* ? - manually done *)
     clear H; induction p' as [ | [ ] ]; simpl; intuition;
       rewrite suffix_remains by auto;
         change (S (offset + wordToNat (sel V pos))) with (S offset + wordToNat (sel V pos)); eauto; simpl.
@@ -832,6 +846,7 @@ Section Parse.
   Lemma Rv_preserve : forall rv posV len,
     rv = posV ^+ $ (len)
     -> rv = natToW (0 + wordToNat posV + len).
+  Proof using .
     simpl; intros; subst.
     rewrite natToW_plus.
     f_equal.
@@ -847,6 +862,7 @@ Section Parse.
     -> sel V size = $ (length ws)
     -> goodSize (wordToNat (sel V pos) + Datatypes.length p)
     -> (0 + wordToNat (sel V pos) + length p <= length ws)%nat.
+  Proof using Type.
     simpl; intros.
     apply wle_goodSize.
     rewrite natToW_plus.

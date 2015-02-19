@@ -250,12 +250,14 @@ Section Query.
   Lemma subst_qspecOut_fwd : forall pc state (specs : codeSpec pc state) A v qs (k : _ -> propX _ _ (A :: nil)),
     interp specs (subst (qspecOut qs k) v)
     -> interp specs (qspecOut qs (fun x => subst (k x) v)).
+  Proof using .
     induction qs; propxFo; eauto.
   Qed.
 
   Lemma subst_qspecOut_bwd : forall pc state (specs : codeSpec pc state) A v qs (k : _ -> propX _ _ (A :: nil)),
     interp specs (qspecOut qs (fun x => subst (k x) v))
     -> interp specs (subst (qspecOut qs k) v).
+  Proof using .
     induction qs; propxFo; eauto.
   Qed.
 
@@ -274,6 +276,7 @@ Section Query.
   Lemma qspecOut_fwd : forall (specs : codeSpec W (settings * state)) qs k,
     interp specs (qspecOut qs k)
     -> exists v : domain qs, interp specs (k (qspecOut' qs v)).
+  Proof using .
     induction qs; simpl; propxFo.
     exists tt; auto.
     match goal with
@@ -286,6 +289,7 @@ Section Query.
   Lemma qspecOut_bwd : forall (specs : codeSpec W (settings * state)) qs k v,
     interp specs (k (qspecOut' qs v))
     -> interp specs (qspecOut qs k).
+  Proof using .
     induction qs; simpl; propxFo; eauto.
   Qed.
 
@@ -295,6 +299,7 @@ Section Query.
     -> sz = length (ws1 ++ ws2)
     -> goodSize (length (ws1 ++ ws2))
     -> ws2 = nil.
+  Proof using .
     intros; subst; rewrite app_length in *;
       match goal with
         | [ H : _ |- _ ] => eapply wle_goodSize in H; eauto
@@ -306,6 +311,7 @@ Section Query.
   Lemma length_app_nil : forall (w : W) A (ls : list A),
     w = length (ls ++ nil)
     -> w = length ls.
+  Proof using .
     intros; rewrite app_length in *; simpl in *; subst; auto.
   Qed.
 
@@ -315,6 +321,7 @@ Section Query.
 
   Theorem double_sel : forall V x,
     sel (sel V) x = sel V x.
+  Proof using .
     reflexivity.
   Qed.
 
@@ -327,12 +334,14 @@ Section Query.
   Lemma goodSize_middle : forall (pre : list W) mid post,
     goodSize (length (pre ++ mid :: post))
     -> goodSize (length pre).
+  Proof using .
     intros; autorewrite with sepFormula in *; simpl in *; eauto.
   Qed.
 
   Lemma goodSize_middleS : forall (pre : list W) mid post,
     goodSize (length (pre ++ mid :: post))
     -> goodSize (S (length pre)).
+  Proof using .
     intros; autorewrite with sepFormula in *; simpl in *; eauto.
     eapply goodSize_weaken; eauto.
   Qed.
@@ -349,6 +358,7 @@ Section Query.
     -> ~In "rp" ns
     -> forall c', conditionBound c'
       -> bexpSafe (conditionOut c') stn st.
+  Proof using . (* ? - manually done - broken proof *)
     clear_fancy; induction c'; simpl; intuition;
       match goal with
         | [ _ : evalCond (expOut ?e1) _ (expOut ?e2) _ _ = None |- _ ] =>
@@ -363,18 +373,21 @@ Section Query.
   Lemma wneb_true : forall w1 w2,
     w1 <> w2
     -> wneb w1 w2 = true.
+  Proof using .
     unfold wneb; intros; destruct (weq w1 w2); auto.
   Qed.
 
   Lemma wltb_true : forall w1 w2,
     w1 < w2
     -> wltb w1 w2 = true.
+  Proof using .
     unfold wltb; intros; destruct (wlt_dec w1 w2); auto.
   Qed.
 
   Lemma wleb_true : forall w1 w2,
     w1 <= w2
     -> wleb w1 w2 = true.
+  Proof using .
     unfold wleb; intros; destruct (weq w1 w2); destruct (wlt_dec w1 w2); auto.
     elimtype False; apply n.
     assert (H1 : wordToNat w1 = wordToNat w2) by nomega.
@@ -389,30 +402,35 @@ Section Query.
     b = true
     -> b = false
     -> False.
+  Proof using .
     intros; congruence.
   Qed.
 
   Lemma weqb_false : forall w1 w2,
     w1 <> w2
     -> weqb w1 w2 = false.
+  Proof using .
     unfold weqb; intros; generalize (weqb_true_iff w1 w2); destruct (Word.weqb w1 w2); intuition.
   Qed.
 
   Lemma wneb_false : forall w1 w2,
     w1 = w2
     -> wneb w1 w2 = false.
+  Proof using .
     unfold wneb; intros; destruct (weq w1 w2); intuition.
   Qed.
 
   Lemma wltb_false : forall w1 w2,
     w2 <= w1
     -> wltb w1 w2 = false.
+  Proof using .
     unfold wltb; intros; destruct (wlt_dec w1 w2); intuition.
   Qed.
 
   Lemma wleb_false : forall w1 w2,
     w2 < w1
     -> wleb w1 w2 = false.
+  Proof using .
     unfold wleb; intros; destruct (weq w1 w2); destruct (wlt_dec w1 w2); intuition; nomega.
   Qed.
 
@@ -426,6 +444,7 @@ Section Query.
     -> forall c', conditionBound c'
       -> (bexpTrue (conditionOut c') stn st -> satisfies V (sel V index) (sel V value) c')
       /\ (bexpFalse (conditionOut c') stn st -> ~satisfies V (sel V index) (sel V value) c').
+  Proof using . (* ? - manually done - broken proof *)
     clear_fancy; induction c'; simpl; intuition;
       try (eapply bool_one; [ eassumption | ]);
         match goal with
@@ -445,6 +464,7 @@ Section Query.
     -> forall c', conditionBound c'
       -> bexpTrue (conditionOut c') stn st
       -> satisfies V ind val c'.
+  Proof using Type.
     intros; subst; edestruct condition_satisfies'; eauto.
   Qed.
 
@@ -458,6 +478,7 @@ Section Query.
     -> forall c', conditionBound c'
       -> bexpFalse (conditionOut c') stn st
       -> ~satisfies V ind val c'.
+  Proof using Type.
     intros; subst; edestruct condition_satisfies'; eauto.
   Qed.
 
@@ -479,6 +500,7 @@ Section Query.
     -> noMatches V ws' (length ws)
     -> goodSize (length (ws ++ ws'))
     -> exists v', interp specs (![qspecOut' (invPre qs (ws ++ ws') wsAll V) v' * fr] (stn, st)).
+  Proof using (c invPost invPre).
     induction ws'; simpl; intuition; autorewrite with sepFormula; eauto.
 
     match goal with
@@ -500,6 +522,7 @@ Section Query.
   Hint Resolve natToW_inj.
 
   Lemma wleb_true_fwd : forall u v, wleb u v = true -> u <= v.
+  Proof using .
     unfold wleb; intros;
       destruct (weq u v); destruct (wlt_dec u v); subst; auto; discriminate || nomega.
   Qed.
@@ -519,6 +542,7 @@ Section Query.
     -> satisfies V len val c'
     -> goodSize len
     -> (forall len' val', goodSize len' -> len <> len' -> ~satisfies V len' val' c').
+  Proof using .
     induction c'; simpl; intuition; indexEquals; intuition (subst; eauto);
       match goal with
         | [ H : _ -> False |- _ ] => apply H; apply natToW_inj; auto; congruence
@@ -531,6 +555,7 @@ Section Query.
       -> (index <= index' < index + length ws)%nat -> False)
     -> goodSize (index + length ws)
     -> noMatches V ws index.
+  Proof using Type.
     induction ws; simpl; intuition eauto.
     eapply IHws; intros.
     eauto.
@@ -543,12 +568,14 @@ Section Query.
       -> ~satisfies V index' val c)
     -> goodSize (index + length ws)
     -> noMatches V ws index.
+  Proof using Type.
     intuition; eapply notSatisfies_noMatches'; eauto.
   Qed.
 
   Lemma goodSize_middle' : forall (ls1 : list W) x ls2,
     goodSize (length (ls1 ++ x :: ls2))
     -> goodSize (length (ls1 ++ x :: nil) + length ls2).
+  Proof using .
     intros; autorewrite with sepFormula in *; simpl in *; rewrite <- plus_assoc; auto.
   Qed.
 
@@ -560,6 +587,7 @@ Section Query.
     indexEquals c' = Some x
     -> conditionBound c'
     -> In x ns.
+  Proof using Type.
     induction c'; simpl; intuition; indexEquals; tauto.
   Qed.
 
@@ -567,18 +595,21 @@ Section Query.
     indexGe c' = Some x
     -> conditionBound c'
     -> In x ns.
+  Proof using Type.
     induction c'; simpl; intuition; indexEquals; tauto.
   Qed.
 
   Lemma indexEquals_correct' : forall k V c',
     indexEquals c' = Some k
     -> (forall len' val', goodSize len' -> sel V k <> len' -> ~satisfies V len' val' c').
+  Proof using .
     induction c'; simpl; intuition; indexEquals; intuition (subst; eauto).
   Qed.
 
   Lemma indexGe_correct : forall k V c',
     indexGe c' = Some k
     -> (forall len' val', goodSize len' -> natToW len' < sel V k -> ~satisfies V len' val' c').
+  Proof using .
     induction c'; simpl; intuition; indexEquals; intuition (subst; eauto).
   Qed.
 
@@ -586,6 +617,7 @@ Section Query.
     noMatches V ws index
     -> noMatches V ws' (length ws + index)
     -> noMatches V (ws ++ ws') index.
+  Proof using Type.
     induction ws; simpl; intuition.
     match goal with
       | [ H1 : noMatches _ _ (S (length ?ws + ?index0)) |- _ ]
@@ -598,6 +630,7 @@ Section Query.
     indexEquals c' = Some x
     -> conditionBound c'
     -> x <> index.
+  Proof using Type.
     induction c'; simpl; intuition; indexEquals; tauto.
   Qed.
 
@@ -605,6 +638,7 @@ Section Query.
     indexEquals c' = Some x
     -> conditionBound c'
     -> x <> value.
+  Proof using Type.
     induction c'; simpl; intuition; indexEquals; tauto.
   Qed.
 
@@ -612,6 +646,7 @@ Section Query.
     indexGe c' = Some x
     -> conditionBound c'
     -> x <> index.
+  Proof using Type.
     induction c'; simpl; intuition; indexEquals; tauto.
   Qed.
 
@@ -619,6 +654,7 @@ Section Query.
     indexGe c' = Some x
     -> conditionBound c'
     -> x <> value.
+  Proof using Type.
     induction c'; simpl; intuition; indexEquals; tauto.
   Qed.
 
@@ -627,6 +663,7 @@ Section Query.
   Lemma skipn_breakout : forall ws n,
     (n < length ws)%nat
     -> skipn n ws = Array.selN ws n :: tl (skipn n ws).
+  Proof using .
     induction ws; destruct n; simpl; intuition.
   Qed.
 
@@ -635,6 +672,7 @@ Section Query.
     -> forall V V', (forall x, x <> index -> x <> value -> sel V x = sel V' x)
       -> satisfies V ind val c'
       -> satisfies V' ind val c'.
+  Proof using Type.
     induction c'; simpl; intuition eauto.
     destruct e1; destruct e2; simpl in *; intuition idtac;
       repeat match goal with
@@ -648,18 +686,21 @@ Section Query.
     -> forall V V', (forall x, x <> index -> x <> value -> sel V x = sel V' x)
       -> ~satisfies V ind val c'
       -> ~satisfies V' ind val c'.
+  Proof using Type.
     intuition.
     eauto using satisfies_incidentals, eq_sym.
   Qed.
 
   Lemma length_tl : forall A (ls : list A),
     length (tl ls) = length ls - 1.
+  Proof using .
     destruct ls; simpl; omega.
   Qed.
 
   Theorem wordToNat_natToW_goodSize : forall n,
     goodSize n
     -> wordToNat (natToW n) = n.
+  Proof using .
     intros; unfold natToW; rewrite wordToNat_natToWord_idempotent; auto.
   Qed.
 
@@ -671,6 +712,7 @@ Section Query.
     (exists sz, mid < sz /\ sz = natToW (length ws))
     -> goodSize (length ws)
     -> length (firstn (wordToNat mid) ws) = wordToNat mid.
+  Proof using .
     destruct 1; intuition idtac; subst; rewrite firstn_length; rewrite min_l; intuition nomega.
   Qed.
 
@@ -679,6 +721,7 @@ Section Query.
   Lemma goodSize_middle'' : forall (ls1 ls2 : list W) x,
     goodSize (length (ls1 ++ x :: ls2))
     -> goodSize (length ls1 + 1 + length ls2).
+  Proof using .
     intros; autorewrite with sepFormula in *; simpl in *.
     rewrite <- plus_assoc; auto.
   Qed.
@@ -689,6 +732,7 @@ Section Query.
 
   Lemma roundTrip' : forall w : W,
     w = natToW (wordToNat w).
+  Proof using .
     intros; unfold natToW; rewrite natToWord_wordToNat; auto.
   Qed.
 
@@ -707,6 +751,7 @@ Section Query.
     -> sz = natToW n
     -> goodSize n
     -> goodSize (wordToNat mid + 1 + (n - wordToNat mid - 1)).
+  Proof using .
     intros; subst; apply goodSize_weaken with n; eauto; my_nomega.
   Qed.
 
@@ -715,6 +760,7 @@ Section Query.
   Lemma breakout : forall (ws : list W) mid,
     (wordToNat mid < length ws)%nat
     -> ws = firstn (wordToNat mid) ws ++ Array.sel ws mid :: tl (skipn (wordToNat mid) ws).
+  Proof using .
     intros; etransitivity; [ symmetry; apply (firstn_skipn (wordToNat mid)) | ];
       cbv beta; f_equal; apply skipn_breakout; auto.
   Qed.
@@ -844,6 +890,7 @@ Section Query.
 
   Lemma app_length_le : forall A (ls1 ls2 : list A),
     (length ls1 <= length (ls1 ++ ls2))%nat.
+  Proof using .
     intros; rewrite app_length; auto.
   Qed.
 
@@ -855,6 +902,7 @@ Section Query.
     -> ind < siz
     -> goodSize (length (ls1 ++ ls2))
     -> (S (length ls1) <= length ls1 + length ls2)%nat.
+  Proof using .
     intros; subst; autorewrite with sepFormula in *.
     match goal with
       | [ H : _ |- _ ] => solve [ apply lt_goodSize' in H; eauto ]
