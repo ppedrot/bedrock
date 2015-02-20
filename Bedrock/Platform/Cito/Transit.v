@@ -19,7 +19,7 @@ Section ADTValue.
   Open Scope fmap_scope.
   Require Import SemanticsUtil.
 
-  Definition combine_ret w o : Value := 
+  Definition combine_ret w o : Value :=
     match o with
       | Some a => ADT a
       | None => SCA w
@@ -49,13 +49,18 @@ Section ADTValue.
   Require Import GeneralTactics GeneralTactics2 GeneralTactics3.
 
   Definition match_ret vs (lhs : option string) (ret_w : W) :=
-    match lhs with 
-      | Some x => ret_w = vs x 
+    match lhs with
+      | Some x => ret_w = vs x
       | None => True
     end.
 
   Require Import ListFacts5.
   Require Import ListFacts4.
+
+  Lemma combine_ret_decide_ret addr ret : combine_ret (fst (decide_ret addr ret)) (snd (decide_ret addr ret)) = ret.
+  Proof using Type.
+    destruct ret; simpl; eauto.
+  Qed.
 
   Lemma RunsTo_TransitTo lhs f args env spec v v' : let f_w := eval (fst v) f in snd env f_w = Some (Foreign spec) -> RunsTo env (Syntax.Call lhs f args) v v' -> exists inputs outputs ret_w ret_a, TransitTo spec (List.map (eval (fst v)) args) inputs outputs ret_w ret_a (snd v) (snd v') /\ match_ret (fst v') lhs ret_w.
   Proof.
@@ -96,10 +101,6 @@ Section ADTValue.
       {
         unfold_all.
         rewrite combine_map.
-        Lemma combine_ret_decide_ret addr ret : combine_ret (fst (decide_ret addr ret)) (snd (decide_ret addr ret)) = ret.
-        Proof using Type.
-          destruct ret; simpl; eauto.
-        Qed.
         rewrite combine_ret_decide_ret.
         eauto.
       }
@@ -127,6 +128,15 @@ Section ADTValue.
 
   Require Import List.
 
+  Lemma fst_decide_ret_combine_ret ret_w ret_a : fst (decide_ret ret_w (combine_ret ret_w ret_a)) = ret_w.
+  Proof using Type.
+    destruct ret_a; simpl; eauto.
+  Qed.
+  Lemma snd_decide_ret_combine_ret ret_w ret_a : snd (decide_ret ret_w (combine_ret ret_w ret_a)) = ret_a.
+  Proof using Type.
+    destruct ret_a; simpl; eauto.
+  Qed.
+
   Lemma TransitTo_RunsTo lhs f args env spec v v' : let f_w := eval (fst v) f in snd env f_w = Some (Foreign spec) -> forall inputs outputs ret_w ret_a, TransitTo spec (List.map (eval (fst v)) args) inputs outputs ret_w ret_a (snd v) (snd v') -> fst v' = upd_option (fst v) lhs ret_w -> RunsTo env (Syntax.Call lhs f args) v v'.
   Proof.
     simpl.
@@ -135,14 +145,6 @@ Section ADTValue.
     unfold TransitTo in *; simpl in *.
     openhyp.
     subst; simpl in *.
-    Lemma fst_decide_ret_combine_ret ret_w ret_a : fst (decide_ret ret_w (combine_ret ret_w ret_a)) = ret_w.
-    Proof using Type.
-      destruct ret_a; simpl; eauto.
-    Qed.
-    Lemma snd_decide_ret_combine_ret ret_w ret_a : snd (decide_ret ret_w (combine_ret ret_w ret_a)) = ret_a.
-    Proof using Type.
-      destruct ret_a; simpl; eauto.
-    Qed.
     rewrite <- (fst_decide_ret_combine_ret ret_w ret_a).
     set (words_inputs := List.combine (List.map (eval w) args) inputs) in *.
     set (triples := make_triples words_inputs outputs) in *.
@@ -223,7 +225,7 @@ Section ADTValue.
     {
       rewrite map_fst_combine by (repeat rewrite map_length; eauto).
       eauto.
-    }        
+    }
     rewrite map_snd_combine by (repeat rewrite map_length; eauto).
     eauto.
   Qed.

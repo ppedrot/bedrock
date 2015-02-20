@@ -28,11 +28,53 @@ Section ADTValue.
   Require Import GeneralTactics.
   Require Import ListFacts4.
 
-  Lemma fold_bwd p a triples : 
+  Lemma no_alias_tail ls : forall e, no_alias (e :: ls) -> no_alias ls.
+  Proof using Type.
+    unfold no_alias; intros e Hna.
+    intros i j p ai aj Hi Hj.
+    assert (S i = S j).
+    eapply Hna; eauto.
+    inject H; eauto.
+  Qed.
+  Lemma not_reachable_p_incl ls1 ls2 p : List.incl ls1 ls2 -> not_reachable_p p ls2 -> not_reachable_p p ls1.
+  Proof using Type.
+    unfold not_reachable_p; intros Hin Hnr.
+    intros i v Hi.
+    eapply incl_nth_error in Hi; eauto; openhyp.
+    eapply Hnr in H; eauto; openhyp.
+  Qed.
+  Lemma not_reachable_p_tail ls e p : not_reachable_p p (e :: ls) -> not_reachable_p p ls.
+  Proof using Type.
+    intros; eapply not_reachable_p_incl; eauto.
+    eapply incl_tl; eapply incl_refl; eauto.
+  Qed.
+  Lemma not_not_reachable_p p a ls : ~ not_reachable_p p ((p, ADT a) :: ls).
+  Proof using Type.
+    unfold not_reachable_p.
+    intros H.
+    specialize (H 0 (ADT a)).
+    simpl in *.
+    edestruct H; eauto.
+    discriminate.
+  Qed.
+  Lemma no_alias_not_reachable_p p a ls : no_alias ((p, ADT a) :: ls) -> not_reachable_p p ls.
+  Proof using Type.
+    intros Hna.
+    unfold not_reachable_p.
+    intros i v Hi.
+    destruct v.
+    eauto.
+    unfold no_alias in *.
+    assert (S i = 0).
+    eapply Hna; simpl in *; eauto.
+    discriminate.
+  Qed.
+
+  Lemma fold_bwd p a triples :
     forall h,
       let words_cinput := List.map (fun x => (Word x, ADTIn x)) triples in
-      no_alias words_cinput -> 
-      ((not_reachable_p p words_cinput /\ find p h = Some a) \/ 
+      no_alias words_cinput ->
+      ((not_reachable_p p words_cinput /\ find p h = Some a) \/
        exists i input, nth_error triples i = Some {| Word := p; ADTIn := ADT input; ADTOut := Some a |}) ->
       find p (List.fold_left store_out triples h) = Some a.
   Proof.
@@ -45,45 +87,16 @@ Section ADTValue.
     destruct a0 as [tp ti to]; simpl in *.
     intros h Hna H.
     eapply IHtriples.
-    Lemma no_alias_tail ls : forall e, no_alias (e :: ls) -> no_alias ls.
-    Proof using Type.
-      unfold no_alias; intros e Hna.
-      intros i j p ai aj Hi Hj.
-      assert (S i = S j).
-      eapply Hna; eauto.
-      inject H; eauto.
-    Qed.
     eapply no_alias_tail; eauto.
     destruct H as [[Hnr hf] | [i [ai Ht]] ].
     left.
     split.
-    Lemma not_reachable_p_incl ls1 ls2 p : List.incl ls1 ls2 -> not_reachable_p p ls2 -> not_reachable_p p ls1.
-    Proof using Type.
-      unfold not_reachable_p; intros Hin Hnr.
-      intros i v Hi.
-      eapply incl_nth_error in Hi; eauto; openhyp.
-      eapply Hnr in H; eauto; openhyp.
-    Qed.
-    Lemma not_reachable_p_tail ls e p : not_reachable_p p (e :: ls) -> not_reachable_p p ls.
-    Proof using Type.
-      intros; eapply not_reachable_p_incl; eauto.
-      eapply incl_tl; eapply incl_refl; eauto.
-    Qed.
     eapply not_reachable_p_tail; eauto.
     unfold store_out; simpl.
     destruct ti as [w | ai].
     eauto.
     destruct to as [ao |].
     destruct (Word.weq p tp).
-    Lemma not_not_reachable_p p a ls : ~ not_reachable_p p ((p, ADT a) :: ls).
-    Proof using Type.
-      unfold not_reachable_p.
-      intros H.
-      specialize (H 0 (ADT a)).
-      simpl in *.
-      edestruct H; eauto.
-      discriminate.
-    Qed.
     subst; solve [eapply not_not_reachable_p in Hnr; intuition].
     solve [rewrite add_neq_o; eauto].
     destruct (Word.weq p tp).
@@ -93,18 +106,6 @@ Section ADTValue.
     inject Ht.
     left.
     split.
-    Lemma no_alias_not_reachable_p p a ls : no_alias ((p, ADT a) :: ls) -> not_reachable_p p ls.
-    Proof using Type.
-      intros Hna.
-      unfold not_reachable_p.
-      intros i v Hi.
-      destruct v.
-      eauto.
-      unfold no_alias in *.
-      assert (S i = 0).
-      eapply Hna; simpl in *; eauto.
-      discriminate.
-    Qed.
     eapply no_alias_not_reachable_p; eauto.
     unfold store_out; simpl.
     solve [rewrite add_eq_o; eauto].
@@ -113,12 +114,12 @@ Section ADTValue.
     eauto.
   Qed.
 
-  Lemma fold_fwd : 
+  Lemma fold_fwd :
     forall k (v : ADTValue) ls h,
-      WordMap.MapsTo k v (fold_left store_out ls h) -> 
-      (WordMap.MapsTo k v h /\ 
-       forall a o, ~List.In {| Word := k; ADTIn := ADT a; ADTOut := o |} ls) 
-      \/ exists a, 
+      WordMap.MapsTo k v (fold_left store_out ls h) ->
+      (WordMap.MapsTo k v h /\
+       forall a o, ~List.In {| Word := k; ADTIn := ADT a; ADTOut := o |} ls)
+      \/ exists a,
            List.In {| Word := k; ADTIn := ADT a; ADTOut := Some v |} ls.
   Proof using Type.
     induction ls; simpl; intuition.
@@ -148,8 +149,8 @@ Section ADTValue.
   Lemma fold_store_out_elim p a triples words_cinput coutput h :
     words_cinput = List.map (fun x => (Word x, ADTIn x)) triples ->
     coutput = List.map ADTOut triples ->
-    find p (List.fold_left store_out triples h) = Some a -> 
-    (not_reachable_p p words_cinput /\ find p h = Some a) \/ 
+    find p (List.fold_left store_out triples h) = Some a ->
+    (not_reachable_p p words_cinput /\ find p h = Some a) \/
     exists i input, nth_error triples i = Some {| Word := p; ADTIn := ADT input; ADTOut := Some a |}.
   Proof using Type.
     intros Hwid Hod Hf.
@@ -180,8 +181,8 @@ Section ADTValue.
   Lemma fold_store_out_intro p a triples words_cinput coutput h :
     words_cinput = List.map (fun x => (Word x, ADTIn x)) triples ->
     coutput = List.map ADTOut triples ->
-    no_alias words_cinput -> 
-    ((not_reachable_p p words_cinput /\ find p h = Some a) \/ 
+    no_alias words_cinput ->
+    ((not_reachable_p p words_cinput /\ find p h = Some a) \/
      exists i input, nth_error triples i = Some {| Word := p; ADTIn := ADT input; ADTOut := Some a |}) ->
     find p (List.fold_left store_out triples h) = Some a.
   Proof using Type.
@@ -189,11 +190,11 @@ Section ADTValue.
   Qed.
 
   Lemma find_Some_fold_store_out p a words_cinput coutput h :
-    no_alias words_cinput -> 
+    no_alias words_cinput ->
     length words_cinput = length coutput ->
-    (find p (List.fold_left store_out (make_triples words_cinput coutput) h) = Some a <-> 
-     ((not_reachable_p p words_cinput /\ find p h = Some a) \/ 
-      exists i input, 
+    (find p (List.fold_left store_out (make_triples words_cinput coutput) h) = Some a <->
+     ((not_reachable_p p words_cinput /\ find p h = Some a) \/
+      exists i input,
         nth_error words_cinput i = Some (p, ADT input) /\
         nth_error coutput i = Some (Some a))).
   Proof using Type.
