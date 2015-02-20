@@ -1,32 +1,30 @@
+Require Import Semantics.
+Require Import SemanticsUtil.
+Require Import List.
+Require Import GeneralTactics4.
+Require Import Memory.
+Require Import WordMap.
+Require Import WordMapFacts.
+Require Import GeneralTactics.
+Require Import ListFacts4.
+Require Import SemanticsFacts7.
+Import FMapNotations.
+Open Scope fmap_scope.
+
 Set Implicit Arguments.
 
 Section ADTValue.
 
   Variable ADTValue : Type.
 
-  Require Import Semantics.
-  Require Import SemanticsUtil.
-  Require Import List.
-
   Notation make_triples := (@make_triples ADTValue).
-
-  Require Import GeneralTactics4.
 
   Arguments store_out {_} _ _.
   Arguments ADTOut {_} _.
 
-  Require Import Memory.
-
   Definition no_alias (words_cinput : list (W * Value ADTValue)) := forall i j p (ai aj : ADTValue), nth_error words_cinput i = Some (p, ADT ai) -> nth_error words_cinput j = Some (p, ADT aj) -> i = j.
 
   Definition not_reachable_p p (words_cinput : list (W * Value ADTValue)) := forall i v, nth_error words_cinput i = Some (p, v) -> exists w, v = SCA _ w.
-
-  Require Import WordMap.
-  Import WordMap.
-  Require Import WordMapFacts.
-
-  Require Import GeneralTactics.
-  Require Import ListFacts4.
 
   Lemma no_alias_tail ls : forall e, no_alias (e :: ls) -> no_alias ls.
   Proof using Type.
@@ -204,7 +202,6 @@ Section ADTValue.
     eapply fold_store_out_elim in Hf; simpl; eauto.
     destruct Hf as [[Hnr Hf] | [i [ai Ht]]].
     left.
-    Require Import SemanticsFacts7.
     rewrite make_triples_Word_ADTIn in *; eauto.
     right.
     exists i, ai.
@@ -231,9 +228,6 @@ Section ADTValue.
     left; eexists; eauto.
     right; left; eauto.
   Defined.
-
-  Import FMapNotations.
-  Open Scope fmap_scope.
 
   Lemma find_ret_doesn't_matter p addr ret triples h h1 : ret_doesn't_matter p addr ret -> find p (heap_upd_option (fold_left store_out triples h) (fst (decide_ret addr ret)) (snd (decide_ret addr ret)) - h1) = find p (fold_left store_out triples h - h1).
   Proof using Type.

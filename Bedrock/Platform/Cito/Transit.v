@@ -1,23 +1,28 @@
+Require Import Semantics.
+Require Import SemanticsExpr.
+Require Import List.
+Require Import WordMap.
+Require Import WordMapFacts.
+Import FMapNotations.
+Require Import SemanticsUtil.
+Require Import List.
+Require Import BedrockTactics.
+Require Import GeneralTactics GeneralTactics2 GeneralTactics3.
+Require Import ListFacts5.
+Require Import ListFacts4.
+Require Import SemanticsFacts7.
+Require Import SemanticsFacts6.
+Open Scope fmap_scope.
+
 Set Implicit Arguments.
 
 Section ADTValue.
 
   Variable ADTValue : Type.
 
-  Require Import Semantics.
-
   Notation Value := (@Value ADTValue).
 
   Arguments SCA {_} _.
-
-  Require Import SemanticsExpr.
-  Require Import List.
-  Require Import WordMap.
-  Import WordMap.
-  Require Import WordMapFacts.
-  Import FMapNotations.
-  Open Scope fmap_scope.
-  Require Import SemanticsUtil.
 
   Definition combine_ret w o : Value :=
     match o with
@@ -45,17 +50,12 @@ Section ADTValue.
     good_inputs heap words_inputs /\
     PreCond spec inputs.
 
-  Require Import BedrockTactics.
-  Require Import GeneralTactics GeneralTactics2 GeneralTactics3.
-
   Definition match_ret vs (lhs : option string) (ret_w : W) :=
     match lhs with
       | Some x => ret_w = vs x
       | None => True
     end.
 
-  Require Import ListFacts5.
-  Require Import ListFacts4.
 
   Lemma combine_ret_decide_ret addr ret : combine_ret (fst (decide_ret addr ret)) (snd (decide_ret addr ret)) = ret.
   Proof using Type.
@@ -108,7 +108,6 @@ Section ADTValue.
         unfold_all.
         rewrite H5.
         rewrite combine_map.
-        Require Import SemanticsFacts7.
         erewrite <- split_triples; eauto.
       }
       {
@@ -125,8 +124,6 @@ Section ADTValue.
     }
     eauto.
   Qed.
-
-  Require Import List.
 
   Lemma fst_decide_ret_combine_ret ret_w ret_a : fst (decide_ret ret_w (combine_ret ret_w ret_a)) = ret_w.
   Proof using Type.
@@ -153,7 +150,6 @@ Section ADTValue.
     {
       instantiate (1 := triples).
       unfold_all.
-      Require Import SemanticsFacts6.
       rewrite make_triples_Word by (rewrite combine_length_eq; repeat rewrite map_length; eauto).
       rewrite map_fst_combine by (repeat rewrite map_length; eauto).
       eauto.
