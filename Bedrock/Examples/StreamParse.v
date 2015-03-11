@@ -374,8 +374,6 @@ Section Parse.
 
   Transparent evalInstrs.
   Opaque evalInstr.
-  Transparent evalInstr.
-  Local Arguments evalInstr : simpl never.
 
   Lemma reads_nocrash : forall specs stn ws r fr,
     ~In "rp" ns
@@ -427,7 +425,7 @@ Section Parse.
     assumption.
     assumption.
     assumption.
-    (*Transparent evalInstr.*)
+    Transparent evalInstr.
     simpl.
     match goal with
       | [ |- match ?E with None => _ | _ => _ end = match ?E' with None => _ | _ => _ end ] =>
@@ -466,7 +464,6 @@ Section Parse.
   Qed.
 
   Opaque evalInstr.
-  Transparent evalInstr.
 
   Lemma reads_exec' : forall specs stn ws r fr,
     ~In "rp" ns
@@ -524,7 +521,7 @@ Section Parse.
     end.
     assumption.
     assumption.
-    (*Transparent evalInstr.*)
+    Transparent evalInstr.
     simpl.
     match goal with
       | [ |- match ?E with None => _ | _ => _ end = match ?E' with None => _ | _ => _ end ] =>
@@ -679,7 +676,6 @@ Section Parse.
 
   Opaque evalInstr mult.
   Transparent evalInstrs.
-  Transparent evalInstr.
 
   Lemma simplify_reads : forall st' ws r fr stn specs p' offset st V,
     interp specs (![array ws (sel V stream) * locals ("rp" :: ns) V r (Regs st Sp) * fr] (stn, st))
@@ -775,7 +771,7 @@ Section Parse.
     unfold Array.sel in H22.
     unfold natToW in H22; rewrite wordToNat_natToWord_idempotent in H22.
     generalize H19 H20 H22; clear; intros.
-    (*Transparent evalInstr.*)
+    Transparent evalInstr.
 
     apply evalAssign_rhs.
     simpl.
