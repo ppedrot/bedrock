@@ -372,7 +372,7 @@ Module SepTheoryX_Ext (ST : SepTheoryX).
 
     Lemma existsEach_cons : forall cs v vs P,
       ST.heq cs (existsEach (v :: vs) P)
-                (ST.ex (fun x : typeD v => existsEach vs (fun env => P (@existT _ _ v x :: env)))).
+                (ST.ex (fun x => existsEach vs (fun env => P (@existT _ _ v x :: env)))).
     Proof.
       intros. change (v :: vs) with ((v :: nil) ++ vs). rewrite existsEach_app.
       eapply ST.heq_defn. simpl. split; unfold existsEach; thinker. eapply ST.himp_ex_c.
