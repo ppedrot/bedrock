@@ -1011,11 +1011,10 @@ Module Make (SE : SepExpr) <: SepHeap with Module SE := SE.
           apply heq_liftSExpr. symmetry. repeat rewrite starred_def. simpl. reflexivity. }
     Qed.
 
-    Opaque star_SHeap.
-
     Lemma hash_denote' : forall EG cs (s : sexpr _ _ _) G,
       heq funcs preds EG G cs s (existsEach (fst (hash s)) (sheapD' (snd (hash s)))).
     Proof.
+      Opaque star_SHeap.
       induction s; simpl; try solve [ unfold sheapD'; simpl; intros; repeat (rewrite heq_star_emp_r || rewrite heq_star_emp_l); reflexivity ].
       { (** Star **)
         intros. rewrite IHs1 at 1. intros.
