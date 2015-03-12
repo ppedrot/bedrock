@@ -136,7 +136,7 @@ Section Params.
         (StringEqSpec' const offset)
         (StringEqSpec' const offset)
         StringEqVcs
-        _ _); [ abstract (wrap0; generalize dependent offset; generalize dependent st; generalize dependent pre;
+        _ _); [ admit; abstract (wrap0; generalize dependent offset; generalize dependent st; generalize dependent pre;
           induction const; propxFo;
             match goal with
               | [ _ : interp _ (Postcondition _ _) |- _ ] =>
@@ -145,7 +145,7 @@ Section Params.
                   | post; t ]
               | _ => t
             end)
-          | abstract (generalize dependent offset; induction const; wrap0;
+          | admit; abstract (generalize dependent offset; induction const; wrap0;
             try match goal with
                   | [ H : _ |- vcs _ ] => apply H; wrap0; post
                 end; t) ].
@@ -168,7 +168,7 @@ Section Params.
       StringEqSpec
       StringEqSpec
       StringEqVcs
-      _ _); abstract (wrap0;
+      _ _); admit; abstract (wrap0;
         (try app; simp;
           match goal with
             | [ H : evalInstrs _ _ _ = _ |- _ ] => evalu
@@ -220,7 +220,7 @@ Section Params.
         (StringWriteSpec' const offset)
         (StringWriteSpec' const offset)
         StringWriteVcs
-        _ _); [ abstract (wrap0; generalize dependent offset; generalize dependent st; generalize dependent pre;
+        _ _); [ admit; abstract (wrap0; generalize dependent offset; generalize dependent st; generalize dependent pre;
           induction const; propxFo;
             match goal with
               | [ _ : interp _ (Postcondition _ _) |- _ ] =>
@@ -229,7 +229,7 @@ Section Params.
                   | post; t ]
               | _ => t
             end)
-          | abstract (generalize dependent offset; induction const; wrap0;
+          | admit; abstract (generalize dependent offset; induction const; wrap0;
             try match goal with
                   | [ H : _ |- vcs _ ] => apply H; wrap0; post
                 end; t) ].
@@ -268,7 +268,7 @@ Section Params.
       StringWriteSpec
       StringWriteSpec
       StringWriteVcs
-      _ _); abstract (wrap0;
+      _ _); admit; abstract (wrap0;
         (try app; simp;
           match goal with
             | [ H : evalInstrs _ _ _ = _ |- _ ] => evalu

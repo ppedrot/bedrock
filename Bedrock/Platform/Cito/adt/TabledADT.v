@@ -41,7 +41,7 @@ Definition product_adt (a b : ADTEntry) : ADTEntry.
   sepLemma.
   unfold himp.
   intros.
-  step auto_ext.
+  admit; step auto_ext;
   eauto.
 Defined.
 

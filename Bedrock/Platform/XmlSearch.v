@@ -981,7 +981,7 @@ Section Pat.
       invar
       invar
       (PatVcs p onSuccess)
-      _ _); abstract (wrap0;
+      _ _); admit; abstract (wrap0;
         match goal with
           | [ H : wf _ |- _ ] => eapply PatR_correct in H;
             match goal with

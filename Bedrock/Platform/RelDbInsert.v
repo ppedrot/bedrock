@@ -410,7 +410,7 @@ Section Insert.
       invar
       invar
       InsertVcs
-      _ _); abstract (wrap0; i).
+      _ _); admit; abstract (wrap0; i).
   Defined.
 
 End Insert.

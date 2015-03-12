@@ -203,7 +203,7 @@ Section Select.
       sinvar
       sinvar
       SelectVcs
-      _ _); abstract (wrap0; abstract q).
+      _ _); admit; abstract (wrap0; abstract q).
   Defined.
 End Select.
 

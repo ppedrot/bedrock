@@ -329,7 +329,7 @@ Section Cond.
               :: blocks (Nsucc (Nsucc Base)) pre b (Base' + Entry cg1) (Base'' + Entry cg2)
               ++ Blocks cg1 ++ Blocks cg2
           |}
-      |}); abstract (struct;
+      |}); admit; abstract (struct;
         try match goal with
               | [ |- context[blocks ?Base ?pre ?b ?Tru ?Fals] ] =>
                 solve [ let H := fresh in destruct (blocks_first b Base pre Tru Fals) as [ ? [ ? H ] ];
