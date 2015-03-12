@@ -5,6 +5,10 @@ Require Import Coq.Lists.List.
 Set Implicit Arguments.
 Global Set Asymmetric Patterns.
 
+(** Hack for allowing admit in 8.5 *)
+Axiom proof_admitted : False.
+Ltac admit := case proof_admitted.
+
 Section machine.
   Variables pc state : Type.
 
