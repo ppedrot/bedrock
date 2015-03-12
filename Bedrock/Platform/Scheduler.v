@@ -299,7 +299,7 @@ Lemma exitize_locals : forall xx yy ns vs res sp,
 Qed.
 
 Definition hints : TacPackage.
-  prepare (sched_fwd, SinglyLinkedList.nil_fwd, SinglyLinkedList.cons_fwd, allocate_array,
+  admit; prepare (sched_fwd, SinglyLinkedList.nil_fwd, SinglyLinkedList.cons_fwd, allocate_array,
     files_empty_fwd, files_pick_fwd, exitize_locals)
   (sched_bwd, SinglyLinkedList.nil_bwd, SinglyLinkedList.cons_bwd, free_array, tqs_empty_bwd,
     files_empty_bwd, files_pick_bwd, files_add_bwd).

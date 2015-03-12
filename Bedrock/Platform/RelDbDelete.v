@@ -356,7 +356,7 @@ Section Delete.
   Qed.
 
   Lemma rhints : TacPackage.
-    prepare tt row_free.
+    admit; prepare tt row_free.
   Defined.
 
   Hint Rewrite length_posl length_lenl : sepFormula.

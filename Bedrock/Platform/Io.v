@@ -41,7 +41,7 @@ Module Make(M : S).
 Import M.
 
 Definition hints : TacPackage.
-  prepare buffer_split_tagged buffer_join_tagged.
+  admit; prepare buffer_split_tagged buffer_join_tagged.
 Defined.
 
 Definition readSomeS := readSomeGS sched globalInv.

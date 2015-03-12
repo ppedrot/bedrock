@@ -113,7 +113,7 @@ Lemma allocated_in : forall p ws,
 Qed.
 
 Definition hints : TacPackage.
-  prepare (arr_fwd, allocated_out) (arr_bwd, allocated_in).
+  admit; prepare (arr_fwd, allocated_out) (arr_bwd, allocated_in).
 Defined.
 
 Definition newS := newS arr 8.

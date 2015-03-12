@@ -115,7 +115,7 @@ Definition lset'_empty_bwd : forall s n (c : W), c = 0
   -> [| n = O |] * [| s === %0 |] ===> lset' s n c := lset'_empty_bwd.
 
 Definition hints : TacPackage.
-  prepare (lset_fwd, lset'_empty_fwd, lset'_nonempty_fwd)
+  admit; prepare (lset_fwd, lset'_empty_fwd, lset'_nonempty_fwd)
   (lset_bwd, lset'_empty_bwd, lset'_nonempty_bwd).
 Defined.
 

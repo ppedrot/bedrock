@@ -248,7 +248,7 @@ Export Queue.
 Hint Immediate llist_extensional lseg_extensional queue_extensional.
 
 Definition hints : TacPackage.
-  prepare (queue_fwd, llist_empty_fwd, llist_nonempty_fwd, llist_end_fwd, llist_nonempty_fwd_b)
+  admit; prepare (queue_fwd, llist_empty_fwd, llist_nonempty_fwd, llist_end_fwd, llist_nonempty_fwd_b)
   (queue_bwd, llist_empty_bwd, llist_nonempty_bwd, llist_end_bwd).
 Defined.
 

@@ -52,13 +52,13 @@ Lemma buf_2_fwd : forall p len, (2 <= len)%nat -> p =?> len ===> p =?> 2 * (p ^+
 Qed.
 
 Definition hints_buf_2_fwd : TacPackage.
-  prepare buf_2_fwd tt.
+  admit; prepare buf_2_fwd tt.
 Defined.
 
 Definition hints_array : TacPackage.
-  prepare behold_the_array_ls tt.
+  admit; prepare behold_the_array_ls tt.
 Defined.
 
 Definition hints_buf_2_fwd_array : TacPackage.
-  prepare (buf_2_fwd, behold_the_array_ls) tt.
+  admit; prepare (buf_2_fwd, behold_the_array_ls) tt.
 Defined.

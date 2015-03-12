@@ -36,7 +36,7 @@ Section TopSection.
   Qed.
 
   Definition hints_array_to_locals : TacPackage.
-    prepare array_to_locals_fwd tt.
+    admit; prepare array_to_locals_fwd tt.
   Defined.
 
   Lemma replace_array_to_locals : forall ls p vars, array ls p = array_to_locals ls p vars.

@@ -400,11 +400,11 @@ Module Packaged (CE : TypedPackage.CoreEnv).
     Ltac prepare := prepareHints ltac:(fun x => x) pc state isConst env0.
 
     Definition hints_emp : hints.
-      prepare (Hemp, Hf) (Hemp, Hf, Hh) ltac:(fun x => refine x).
+      admit; prepare (Hemp, Hf) (Hemp, Hf, Hh) ltac:(fun x => refine x).
     Defined.
 
     Definition hints_tt : hints.
-      prepare tt tt ltac:(fun x => refine x).
+      admit; prepare tt tt ltac:(fun x => refine x).
     Defined.
     End Tests.
   End TESTS.

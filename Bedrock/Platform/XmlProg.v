@@ -126,7 +126,7 @@ Theorem httpq_nil : Emp ===> httpq 0.
 Qed.
 
 Definition hints : TacPackage.
-  prepare buffer_split_tagged (buffer_join_tagged, httpq_nil).
+  admit; prepare buffer_split_tagged (buffer_join_tagged, httpq_nil).
 Defined.
 
 Definition m0 := bimport [[ "buffers"!"bmalloc" @ [bmallocS], "sys"!"abort" @ [abortS],

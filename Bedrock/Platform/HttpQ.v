@@ -102,7 +102,7 @@ Definition preRequest := ("POST / HTTP/1.0" ++ nl
   ++ "Content-Length: ")%string.
 
 Definition hints : TacPackage.
-  prepare (httpq_fwd, onebuf_fwd, SinglyLinkedList.nil_fwd, SinglyLinkedList.cons_fwd,
+  admit; prepare (httpq_fwd, onebuf_fwd, SinglyLinkedList.nil_fwd, SinglyLinkedList.cons_fwd,
   buffer_split_tagged)
   (httpq_bwd, httpq_split, onebuf_bwd, SinglyLinkedList.nil_bwd, SinglyLinkedList.cons_bwd,
   buffer_join_tagged).

@@ -238,7 +238,7 @@ Lemma expose_stack : forall ns vs ss sp,
 Qed.
 
 Definition hints : TacPackage.
-  prepare (tq_fwd, create_stack, expose_stack) (tq_bwd, susps_empty_bwd, susps_add_bwd).
+  admit; prepare (tq_fwd, create_stack, expose_stack) (tq_bwd, susps_empty_bwd, susps_add_bwd).
 Defined.
 
 (* What is a valid initial code pointer for a thread, given the requested stack size? *)

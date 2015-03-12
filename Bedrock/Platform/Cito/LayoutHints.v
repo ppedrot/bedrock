@@ -22,7 +22,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Definition hints_heap_empty_bwd : TacPackage.
-      prepare tt heap_empty_bwd.
+      admit; prepare tt heap_empty_bwd.
     Defined.
 
   End TopSection.

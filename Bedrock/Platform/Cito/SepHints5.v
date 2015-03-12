@@ -19,7 +19,7 @@ Section TopSection.
   Qed.
 
   Definition hints_split_buf : TacPackage.
-    prepare split_buf tt.
+    admit; prepare split_buf tt.
   Defined.
 
   Definition to_intro_array (_ : W) := True.
@@ -93,11 +93,11 @@ Section TopSection.
   Qed.
 
   Definition hints_intro_array : TacPackage.
-    prepare intro_array tt.
+    admit; prepare intro_array tt.
   Defined.
 
   Definition hints_combine_locals : TacPackage.
-    prepare tt combine_locals.
+    admit; prepare tt combine_locals.
   Defined.
 
   Definition locals_to_split vars1 vars2 vs p := locals (vars1 ++ vars2) vs 0 p.
@@ -123,7 +123,7 @@ Section TopSection.
   Qed.
 
   Definition hints_split_locals : TacPackage.
-    prepare split_locals tt.
+    admit; prepare split_locals tt.
   Defined.
 
 End TopSection.

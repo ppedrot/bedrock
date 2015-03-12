@@ -71,7 +71,7 @@ Lemma buf_2_fwd : forall p len, (2 <= len)%nat -> p =?> len ===> p =?> 2 * (p ^+
 Qed.
 
 Definition hints : TacPackage.
-  prepare buf_2_fwd tt.
+  admit; prepare buf_2_fwd tt.
 Defined.
 
 Fixpoint gen_str n : string :=
@@ -119,7 +119,7 @@ Lemma behold_the_array_ls : forall len p, p =?> len ===> Ex ls, [| length ls = l
 Qed.
 
 Definition hints2 : TacPackage.
-  prepare behold_the_array_ls tt.
+  admit; prepare behold_the_array_ls tt.
 Defined.
 
 Theorem m_ok : moduleOk m.

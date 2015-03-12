@@ -18,7 +18,7 @@ Module T := Thread0.Make(M).
 Import T.
 
 Definition hints : TacPackage.
-  prepare (materialize_buffer, buffer_split_tagged) buffer_join_tagged.
+  admit; prepare (materialize_buffer, buffer_split_tagged) buffer_join_tagged.
 Defined.
 
 Definition mainS := SPEC reserving 49

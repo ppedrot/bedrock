@@ -189,7 +189,7 @@ Lemma rows_app_end : forall sch x ls y,
 Qed.
 
 Definition hints : TacPackage.
-  prepare (SinglyLinkedList.nil_fwd, SinglyLinkedList.cons_fwd,
+  admit; prepare (SinglyLinkedList.nil_fwd, SinglyLinkedList.cons_fwd,
     ListSegment.sll_fwd,
     table_fwd, row_fwd, rows_cons_fwd, create_len_pos_div2)
   (SinglyLinkedList.nil_bwd, SinglyLinkedList.cons_bwd,

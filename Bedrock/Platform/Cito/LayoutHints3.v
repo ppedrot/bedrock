@@ -340,11 +340,11 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Definition hints_heap_upd_option : TacPackage.
-      prepare tt is_heap_upd_option_bwd.
+      admit; prepare tt is_heap_upd_option_bwd.
     Defined.
 
     Definition hints_heap_merge : TacPackage.
-      prepare tt is_heap_merge_bwd.
+      admit; prepare tt is_heap_merge_bwd.
     Defined.
 
   End TopSection.

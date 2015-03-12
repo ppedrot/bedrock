@@ -94,7 +94,7 @@ Import Adt.
 Export Adt.
 
 Definition hints : TacPackage.
-  prepare (lseq_fwd, lseq'_empty_fwd, lseq'_nonempty_fwd, lseq'_cons_fwd)
+  admit; prepare (lseq_fwd, lseq'_empty_fwd, lseq'_nonempty_fwd, lseq'_cons_fwd)
   (lseq_bwd, lseq'_empty_bwd, lseq'_nonempty_bwd).
 Defined.
 

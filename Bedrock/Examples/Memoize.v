@@ -48,7 +48,7 @@ Import Memo.
 Export Memo.
 
 Definition hints : TacPackage.
-  prepare memo_fwd memo_bwd.
+  admit; prepare memo_fwd memo_bwd.
 Defined.
 
 Definition initS : spec := SPEC("f", "in", "out") reserving 7

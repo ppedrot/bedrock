@@ -72,7 +72,7 @@ Import Xmlp.
 Export Xmlp.
 
 Definition hints : TacPackage.
-  prepare (xmlp_fwd, xmlp'_fwd) (xmlp_bwd, xmlp'_bwd).
+  admit; prepare (xmlp_fwd, xmlp'_fwd) (xmlp_bwd, xmlp'_bwd).
 Defined.
 
 
