@@ -109,7 +109,7 @@ Section Delete.
           [| V rw <> 0 |] * tptr =*> head * sll done (V "res") * sll (V data :: remaining) (V rw)
           * rows sch head remaining * rows sch head done * mallocHeap 0)%Sep
       invPost
-      sch data cond;;
+      tptr sch data cond;;
 
       If ("matched" = 0) {
         (* No match.  This row survives. *)
