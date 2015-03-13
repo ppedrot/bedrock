@@ -4,6 +4,7 @@ Require Import Bedrock.Platform.AutoSep.
 
 Lemma allocate_array' : forall p n offset,
   allocated p offset n ===> Ex ls, [| length ls = n |] * array ls (p ^+ $ (offset)).
+Proof using .
   induction n; simpl.
 
   sepLemma.
@@ -42,12 +43,14 @@ Lemma allocate_array : forall p n,
   p = p
   -> make_array
   -> p =?> n ===> Ex ls, [| length ls = n |] * array ls p.
+Proof using .
   intros; eapply Himp_trans; [ apply allocate_array' | ].
   replace (p ^+ $0) with p by words; apply Himp_refl.
 Qed.
 
 Lemma free_array' : forall p n offset,
   Ex ls, [| length ls = n |] * array ls (p ^+ $ (offset)) ===> allocated p offset n.
+Proof using .
   sepLemma.
   etransitivity; [ apply ptsto32m_allocated | ].
   etransitivity; [ apply allocated_shift_base | ].
@@ -64,6 +67,7 @@ Lemma free_array : forall p n,
   p = p
   -> dissolve_array
   -> Ex ls, [| length ls = n |] * array ls p ===> p =?> n.
+Proof using .
   intros; eapply Himp_trans; [ | apply free_array' ].
   replace (p ^+ $0) with p by words; apply Himp_refl.
 Qed.
@@ -71,6 +75,7 @@ Qed.
 Lemma selN_updN_eq : forall v a n,
   (n < length a)%nat
   -> Array.selN (Array.updN a n v) n = v.
+Proof using .
   induction a; destruct n; simpl; intuition.
 Qed.
 
@@ -78,6 +83,7 @@ Lemma selN_upd_eq : forall v a n,
   (n < length a)%nat
   -> goodSize (length a)
   -> Array.selN (Array.upd a (natToW n) v) n = v.
+Proof using .
   intros; rewrite upd_updN.
   apply selN_updN_eq; auto.
   eauto using goodSize_weaken.
@@ -87,6 +93,7 @@ Lemma inc : forall n (w : W) l,
   n = wordToNat l
   -> w < natToW n
   -> w ^+ natToW 1 <= l.
+Proof using .
   intros; subst.
   assert (exists b, w < b) by eauto.
   pre_nomega.
@@ -98,12 +105,14 @@ Qed.
 
 Theorem natToW_wordToNat : forall w : W,
   natToW (wordToNat w) = w.
+Proof using .
   intros; apply natToWord_wordToNat.
 Qed.
 
 Theorem wordToNat_inj : forall sz (u v : word sz),
   wordToNat u = wordToNat v
   -> u = v.
+Proof using .
   intros; rewrite <- (natToWord_wordToNat u); rewrite <- (natToWord_wordToNat v); congruence.
 Qed.
 

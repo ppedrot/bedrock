@@ -19,10 +19,12 @@ Definition natToW (n : nat) : W := natToWord _ n.
 Definition isConstNat (n : nat) := True.
 
 Theorem natToWord_expose : forall n w, isConstNat w -> natToWord n w = natToWord' n w.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem natToW_expose : forall n, isConstNat n -> natToW n = natToWord' _ n.
+Proof using .
   reflexivity.
 Qed.
 
@@ -43,6 +45,7 @@ Definition goodSize (n : nat) := (N_of_nat n < Npow2 32)%N.
 
 Theorem goodSize_danger : forall n, goodSize n
   -> (n < pow2 32)%nat (* Don't evaluate this! :-) *).
+Proof using .
   unfold goodSize; intros.
   apply Nlt_out in H.
   rewrite Nat2N.id in H.
@@ -54,6 +57,7 @@ Theorem natToW_inj : forall n m, natToW n = natToW m
   -> goodSize n
   -> goodSize m
   -> n = m.
+Proof using .
   intros; eapply natToWord_inj; eauto; apply goodSize_danger; auto.
 Qed.
 
@@ -128,10 +132,12 @@ Definition rupd (rs : regs) (r : reg) (v : W) : regs := fun r' =>
   if reg_eq r' r then v else rs r'.
 
 Theorem rupd_eq : forall rs r v, rupd rs r v r = v.
+Proof using .
   intros; unfold rupd; destruct (reg_eq r r); tauto.
 Qed.
 
 Theorem rupd_ne : forall rs r v r', r' <> r -> rupd rs r v r' = rs r'.
+Proof using .
   intros; unfold rupd; destruct (reg_eq r' r); tauto.
 Qed.
 
@@ -168,6 +174,7 @@ Add Ring Wring : Wring (decidable (weqb_sound 32), constants [wcst]).
 Lemma cancel : forall u v k : W,
   u ^+ k = v ^+ k
   -> u = v.
+Proof using .
   intros.
   apply (f_equal (fun x => x ^+ ^~ k)) in H.
   replace (u ^+ k ^+ ^~ k) with u in H by (wprepare; word_eq).
@@ -180,6 +187,7 @@ Hint Immediate cancel.
 Lemma cancel_contra : forall u v k : W,
   u <> v
   -> u ^+ k <> v ^+ k.
+Proof using .
   generalize cancel; firstorder.
 Qed.
 
@@ -187,6 +195,7 @@ Hint Immediate cancel_contra.
 
 Lemma natToWordToN : forall n m, (N_of_nat m < Npow2 n)%N
   -> wordToN (natToWord n m) = N_of_nat m.
+Proof using .
   intros.
   rewrite wordToN_nat.
   destruct (wordToNat_natToWord n m); intuition.
@@ -206,6 +215,7 @@ Lemma cancel_contra_minus : forall k1 k2 (u v : W),
   -> (k1 < k2)%nat
   -> (N_of_nat k2 < Npow2 32)%N
   -> u = v ^+ $ (k2 - k1).
+Proof using .
   intros.
   apply cancel with ($ k1).
   rewrite H; clear H.
@@ -231,6 +241,7 @@ Lemma cancel_contra_minus' : forall k1 k2 (u v : W),
   -> (k1 < k2)%nat
   -> (N_of_nat k2 < Npow2 32)%N
   -> u ^+ $ k1 <> v ^+ $ k2.
+Proof using .
   intros; intro.
   apply H.
   eapply cancel_contra_minus; eauto.
@@ -241,6 +252,7 @@ Lemma cancel_contra_minus'' : forall k1 k2 (u v : W),
   -> (k1 < k2)%nat
   -> (N_of_nat k2 < Npow2 32)%N
   -> v ^+ $ k2 <> u ^+ $ k1.
+Proof using .
   intros; intro.
   apply H.
   symmetry.
@@ -259,6 +271,7 @@ Theorem const_separated : forall u v,
   -> u ^+ $ 2 <> v
   -> u ^+ $ 3 <> v
   -> separated u v.
+Proof using .
   red; intros.
   repeat match goal with
            | [ H : (_ < _)%nat |- _ ] => inversion H; clear H; subst
@@ -311,7 +324,7 @@ Ltac W_neq := (apply const_separated; word_neq) || (wprepare; word_neq).
 Theorem ReadWriteEq : forall stn m m' k v,
   WriteWord stn m k v = Some m' ->
   ReadWord stn m' k = Some v.
-Proof.
+Proof using .
   unfold ReadWord, WriteWord, mem_get_word, mem_set_word, footprint_w, ReadByte, WriteByte. intros stn m m' k v.
   case_eq (explode stn v). destruct p. destruct p. intros.
   repeat match goal with
@@ -349,7 +362,7 @@ Theorem ReadWriteNe : forall stn m m' k v k',
   separated k' k ->
   WriteWord stn m k v = Some m' ->
   ReadWord stn m' k' = ReadWord stn m k'.
-Proof.
+Proof using .
   unfold ReadWord, WriteWord, mem_get_word, mem_set_word, footprint_w, ReadByte, WriteByte; intros.
   revert H0.
   case_eq (explode stn v); intros. destruct p. destruct p.

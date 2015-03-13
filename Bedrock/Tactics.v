@@ -29,7 +29,7 @@ Ltac think := think' idtac ltac:(eauto).
 Require Import Coq.Lists.List.
 Lemma nth_error_None_length : forall (T : Type) (ls : list T) (n : nat),
   nth_error ls n = None -> length ls <= n.
-Proof.
+Proof using .
   induction ls; destruct n; simpl; intros; think; try omega. inversion H.
   eapply IHls in H. omega.
 Qed.
@@ -39,6 +39,6 @@ Lemma map_nth_error_full : forall T U (F : T -> U) ls n,
                              | None => None
                              | Some v => Some (F v)
                            end.
-Proof.
+Proof using .
   induction ls; destruct n; simpl; intros; think; auto.
 Qed.

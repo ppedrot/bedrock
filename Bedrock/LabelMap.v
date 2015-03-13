@@ -53,14 +53,17 @@ Implicit Arguments Comp_lt [A eq0 lt x y c].
 Implicit Arguments Comp_gt [A eq0 lt x y c].
 
 Theorem Nlt_irrefl' : forall n : N, n < n -> False.
+Proof using .
   exact Nlt_irrefl.
 Qed.
 
 Theorem Nlt_irrefl'' : forall n n' : N, n = n' -> n < n' -> False.
+Proof using .
   intros; subst; eapply Nlt_irrefl'; eauto.
 Qed.
 
 Theorem Nlt_notboth : forall x y, x < y -> y < x -> False.
+Proof using .
   intros; eapply Nlt_irrefl'; eapply Nlt_trans; eauto.
 Qed.
 
@@ -77,6 +80,7 @@ Ltac rewr := repeat match goal with
 Theorem string_lt_trans : forall s1 s2 s3, string_lt s1 s2 = true
   -> string_lt s2 s3 = true
   -> string_lt s1 s3 = true.
+Proof using .
   induction s1; simpl; intuition; destruct s2; destruct s3; simpl in *; try congruence; rewr.
 Qed.
 

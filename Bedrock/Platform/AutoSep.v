@@ -40,6 +40,7 @@ Lemma tuple_predicate : forall A B pc state
   interp specs (P x y)
   -> P' = (fun p => P (fst p) (snd p))
   -> interp specs (P' (x, y)).
+Proof using .
   intros; subst; auto.
 Qed.
 
@@ -76,6 +77,7 @@ Definition andify pc state G (Ps : list (propX pc state G)) :=
 
 Lemma eatEasy_right1 : forall pc state (P : PropX pc state) specs,
   interp specs ([|True|] /\ P ---> [|True|] ---> P)%PropX.
+Proof using .
   intros.
   repeat apply Imply_I.
   eapply And_E2; apply Env; simpl; eauto.
@@ -83,6 +85,7 @@ Qed.
 
 Lemma eatEasy_right2 : forall pc state (P : PropX pc state) specs,
   interp specs (andify nil ---> andify (P :: nil) ---> P)%PropX.
+Proof using .
   unfold andify, andify'; simpl; intros.
   do 2 apply Imply_I.
   eapply And_E2; apply Env; simpl; eauto.
@@ -91,6 +94,7 @@ Qed.
 Lemma andify1'' : forall pc state (Ps : list (PropX pc state)) R' R specs,
   interp specs (R' ---> R)
   -> interp specs (andify' Ps R' ---> R).
+Proof using .
   unfold andify'; induction Ps; simpl; intuition.
   apply IHPs.
   apply Imply_I; eapply Imply_E; [ apply interp_weaken; apply H | ].
@@ -99,17 +103,20 @@ Qed.
 
 Lemma andify1' : forall pc state (Qs Ps : list (PropX pc state)) R specs,
   interp specs (andify' (Ps ++ Qs) R ---> andify' Ps R).
+Proof using .
   unfold andify'; induction Ps; simpl; intuition.
   apply andify1''; apply Imply_refl.
 Qed.
 
 Lemma andify1 : forall pc state (Qs Ps : list (PropX pc state)) specs,
   interp specs (andify (Ps ++ Qs) ---> andify Ps).
+Proof using .
   intros; apply andify1'.
 Qed.
 
 Lemma andify2''' : forall pc state (Ps : list (PropX pc state)) R' R specs,
   interp specs ((R' ---> R) ---> andify' Ps R' ---> andify' Ps R)%PropX.
+Proof using .
   unfold andify'; induction Ps; simpl; intuition.
   apply Imply_refl.
   apply Imply_I.
@@ -125,6 +132,7 @@ Qed.
 Lemma andify2'' : forall pc state (Ps : list (PropX pc state)) R' R specs,
   interp specs (R' ---> R)
   -> interp specs (andify' Ps R' ---> andify' Ps R).
+Proof using .
   intros; eapply Imply_E.
   apply andify2'''.
   auto.
@@ -132,6 +140,7 @@ Qed.
 
 Lemma andify2' : forall pc state (Qs Ps : list (PropX pc state)) R specs,
   interp specs (andify' (Ps ++ Qs) R ---> andify' Qs R).
+Proof using .
   unfold andify'; induction Ps; simpl; intuition.
   apply Imply_refl.
   eapply Imply_trans; try apply IHPs.
@@ -141,6 +150,7 @@ Qed.
 
 Lemma andify2 : forall pc state (Qs Ps : list (PropX pc state)) specs,
   interp specs (andify (Ps ++ Qs) ---> andify Qs).
+Proof using .
   intros; apply andify2'.
 Qed.
 
@@ -151,6 +161,7 @@ Lemma eatEasy_right' : forall pc state G (P : propX pc state G),
         interp specs (andify easy ---> andify hard ---> P)%PropX
     | _ => fun _ => True
   end P.
+Proof using .
   induction P; destruct G; simpl; intuition;
     try (apply eatEasy_right1 || apply eatEasy_right2; eauto).
 
@@ -176,6 +187,7 @@ Qed.
 
 Lemma eatEasy_left1 : forall pc state (P : PropX pc state) specs,
   interp specs (P ---> andify (P :: nil))%PropX.
+Proof using .
   unfold andify, andify'; simpl; intros.
   apply Imply_I.
   apply And_I.
@@ -185,11 +197,13 @@ Qed.
 
 Lemma eatEasy_left2 : forall pc state (P : PropX pc state) specs,
   interp specs (P ---> andify nil).
+Proof using .
   intros; apply Imply_I; apply Inj_I; auto.
 Qed.
 
 Lemma andify_app' : forall pc state (Qs Ps : list (PropX pc state)) R specs,
   interp specs (andify' Ps R ---> andify Qs ---> andify' (Ps ++ Qs) R)%PropX.
+Proof using .
   unfold andify, andify'; induction Ps; simpl; intuition.
   apply Imply_I.
   eapply Imply_E.
@@ -199,6 +213,7 @@ Qed.
 
 Lemma andify_app : forall pc state (Qs Ps : list (PropX pc state)) specs,
   interp specs (andify Ps ---> andify Qs ---> andify (Ps ++ Qs))%PropX.
+Proof using .
   unfold andify, andify'; induction Ps; simpl; intuition.
   apply Imply_I; apply interp_weaken; apply Imply_refl.
   apply andify_app'.
@@ -211,6 +226,7 @@ Lemma eatEasy_left1' : forall pc state G (P : propX pc state G),
         interp specs (P ---> andify easy)%PropX
     | _ => fun _ => True
   end P.
+Proof using .
   induction P; destruct G; simpl; intuition;
     try (apply eatEasy_left1 || apply eatEasy_left2).
 
@@ -234,6 +250,7 @@ Lemma eatEasy_left2' : forall pc state G (P : propX pc state G),
         interp specs (P ---> andify hard)%PropX
     | _ => fun _ => True
   end P.
+Proof using .
   induction P; destruct G; simpl; intuition;
     try (apply eatEasy_left1 || apply eatEasy_left2).
 
@@ -255,6 +272,7 @@ Theorem eatEasy_simpl : forall pc state (P Q : PropX pc state) specs,
     let (easy2, hard2) := eatEasy Q in
     interp specs (andify easy1 ---> andify hard1 ---> andify easy2 /\ andify hard2)%PropX)
   -> interp specs (P ---> Q)%PropX.
+Proof using .
   intros.
   specialize (eatEasy_left1' P); specialize (eatEasy_left2' P); destruct (eatEasy P); intros.
   specialize (eatEasy_right' Q); destruct (eatEasy Q); intros.
@@ -281,6 +299,7 @@ Ltac cptr := post; rewrite sepFormula_eq;
 Lemma jiggle : forall pc state (P Q R S : PropX pc state) specs,
   interp specs (P ---> (Q /\ S) /\ R)%PropX
   -> interp specs (P ---> (Q /\ R) /\ S)%PropX.
+Proof using .
   intros.
   eapply Imply_trans; try apply H.
   intros; apply Imply_I.
@@ -305,6 +324,7 @@ Lemma curry_predicate : forall A B pc state
   interp specs (P (x, y))
   -> P' = (fun x y => P (x, y))
   -> interp specs (P' x y).
+Proof using .
   intros; subst; auto.
 Qed.
 
@@ -313,6 +333,7 @@ Hint Extern 1 (simplify _ _ _) =>
 
 Lemma substH_in2 : forall a b (P : hpropB (a :: b :: nil)) q1 q2,
   (fun stn sm => subst (G := a :: nil) (subst (P stn sm) q1) q2) = substH (substH P q1) q2.
+Proof using .
 reflexivity.
 Qed.
 
@@ -323,6 +344,7 @@ Require Import Coq.Arith.Arith.
 Lemma create_stack : forall ns ss sp,
   NoDup ns
   -> sp =?> (length ns + ss) ===> Ex vs, locals ns vs ss sp.
+Proof using .
   intros; eapply Himp_trans; [ apply allocated_split | ].
   instantiate (1 := length ns); omega.
   eapply Himp_trans.

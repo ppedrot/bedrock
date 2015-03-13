@@ -24,6 +24,7 @@ Import LinkMake.StubsMake.StubMake.CompileFuncSpecMake.InvMake.
 Lemma is_heap_eat : forall w v,
   is_heap heap_empty
   ===> is_heap (WordMap.remove w (heap_upd heap_empty w v)).
+Proof using .
   intros; apply is_heap_Equal.
   apply Properties.F.Equal_mapsto_iff; intuition.
   apply Properties.F.empty_mapsto_iff in H; tauto.
@@ -36,6 +37,7 @@ Require Import Bedrock.Platform.Cito.LayoutHintsUtil.
 Lemma readd : forall c rv rv',
   cell rv' c * is_heap heap_empty
   ===> is_heap (WordMap.add c (Cell rv') (heap_upd heap_empty c (Cell rv))).
+Proof using .
   intros.
   unfold is_heap at 2.
   assert (List.In (c, Cell rv') (heap_elements (WordMap.add c (Cell rv') (heap_upd heap_empty c (Cell rv))))).
@@ -62,6 +64,7 @@ Qed.
 Lemma readd_Arr : forall c rv rv',
   arr rv' c * is_heap heap_empty
   ===> is_heap (WordMap.add c (Arr rv') (heap_upd heap_empty c (Arr rv))).
+Proof using .
   intros.
   unfold is_heap at 2.
   assert (List.In (c, Arr rv') (heap_elements (WordMap.add c (Arr rv') (heap_upd heap_empty c (Arr rv))))).
@@ -89,6 +92,7 @@ Import LayoutHintsUtil.
 Lemma readd_FSet : forall c rv rv',
   lset rv' c * is_heap heap_empty
   ===> is_heap (WordMap.add c (FSet rv') (heap_upd heap_empty c (FSet rv))).
+Proof using .
   intros.
   unfold is_heap at 2.
   assert (List.In (c, FSet rv') (heap_elements (WordMap.add c (FSet rv') (heap_upd heap_empty c (FSet rv))))).
@@ -115,6 +119,7 @@ Qed.
 Lemma get_rval : forall specs st P (Q : Prop) R S T Z,
   (Q -> interp specs (![P * R * S * T] st ---> Z)%PropX)
   -> interp specs (![P * (([|Q|] * R) * S) * T] st ---> Z)%PropX.
+Proof using .
   intros.
   apply Imply_trans with (![[|Q|] * (P * R * S * T)]st)%PropX.
   assert (P * ([|Q|] * R * S) * T ===> [|Q|] * (P * R * S * T)).
@@ -140,6 +145,7 @@ Qed.
 Lemma get_rval' : forall specs st P (Q : Prop) R S T Z,
   (Q -> interp specs (![P * R * S * T] st ---> Z)%PropX)
   -> interp specs (![P * ((R * [|Q|]) * S) * T] st ---> Z)%PropX.
+Proof using .
   intros.
   apply Imply_trans with (![[|Q|] * (P * R * S * T)]st)%PropX.
   assert (P * (R * [|Q|] * S) * T ===> [|Q|] * (P * R * S * T)).
@@ -326,6 +332,7 @@ Definition m0 := bimport [[ "sys"!"abort" @ [abortS],
   }}.
 
 Theorem ok0 : moduleOk m0.
+Proof using .
   vcgen.
 
 
@@ -606,17 +613,21 @@ Definition m3 := link ListSet.m m2.
 Definition m := link Malloc.m m3.
 
 Theorem ok1 : moduleOk m1.
+Proof using .
   link SimpleCell.ok ok0.
 Qed.
 
 Theorem ok2 : moduleOk m2.
+Proof using .
   link ArraySeq.ok ok1.
 Qed.
 
 Theorem ok3 : moduleOk m3.
+Proof using .
   link ListSet.ok ok2.
 Qed.
 
 Theorem ok : moduleOk m.
+Proof using .
   link Malloc.ok ok3.
 Qed.

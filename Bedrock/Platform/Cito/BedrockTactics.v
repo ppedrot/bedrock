@@ -3,10 +3,12 @@ Set Implicit Arguments.
 Require Import Bedrock.Platform.AutoSep.
 
 Lemma sel_upd_eq' : forall vs nm v nm', nm = nm' -> (upd vs nm v) nm' = v.
+Proof using .
   intros; eapply sel_upd_eq; eauto.
 Qed.
 
 Lemma sel_upd_ne' : forall vs nm v nm', nm <> nm' -> (upd vs nm v) nm' = sel vs nm'.
+Proof using .
   intros; eapply sel_upd_ne; eauto.
 Qed.
 

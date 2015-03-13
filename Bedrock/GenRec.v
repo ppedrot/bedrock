@@ -34,7 +34,7 @@ Inductive R_nat : nat -> nat -> Prop :=
 | R_S : forall n, R_nat n (S n).
 
 Theorem wf_R_nat : well_founded R_nat.
-Proof.
+Proof using .
   red; induction a; constructor; intros.
     inversion H.
     inversion H; subst; auto.

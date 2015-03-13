@@ -55,6 +55,7 @@ Theorem bexpD_truth : forall stn st b,
     | Some true => bexpTrue b stn st
     | Some false => bexpFalse b stn st
   end.
+Proof using .
   induction b; simpl; unfold evalCond; intuition;
     repeat match goal with
              | [ H : _ = _ |- _ ] => rewrite H in *
@@ -79,6 +80,7 @@ Fixpoint bexpSafe (b : bexp) (stn : settings) (st : state) : Prop :=
 Theorem bexpSafe_really : forall stn st b,
   bexpSafe b stn st
   -> bexpD b stn st = None -> False.
+Proof using .
   induction b; simpl; intuition;
     repeat match goal with
              | [ _ : context[match ?E with None => _ | _ => _ end] |- _ ] =>

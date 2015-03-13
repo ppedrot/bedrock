@@ -306,6 +306,7 @@ Fixpoint underscore_free (s : string) : Prop :=
 Lemma no_clash' : forall s' s,
   underscore_free (s ++ String "_"  s')%string
   -> False.
+Proof using .
   induction s; simpl; intuition.
 Qed.
 
@@ -313,6 +314,7 @@ Lemma no_clash'' : forall s,
   underscore_free s
   -> forall p, In s (allCdatas_both p)
     -> False.
+Proof using .
   induction p; simpl; intuition (subst; eauto using no_clash');
     match goal with
       | [ H : _ |- _ ] => apply in_app_or in H; tauto
@@ -323,6 +325,7 @@ Lemma no_clash : forall s p,
   In s (allCdatas_both p)
   -> underscore_free s
   -> False.
+Proof using .
   intros; eapply no_clash''; eauto.
 Qed.
 
@@ -333,6 +336,7 @@ Local Hint Extern 1 (underscore_free _) => simpl; intuition congruence.
 Lemma append_inj : forall s1 s2 s,
   (s ++ s1 = s ++ s2)%string
   -> s1 = s2.
+Proof using .
   induction s; simpl; intuition.
 Qed.
 
@@ -341,6 +345,7 @@ Lemma NoDup_app : forall A (ls2 : list A),
   -> forall ls1, NoDup ls1
     -> (forall x, In x ls1 -> In x ls2 -> False)
     -> NoDup (ls1 ++ ls2).
+Proof using .
   induction 2; simpl; intuition;
     constructor; simpl; intuition eauto;
       match goal with
@@ -351,12 +356,14 @@ Qed.
 Lemma NoDup_unapp_noclash : forall A (ls2 ls1 : list A),
   NoDup (ls1 ++ ls2)
   -> (forall x, In x ls1 -> In x ls2 -> False).
+Proof using .
   induction ls1; inversion 1; simpl in *; subst; intuition (subst; eauto using in_or_app).
 Qed.
 
 Lemma In_allCdatas_both : forall x p,
   In x (allCdatas_both p)
   -> exists y, In y (allCdatas p) /\ (x = y ++ "_start" \/ x = y ++ "_len")%string.
+Proof using .
   induction p; simpl; intuition (subst; eauto);
     match goal with
       | [ H : _ |- _ ] =>
@@ -366,12 +373,14 @@ Qed.
 
 Lemma length_append : forall s2 s1,
   String.length (s1 ++ s2) = String.length s1 + String.length s2.
+Proof using .
   induction s1; simpl; intuition.
 Qed.
 
 Lemma append_inj' : forall s s1 s2,
   (s1 ++ s = s2 ++ s)%string
   -> s1 = s2.
+Proof using .
   induction s1; destruct s2; simpl; intuition;
     match goal with
       | [ H : _ |- _ ] =>
@@ -391,6 +400,7 @@ Fixpoint lastChar (s : string) : ascii :=
 Lemma lastChar_app : forall s2,
   (String.length s2 > 0)%nat
   -> forall s1, lastChar (s1 ++ s2) = lastChar s2.
+Proof using .
   induction s1; simpl; intuition;
     destruct s1; simpl in *; auto;
       destruct s2; simpl in *; auto; omega.
@@ -408,6 +418,7 @@ Ltac injy :=
 Lemma allCdatas_NoDup : forall p,
   NoDup (allCdatas p)
   -> NoDup (allCdatas_both p).
+Proof using .
   induction p; simpl; intuition;
     repeat constructor; simpl; intuition;
       try match goal with
@@ -431,6 +442,7 @@ Local Hint Immediate allCdatas_NoDup.
 Lemma freeVar_compile : forall x p,
   XmlSearch.freeVar (compilePat p) x
   -> In x (allCdatas_both p).
+Proof using .
   induction p; simpl; intuition.
 Qed.
 
@@ -439,6 +451,7 @@ Local Hint Immediate freeVar_compile.
 Lemma allCdatas_freeVar : forall x p,
   In x (allCdatas p)
   -> freeVar p x.
+Proof using .
   induction p; simpl; intuition;
     match goal with
       | [ H : _ |- _ ] =>
@@ -451,6 +464,7 @@ Local Hint Resolve allCdatas_freeVar.
 Lemma wf_compile : forall p,
   pwf p
   -> XmlSearch.wf (compilePat p).
+Proof using .
   induction p; simpl; intuition;
     repeat match goal with
              | [ H : _ |- _ ] => apply freeVar_compile in H; apply In_allCdatas_both in H
@@ -462,6 +476,7 @@ Local Hint Immediate wf_compile.
 Lemma wf_NoDup : forall p,
   pwf p
   -> NoDup (allCdatas p).
+Proof using .
   induction p; simpl; intuition; try NoDup; eauto using NoDup_app.
 Qed.
 

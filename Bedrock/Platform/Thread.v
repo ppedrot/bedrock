@@ -132,16 +132,19 @@ Definition exitize_me a b c d := locals a b c d.
 
 Lemma switchedy : forall P Q R S : HProp,
   (P * (Q * R)) * S ===> P * (Q * (R * S)).
+Proof using .
   sepLemma.
 Qed.
 
 Lemma swatchedy : forall P Q R : HProp,
   P * (Q * R) ===> P * Q * R.
+Proof using .
   sepLemma.
 Qed.
 
 Lemma exitize_locals : forall xx ns vs res sp,
   exitize_me ("rp" :: xx :: ns) vs res sp ===> Ex vs', locals ("rp" :: "ss" :: nil) (upd vs' "ss" (sel vs xx)) (res + length ns) sp.
+Proof using .
   unfold exitize_me, locals; intros.
   simpl; unfold upd; simpl.
   apply Himp_ex_c; exists (fun x => if string_dec x "rp" then vs "rp" else vs xx).
@@ -218,6 +221,7 @@ Lemma eq_neq_0 : forall u v : W,
   -> v = 0
   -> u = v
   -> False.
+Proof using .
   congruence.
 Qed.
 
@@ -225,6 +229,7 @@ Lemma freeable_cong : forall (u v : W) n,
   freeable v n
   -> v = u
   -> freeable u n.
+Proof using .
   congruence.
 Qed.
 
@@ -257,18 +262,22 @@ Definition m2 := link Q''.Q'.m m1.
 Definition m := link Q''.Q'.Q.m m2.
 
 Lemma ok0 : moduleOk m0.
+Proof using .
   link Malloc.ok Queue.ok.
 Qed.
 
 Lemma ok1 : moduleOk m1.
+Proof using .
   link Q''.ok ok0.
 Qed.
 
 Lemma ok2 : moduleOk m2.
+Proof using .
   link Q''.Q'.ok ok1.
 Qed.
 
 Theorem ok : moduleOk m.
+Proof using .
   link Q''.Q'.Q.ok ok2.
 Qed.
 

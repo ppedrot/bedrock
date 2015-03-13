@@ -41,6 +41,7 @@ Qed.
 Hint Rewrite roundTrip using solve [eauto] : N.
 
 Lemma natToW_wordToNat : forall w:W, natToW (wordToNat w) = w.
+Proof using .
   intros; rewrite <- natToWord_wordToNat; auto.
 Qed.
 Hint Rewrite natToW_wordToNat : N.
@@ -55,6 +56,7 @@ Ltac roundtrip := pre_nomega; unfold natToW; repeat rewrite wordToNat_natToWord_
 
 Theorem wordToNat_inj : forall sz (x y:word sz),
                           wordToNat x = wordToNat y -> x = y.
+Proof using .
   intros.
   apply (f_equal (natToWord sz)) in H.
   autorewrite with N in *.
@@ -63,6 +65,7 @@ Qed.
 
 Theorem wordToNat_inj' : forall sz (x y:word sz), x <> y ->
                                                   wordToNat x <> wordToNat y.
+Proof using .
   intros.
   contradict H.
   apply wordToNat_inj; assumption.
@@ -76,12 +79,14 @@ Transparent goodSize.
 
 Lemma goodSize_natToW_wlt_lt : forall n m:nat, goodSize n -> goodSize m ->
                                                natToW n < natToW m -> (n < m)%nat.
+Proof using .
   unfold goodSize, natToW.
   generalize dependent 32; intros; nomega.
 Qed.
 
 Lemma natToWord_pow2' : forall(sz k:nat)(w:word sz),
                           natToWord sz (k * pow2 sz) ^+ w = w.
+Proof using .
   induction k; intros; simpl.
 
   apply wplus_unit.
@@ -94,6 +99,7 @@ Lemma natToWord_pow2' : forall(sz k:nat)(w:word sz),
 Qed.
 
 Lemma natToWord_pow2_zero: forall sz n, $ (n * pow2 sz) = natToWord sz 0.
+Proof using .
   intros.
   rewrite <- (wplus_unit $ (n * pow2 sz)).
   rewrite wplus_comm.
@@ -102,6 +108,7 @@ Qed.
 
 Lemma natToWord_pow2_factor : forall (sz:nat)(w:word sz), exists n, forall k,
                                                                       (n < pow2 sz)%nat /\ w = natToWord sz (k * pow2 sz + n).
+Proof using .
   intros.
   exists (wordToNat w).
   intro.
@@ -174,6 +181,7 @@ Ltac destruct_all_words := repeat
  * ========================================================================= *)
 
 Lemma natToW_plus_pow2 : forall n:nat, natToW n = natToW (n + pow2 32).
+Proof using .
   intro.
   unfold natToW.
   rewrite natToWord_plus.
@@ -183,6 +191,7 @@ Qed.
 
 Lemma wneg_natToW_pow2_minus : forall n:nat, goodSize n ->
                                              ^~ (natToW n) = natToW (pow2 32 - n).
+Proof using .
   intros.
   unfold wneg.
   rewrite NToWord_nat.
@@ -196,6 +205,7 @@ Qed.
 
 Lemma wordToNat_wminus : forall n m:W, n <= m ->
                                        wordToNat (m ^- n) = wordToNat m - wordToNat n.
+Proof using .
   intros.
   destruct_all_words.
 
@@ -232,6 +242,7 @@ Qed.
  * ========================================================================= *)
 
 Lemma wle_wneq_wlt : forall i j:W, i <= j -> i <> j -> i < j.
+Proof using .
   intros.
   destruct_all_words.
   apply wordToNat_inj' in H0.
@@ -240,6 +251,7 @@ Lemma wle_wneq_wlt : forall i j:W, i <= j -> i <> j -> i < j.
 Qed.
 
 Lemma wle_wle_antisym : forall n m:W, n <= m -> m <= n -> n = m.
+Proof using .
   intros.
   destruct_all_words.
   f_equal.

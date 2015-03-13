@@ -5,12 +5,14 @@ Require Import Bedrock.sep.Array Bedrock.Allocated.
 
 Lemma updN_length : forall ls a v,
   length (updN ls a v) = length ls.
+Proof using .
   induction ls; simpl; intuition.
   destruct a0; simpl; auto.
 Qed.
 
 Lemma upd_length : forall ls a v,
   length (upd ls a v) = length ls.
+Proof using .
   intros; apply updN_length.
 Qed.
 
@@ -32,6 +34,7 @@ Theorem containsArray_bound' : forall cs P stn ls,
   containsArray P ls
   -> forall st, interp cs (P stn st)
     -> (length ls < pow2 32)%nat.
+Proof using .
   induction 1; intros.
   eapply array_bound; eauto.
   propxFo; eauto.
@@ -43,6 +46,7 @@ Theorem containsArray_bound : forall cs P stn ls st,
   interp cs (![P] (stn, st))
   -> containsArray P ls
   -> (length ls < pow2 32)%nat.
+Proof using .
   rewrite sepFormula_eq; intros; eapply containsArray_bound'; eauto.
 Qed.
 
@@ -52,6 +56,7 @@ Theorem containsArray_goodSize : forall cs P stn ls st,
   interp cs (![P] (stn, st))
   -> containsArray P ls
   -> goodSize (length ls).
+Proof using .
   intros; unfold goodSize.
   apply Nlt_in.
   rewrite Npow2_nat.
@@ -66,6 +71,7 @@ Require Import Coq.NArith.NArith Bedrock.Nomega.
 Lemma bound_N_nat : forall n,
   (n < pow2 32)%nat
   -> (N.of_nat n < Npow2 32)%N.
+Proof using .
   intros; apply Nlt_in; rewrite Npow2_nat; repeat rewrite Nat2N.id; assumption.
 Qed.
 
@@ -74,16 +80,19 @@ Hint Resolve bound_N_nat.
 Lemma sel_selN : forall ls (a : nat),
   goodSize a
   -> sel ls (natToW a) = selN ls a.
+Proof using .
   unfold sel; intros; rewrite wordToNat_natToWord_idempotent; auto.
 Qed.
 
 Lemma upd_updN : forall ls (a : nat) v,
   goodSize a
   -> upd ls (natToW a) v = updN ls a v.
+Proof using .
   unfold upd; intros; rewrite wordToNat_natToWord_idempotent; auto.
 Qed.
 
 Lemma pow2_pos : forall sz, (0 < pow2 sz)%nat.
+Proof using .
   induction sz; simpl; intuition.
 Qed.
 
@@ -116,6 +125,7 @@ Require Import Coq.Lists.List.
 Lemma updN_app : forall b v a,
   Array.updN (a ++ b) (Datatypes.length a) v
   = a ++ Array.updN b 0 v.
+Proof using .
   induction a; simpl; intuition congruence.
 Qed.
 
@@ -125,6 +135,7 @@ Lemma upd_app : forall a b v,
   goodSize (length a)
   -> Array.upd (a ++ b) (natToW (length a)) v
   = a ++ Array.upd b (natToW 0) v.
+Proof using .
   unfold Array.upd; intros; autorewrite with Arr; auto.
 Qed.
 
@@ -146,6 +157,7 @@ Lemma upd_app' : forall a b v w,
   length a = wordToNat w
   -> Array.upd (a ++ b) w v
   = a ++ Array.upd b (natToW 0) v.
+Proof using .
   intros; assert (natToWord 32 (length a) = natToWord 32 (wordToNat w)) by congruence;
     rewrite natToWord_wordToNat in *; subst; apply upd_app.
   rewrite H; auto.
@@ -156,12 +168,14 @@ Hint Rewrite upd_app' using assumption : Arr.
 Lemma goodSize_plus_l : forall n m,
   goodSize (n + m)
   -> goodSize n.
+Proof using .
   unfold goodSize; generalize (Npow2 32); intros; nomega.
 Qed.
 
 Lemma goodSize_plus_r : forall n m,
   goodSize (n + m)
   -> goodSize m.
+Proof using .
   unfold goodSize; generalize (Npow2 32); intros; nomega.
 Qed.
 
@@ -170,6 +184,7 @@ Hint Immediate goodSize_plus_l goodSize_plus_r.
 Lemma goodSize_S : forall n,
   goodSize (S n)
   -> goodSize n.
+Proof using .
   unfold goodSize; generalize (Npow2 32); intros; nomega.
 Qed.
 
@@ -178,6 +193,7 @@ Hint Immediate goodSize_S.
 Lemma selN_middle : forall w ws' ws,
   goodSize (length ws)
   -> Array.selN (ws ++ w :: ws') (length ws) = w.
+Proof using .
   induction ws; simpl; intuition.
 Qed.
 
@@ -186,6 +202,7 @@ Hint Rewrite selN_middle using solve [ auto ] : Arr.
 Lemma sel_middle : forall ws w ws',
   goodSize (length ws)
   -> Array.sel (ws ++ w :: ws') (natToW (length ws)) = w.
+Proof using .
   unfold Array.sel; intros; autorewrite with Arr; reflexivity.
 Qed.
 
@@ -197,6 +214,7 @@ Hint Rewrite <- plus_n_O : Arr.
 Lemma sel_middle' : forall ws w ws' n,
   length ws = wordToNat n
   -> Array.sel (ws ++ w :: ws') n = w.
+Proof using .
   intros; assert (natToWord 32 (length ws) = natToWord 32 (wordToNat n)) by congruence;
     autorewrite with Arr in *; subst.
   rewrite H; autorewrite with Arr.
@@ -208,6 +226,7 @@ Hint Rewrite sel_middle' using assumption : Arr.
 
 Lemma upd0 : forall w ws v,
   Array.upd (w :: ws) (natToW 0) v = v :: ws.
+Proof using .
   intros; unfold Array.upd; autorewrite with Arr; reflexivity.
 Qed.
 
@@ -221,6 +240,7 @@ Lemma le_wordToN : forall (n : nat) (w w' : W),
   -> w' = natToW n
   -> goodSize n
   -> (n <= wordToNat w)%nat.
+Proof using .
   intros; subst.
   destruct (le_lt_dec n (wordToNat w)); auto.
   elimtype False; apply H; clear H.
@@ -239,6 +259,7 @@ Theorem lt_goodSize : forall n m,
   -> goodSize n
   -> goodSize m
   -> natToW n < natToW m.
+Proof using .
   unfold goodSize, natToW, W; generalize 32; intros; nomega.
 Qed.
 
@@ -246,6 +267,7 @@ Theorem goodSize_weaken : forall n m,
   goodSize n
   -> (m <= n)%nat
   -> goodSize m.
+Proof using .
   unfold goodSize; generalize 32; intros; nomega.
 Qed.
 
@@ -258,6 +280,7 @@ Theorem wle_goodSize : forall n m,
   -> goodSize n
   -> goodSize m
   -> (n <= m)%nat.
+Proof using .
   intros.
   destruct (le_lt_dec n m); auto.
   elimtype False.
@@ -277,6 +300,7 @@ Lemma implies_inj_and : forall pc state (specs : codeSpec pc state) G P Q,
   valid specs G [| P |]%PropX
   -> valid specs G [| Q |]%PropX
   -> valid specs G [| P /\ Q |]%PropX.
+Proof using .
   intros.
   eapply Imply_E; [ | eassumption ].
   apply Imply_I.
@@ -292,12 +316,14 @@ Lemma arrayImplies_weaken : forall f f',
   -> forall ws offset,
     arrayImplies f ws offset
     -> arrayImplies f' ws offset.
+Proof using .
   induction ws; simpl; intuition.
 Qed.
 
 Lemma inj_imply : forall pc state (specs : codeSpec pc state) (P Q : Prop),
   (P -> Q)
   -> interp specs ([| P |] ---> [| Q |])%PropX.
+Proof using .
   intros; apply Imply_I; eapply Inj_E; [ apply Env; simpl; eauto | ];
     intro; apply Inj_I; tauto.
 Qed.
@@ -307,6 +333,7 @@ Local Opaque mult.
 Lemma ptsto32m'_implies : forall specs stn p ws offset m,
   interp specs (ptsto32m' _ p offset ws stn m --->
     [| arrayImplies (fun n => smem_get_word (implode stn) (p ^+ $ (n)) m) ws offset |])%PropX.
+Proof using .
   induction ws; unfold ptsto32m', arrayImplies; fold ptsto32m'; fold arrayImplies; intuition.
   apply Imply_I; apply Inj_I; constructor.
   unfold starB, star; apply Imply_I.
@@ -329,49 +356,58 @@ Lemma ptsto32m'_implies : forall specs stn p ws offset m,
 Qed.
 
 Theorem Himp_star_comm : forall P Q, (star P Q) ===> (star Q P).
+Proof using .
   intros; intro cs; apply himp_star_comm.
 Qed.
 
 Theorem Himp_ex_c : forall T (P : T -> _) Q,
   (exists v, Q ===> (P v)) -> Q ===> (ex P).
+Proof using .
   intros; intro cs; apply himp_ex_c; firstorder.
 Qed.
 
 Theorem Himp_ex_star : forall T (P : T -> _) Q,
   (star (ex P) Q) ===> (ex (fun x => star (P x) Q)).
+Proof using .
   intros; intro cs; apply himp_ex_star.
 Qed.
 
 Theorem Himp'_ex : forall T (P : T -> _) Q,
   (forall x, (P x) ===> Q) ->
   ex P ===> Q.
+Proof using .
   intros; intro cs; apply himp'_ex; firstorder.
 Qed.
 
 Theorem Himp_star_frame : forall P Q R S,
   P ===> Q -> R ===> S -> (star P R) ===> (star Q S).
+Proof using .
   intros; intro cs; apply himp_star_frame; auto.
 Qed.
 
 
 Theorem Himp_star_pure_c : forall P Q (F : Prop),
   (F -> P ===> Q) -> (star (inj (PropX.Inj F)) P) ===> Q.
+Proof using .
   intros; intro; apply himp_star_pure_c; firstorder.
 Qed.
 
 Theorem Himp_star_assoc : forall P Q R,
   (star (star P Q) R) ===> (star P (star Q R)).
+Proof using .
   intros; intro; apply himp_star_assoc.
 Qed.
 
 Theorem Himp_star_assoc' : forall P Q R,
   (star P (star Q R)) ===> (star (star P Q) R).
+Proof using .
   intros; intro cs.
   destruct (heq_star_assoc cs P Q R); auto.
 Qed.
 
 Theorem Himp_star_Emp' : forall P,
   P ===> Emp * P.
+Proof using .
   intros; intro cs.
   destruct (heq_star_emp_l cs P); auto.
 Qed.
@@ -380,11 +416,13 @@ Theorem Himp_star_pure_cc : forall P Q (p : Prop),
   p ->
   P ===> Q ->
   P ===> (star (inj (PropX.Inj p)) Q).
+Proof using .
   intros; intro; eapply himp_star_pure_cc; eauto.
 Qed.
 
 Theorem ptsto32m'_in : forall a vs offset,
   ptsto32m _ a offset vs ===> ptsto32m' _ a offset vs.
+Proof using .
   induction vs; intros.
 
   apply Himp_refl.
@@ -406,12 +444,14 @@ Qed.
 Lemma ptsto32m_implies : forall specs stn m p ws offset,
   interp specs (ptsto32m _ p offset ws stn m --->
     [| arrayImplies (fun n => smem_get_word (implode stn) (p ^+ $ (n)) m) ws offset |])%PropX.
+Proof using .
   intros; eapply Imply_trans; apply ptsto32m'_implies || apply ptsto32m'_in.
 Qed.
 
 Lemma array_implies : forall specs stn m ws p,
   interp specs (array ws p stn m --->
     [| arrayImplies (fun n => smem_get_word (implode stn) (p ^+ $ (n)) m) ws 0 |])%PropX.
+Proof using .
   intros; apply ptsto32m_implies.
 Qed.
 
@@ -423,6 +463,7 @@ Lemma arrayImplies_equal : forall stn p m m1 m2 m1' m2',
     -> arrayImplies (fun n => smem_get_word (implode stn) (p ^+ $ (n)) m1') ws' offset
     -> length ws' = length ws
     -> ws' = ws.
+Proof using .
   induction ws; destruct ws'; unfold length, arrayImplies; fold length; fold arrayImplies; intuition.
   f_equal; eauto.
   eapply split_smem_get_word in H0; [ | eauto ].
@@ -434,6 +475,7 @@ Lemma array_equals : forall specs stn st ws p fr ws' fr',
   interp specs (![array ws p * fr] (stn, st))
   -> interp specs (![array ws' p * fr'] (stn, st) --->
     [| length ws' = length ws -> ws' = ws |])%PropX.
+Proof using .
   rewrite sepFormula_eq; unfold sepFormula_def, starB, star; simpl; intros.
   propxFo.
   eapply Imply_sound in H; [ | apply array_implies ].
@@ -455,6 +497,7 @@ Qed.
 Lemma imply_and : forall pc state (specs : codeSpec pc state) (P : Prop) Q R,
   (P -> interp specs (Q ---> R)%PropX)
   -> interp specs (Q /\ [| P |] ---> R)%PropX.
+Proof using .
   intros; apply Imply_I.
   eapply Inj_E; [ eapply And_E2; apply Env; simpl; eauto | ]; intuition.
   eapply Imply_E; eauto.
@@ -465,6 +508,7 @@ Lemma smem_read_correctx'' : forall cs base stn ws offset i m,
   (i < length ws)%nat
   -> interp cs (ptsto32m' _ base (offset * 4) ws stn m
     ---> [| smem_get_word (implode stn) (base ^+ $ ((offset + i) * 4)) m = Some (selN ws i) |])%PropX.
+Proof using .
   induction ws.
 
   simpl length.
@@ -513,6 +557,7 @@ Lemma array_boundx' : forall cs base stn ws m i,
   (0 < i < length ws)%nat
   -> base ^+ $ (i * 4) = base
   -> interp cs (ptsto32m' _ base 0 ws stn m ---> [| False |])%PropX.
+Proof using .
   destruct ws; simpl length; intros.
 
   elimtype False; omega.
@@ -549,6 +594,7 @@ Qed.
 
 Lemma array_boundx : forall cs ws base stn m,
   interp cs (array ws base stn m ---> [| length ws < pow2 32 |]%nat)%PropX.
+Proof using .
   intros.
   destruct (lt_dec (length ws) (pow2 32)); auto.
   apply Imply_I; apply Inj_I; auto.
@@ -574,6 +620,7 @@ Qed.
 Theorem containsArray_boundx' : forall cs P stn ls,
   containsArray P ls
   -> forall st, interp cs (P stn st ---> [|length ls < pow2 32|]%nat)%PropX.
+Proof using .
   induction 1; intros.
   eapply array_boundx; eauto.
 
@@ -597,6 +644,7 @@ Qed.
 Theorem containsArray_boundx : forall cs P stn ls st,
   containsArray P ls
   -> interp cs (![P] (stn, st) ---> [| length ls < pow2 32 |]%nat)%PropX.
+Proof using .
   rewrite sepFormula_eq; intros; unfold sepFormula_def, fst, snd;
     auto using containsArray_boundx'.
 Qed.
@@ -606,6 +654,7 @@ Local Hint Resolve containsArray_boundx.
 Theorem containsArray_goodSizex' : forall cs P stn ls st,
   containsArray P ls
   -> interp cs (P stn st ---> [| goodSize (length ls) |])%PropX.
+Proof using .
   intros; unfold goodSize.
   eapply Imply_trans.
   eapply containsArray_boundx'; eauto.
@@ -619,6 +668,7 @@ Qed.
 Theorem containsArray_goodSizex : forall cs P stn ls st,
   containsArray P ls
   -> interp cs (![P] (stn, st) ---> [| goodSize (length ls) |])%PropX.
+Proof using .
   intros; unfold goodSize.
   eapply Imply_trans.
   eapply containsArray_boundx; eauto.
@@ -636,6 +686,7 @@ Theorem le_goodSize : forall n m,
   -> goodSize n
   -> goodSize m
   -> natToW n <= natToW m.
+Proof using .
   unfold goodSize, natToW, W; generalize 32; intros; nomega.
 Qed.
 
@@ -644,6 +695,7 @@ Theorem lt_goodSize' : forall n m,
   -> goodSize n
   -> goodSize m
   -> (n < m)%nat.
+Proof using .
   unfold goodSize, natToW, W; generalize 32; intros.
   pre_nomega.
   repeat rewrite wordToNat_natToWord_idempotent in H by nomega.

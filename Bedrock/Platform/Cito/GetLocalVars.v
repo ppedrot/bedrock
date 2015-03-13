@@ -12,6 +12,7 @@ Require Import Bedrock.Platform.Cito.SetoidListFacts.
 Require Import Bedrock.Platform.Cito.GeneralTactics2.
 
 Lemma ret_in_vars : forall arg_vars s r, List.In r (arg_vars ++ get_local_vars s arg_vars r).
+Proof using .
   intros; apply List.in_or_app.
   destruct (List.In_dec String.string_dec r arg_vars); try solve [intuition]; intros.
   right.

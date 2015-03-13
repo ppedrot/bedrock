@@ -79,6 +79,7 @@ Definition m := bmodule "array8" {{
 }}.
 
 Lemma rt1 : wordToNat (natToW 1) = 1.
+Proof using .
   reflexivity.
 Qed.
 
@@ -87,12 +88,14 @@ Hint Rewrite rt1 : N.
 Lemma updown : forall (x : W) y,
   natToW 0 < x
   -> y + 1 + wordToNat (x ^- natToW 1) = y + wordToNat x.
+Proof using .
   intros; rewrite wordToNat_wminus; nomega.
 Qed.
 
 Hint Rewrite updown using assumption : sepFormula.
 
 Lemma natToW_wordToNat : forall w : W, natToW (wordToNat w) = w.
+Proof using .
   apply natToWord_wordToNat.
 Qed.
 
@@ -103,6 +106,7 @@ Lemma goodBound : forall (x y u : W) n,
   -> natToW 0 < y
   -> n = wordToNat u
   -> x < natToW n.
+Proof using .
   intros; subst; nomega.
 Qed.
 

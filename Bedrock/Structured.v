@@ -12,12 +12,14 @@ Local Open Scope N_scope.
 Lemma nth_error_bound : forall A x (ls : list A) n,
   nth_error ls n = Some x
   -> (n < length ls)%nat.
+Proof using .
   induction ls; destruct n; simpl; intuition; discriminate.
 Qed.
 
 Lemma nth_error_bound' : forall A x (ls : list A) n,
   nth_error ls (nat_of_N n) = Some x
   -> n < N_of_nat (length ls).
+Proof using .
   intros; apply nth_error_bound in H; nomega.
 Qed.
 

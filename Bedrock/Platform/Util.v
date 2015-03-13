@@ -4,6 +4,7 @@ Require Import Coq.Arith.Arith Bedrock.Bedrock Bedrock.sep.Locals Coq.Lists.List
 Lemma wordToNat_wminus : forall sz (w u : word sz),
   u <= w
   -> wordToNat (w ^- u) = wordToNat w - wordToNat u.
+Proof using .
   intros.
   eapply natToWord_inj; try eapply wordToNat_bound.
   2: generalize (wordToNat_bound w); omega.
@@ -28,6 +29,7 @@ Qed.
 Hint Rewrite wordToNat_wminus using assumption : sepFormula.
 
 Lemma Nle_out : forall n m, (n <= m)%N -> (N.to_nat n <= N.to_nat m)%nat.
+Proof using .
   intros; apply N.lt_eq_cases in H; intuition.
   apply Nlt_out in H0; auto.
 Qed.
@@ -35,6 +37,7 @@ Qed.
 Lemma wordToNat_wplus : forall (w u : W),
   goodSize (wordToNat w + wordToNat u)
   -> wordToNat (w ^+ u) = wordToNat w + wordToNat u.
+Proof using .
   intros.
   rewrite wplus_alt; unfold wplusN, wordBinN.
   apply wordToNat_natToWord_idempotent; auto.
@@ -43,6 +46,7 @@ Qed.
 Lemma wordToNat_wmult : forall (w u : W),
   goodSize (wordToNat w * wordToNat u)
   -> wordToNat (w ^* u) = wordToNat w * wordToNat u.
+Proof using .
   intros.
   rewrite wmult_alt; unfold wmultN, wordBinN.
   apply wordToNat_natToWord_idempotent; auto.
@@ -51,6 +55,7 @@ Qed.
 Lemma wle_le : forall (n sz : W),
   n <= sz
   -> (wordToNat n <= wordToNat sz)%nat.
+Proof using .
   intros; destruct (le_lt_dec (wordToNat n) (wordToNat sz)); auto.
   elimtype False; apply H.
   nomega.
@@ -60,6 +65,7 @@ Local Hint Resolve simplify_fwd.
 
 Lemma subst_qspecOut_fwd' : forall pc state (specs : codeSpec pc state) A B v v' qs (k : _ -> propX _ _ (A :: B :: nil)),
   interp specs (subst (subst (qspecOut qs k) v) v' ---> qspecOut qs (fun x => subst (subst (k x) v) v')).
+Proof using .
   induction qs; simpl; intros.
   apply Imply_refl.
   apply Imply_I.
@@ -75,11 +81,13 @@ Qed.
 Lemma subst_qspecOut_fwd : forall pc state (specs : codeSpec pc state) A v qs (k : _ -> propX _ _ (A :: nil)),
   interp specs (subst (qspecOut qs k) v)
   -> interp specs (qspecOut qs (fun x => subst (k x) v)).
+Proof using .
   induction qs; propxFo; eauto.
 Qed.
 
 Lemma subst_qspecOut_bwd' : forall pc state (specs : codeSpec pc state) A B v v' qs (k : _ -> propX _ _ (A :: B :: nil)),
   interp specs (qspecOut qs (fun x => subst (subst (k x) v) v') ---> subst (subst (qspecOut qs k) v) v').
+Proof using .
   induction qs; simpl; intros.
   apply Imply_refl.
   apply Imply_I.
@@ -95,6 +103,7 @@ Qed.
 Lemma subst_qspecOut_bwd : forall pc state (specs : codeSpec pc state) A v qs (k : _ -> propX _ _ (A :: nil)),
   interp specs (qspecOut qs (fun x => subst (k x) v))
   -> interp specs (subst (qspecOut qs k) v).
+Proof using .
   induction qs; propxFo; eauto.
 Qed.
 
@@ -112,6 +121,7 @@ Fixpoint qspecOut' (qs : qspec) : domain qs -> HProp :=
 
 Lemma qspecOut_fwd' : forall (specs : codeSpec W (settings * state)) qs k,
   interp specs (qspecOut qs k ---> Ex v : domain qs, k (qspecOut' qs v))%PropX.
+Proof using .
   induction qs; simpl; intros.
   apply Imply_I; apply Exists_I with tt; apply Env; simpl; tauto.
   apply Imply_I; eapply Exists_E; [ apply Env; simpl; tauto | ].
@@ -128,11 +138,13 @@ Qed.
 Lemma qspecOut_fwd : forall (specs : codeSpec W (settings * state)) qs k,
   interp specs (qspecOut qs k)
   -> exists v : domain qs, interp specs (k (qspecOut' qs v)).
+Proof using .
   intros; apply (Imply_sound (qspecOut_fwd' _ _ _)) in H; propxFo; eauto.
 Qed.
 
 Lemma qspecOut_bwd' : forall (specs : codeSpec W (settings * state)) qs k v,
   interp specs (k (qspecOut' qs v) ---> qspecOut qs k).
+Proof using .
   induction qs; simpl; intros.
   apply Imply_refl.
   destruct v; simpl.
@@ -143,11 +155,13 @@ Qed.
 Lemma qspecOut_bwd : forall (specs : codeSpec W (settings * state)) qs k v,
   interp specs (k (qspecOut' qs v))
   -> interp specs (qspecOut qs k).
+Proof using .
   intros; eapply (Imply_sound (qspecOut_bwd' _ _ _ _)); eauto.
 Qed.
 
 Lemma qspecOut_bwd'' : forall (specs : codeSpec W (settings * state)) qs k,
   interp specs ((Ex v, k (qspecOut' qs v)) ---> qspecOut qs k)%PropX.
+Proof using .
   intros.
   apply Imply_I.
   eapply Exists_E; [ apply Env; simpl; eauto | ].
@@ -174,6 +188,7 @@ Theorem localsInvariant_in : forall ns' pre post ns res ns'' res' stn_st specs,
   -> post vs1 = post vs2)
   -> interp specs (localsInvariant pre post true (fun w => w)
     ns'' res' stn_st).
+Proof using .
   post; subst.
   apply subst_qspecOut_fwd in H.
   apply qspecOut_fwd in H.
@@ -260,6 +275,7 @@ Theorem localsInvariant_inEx : forall specs A p q p',
     (Ex x : A, p st' x)
     /\ q st')%PropX
   -> interp (pc := W) (state := settings * state) specs (Ex x : A, p' x).
+Proof using .
   propxFo.
   exists x0.
   apply simplify_fwd.
@@ -270,6 +286,7 @@ Qed.
 Lemma word_le : forall sz (u v : word sz),
   u = v \/ u < v
   -> u <= v.
+Proof using .
   intuition subst; nomega.
 Qed.
 

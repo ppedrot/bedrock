@@ -1,5 +1,6 @@
 (*
 Lemma star_diff_ptrs : forall specs st p1 p2, interp specs (![p1 =?>1 * p2 =?> 1] st) -> p1 <> p2.
+Proof using .
   rewrite sepFormula_eq.
   propxFo.
   subst.

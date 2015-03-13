@@ -22,6 +22,7 @@ End starL.
 
 Theorem starL_substH : forall A G (P : A-> hpropB G) v ls,
   substH (starL P ls) v = starL (fun x => substH (P x) v) ls.
+Proof using .
   induction ls; simpl; intuition (autorewrite with sepFormula; congruence).
 Qed.
 
@@ -35,6 +36,7 @@ Theorem use_HimpWeak : forall P Q p P' specs,
   interp specs (![P * Q] p)
   -> P ===>* P'
   -> interp specs (![P' * Q] p).
+Proof using .
   rewrite sepFormula_eq; propxFo.
   do 3 esplit; eauto.
   propxFo.
@@ -72,6 +74,7 @@ Lemma propToWord_elim_not1 : forall P b,
   P \is b
   -> b <> 1
   -> ~P.
+Proof using .
   unfold propToWord, IF_then_else; intuition.
 Qed.
 

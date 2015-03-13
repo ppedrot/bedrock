@@ -125,6 +125,7 @@ Local Hint Constructors unfold_here.
 Import MyHttpQ.Httpq.
 
 Theorem httpq_nil : Emp ===> httpq 0.
+Proof using .
   eapply Himp_trans; [ | apply httpq_bwd ].
   apply Himp_ex_c; exists nil.
   sepLemma; step SinglyLinkedList.hints.
@@ -245,6 +246,7 @@ Definition m0 := bimport [[ "buffers"!"bmalloc" @ [bmallocS], "sys"!"abort" @ [a
   }}.
 
 Lemma buf_size_lower'' : (buf_size < Npow2 32)%N.
+Proof using .
   eapply Nlt_trans; [ | apply (Buf_size_upper _ _ _ _ Wf) ].
   specialize (Buf_size_lower _ _ _ _ Wf); intros.
   pre_nomega.
@@ -257,6 +259,7 @@ Lemma buf_size_lower'' : (buf_size < Npow2 32)%N.
 Qed.
 
 Lemma buf_size_lower' : natToW 2 <= NToW buf_size.
+Proof using .
   unfold NToW.
   rewrite NToWord_nat.
   pre_nomega.
@@ -272,6 +275,7 @@ Local Hint Immediate buf_size_lower'.
 Close Scope Sep_scope.
 
 Lemma bsize_in : (wordToNat (NToW buf_size) * 4) = bsize.
+Proof using .
   unfold NToW, bsize.
   rewrite NToWord_nat.
   rewrite N2Nat.inj_mul.
@@ -282,6 +286,7 @@ Lemma bsize_in : (wordToNat (NToW buf_size) * 4) = bsize.
 Qed.
 
 Lemma bsize_roundTrip : wordToNat (natToW bsize) = bsize.
+Proof using .
   apply wordToNat_natToWord_idempotent.
   unfold bsize.
   rewrite N2Nat.id.
@@ -297,6 +302,7 @@ Hint Extern 1 (_ ?X = 0) =>
   end.
 
 Lemma inBounds_nil : forall n, RelDb.inBounds n nil.
+Proof using .
   constructor.
 Qed.
 
@@ -306,6 +312,7 @@ Lemma freeable8_8 : forall p n,
   n = 8
   -> freeable p 2
   -> freeable8 p n.
+Proof using .
   intros; subst; eexists; split; eauto; eauto.
 Qed.
 
@@ -313,6 +320,7 @@ Hint Immediate freeable8_8.
 
 Lemma arrays_begone : forall specs P p q,
   himp specs P (P * (array nil p * array nil q))%Sep.
+Proof using .
   unfold array; sepLemma.
 Qed.
 
@@ -321,6 +329,7 @@ Hint Immediate arrays_begone.
 Lemma bsize_bound : forall w : W,
   w <= natToW bsize
   -> (wordToNat w <= bsize)%nat.
+Proof using .
   intros.
   nomega.
 Qed.
@@ -340,6 +349,7 @@ Ltac t :=
 Ltac u := abstract t.
 
 Theorem ok0 : moduleOk m0.
+Proof using .
   vcgen; abstract t.
 Qed.
 

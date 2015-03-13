@@ -257,7 +257,7 @@ End canceller.
 Lemma ignore_regs : forall p specs stn st rs,
   interp specs (![ p ] (stn, st))
   -> interp specs (![ p ] (stn, {| Regs := rs; Mem := Mem st |})).
-Proof.
+Proof using .
   rewrite sepFormula_eq; auto.
 Qed.
 
@@ -265,7 +265,7 @@ Lemma interp_interp_himp : forall cs P Q stn_st,
   interp cs (![ P ] stn_st) ->
   (himp cs P Q) ->
   interp cs (![ Q ] stn_st).
-Proof.
+Proof using .
   unfold himp. intros. destruct stn_st.
   rewrite sepFormula_eq in *. unfold sepFormula_def in *. simpl in *.
   eapply Imply_E; eauto.
@@ -274,7 +274,7 @@ Qed.
 Theorem change_Imply_himp : forall (specs : codeSpec W (settings * state)) p q s,
   himp specs p q
   -> interp specs (![p] s ---> ![q] s)%PropX.
-Proof.
+Proof using .
   rewrite sepFormula_eq.
   unfold himp, sepFormula_def.
   eauto.
@@ -299,6 +299,7 @@ Require Import Bedrock.ReifyIL.
 Lemma Some_cong : forall A (x y : A),
   x = y
   -> Some x = Some y.
+Proof using .
   congruence.
 Qed.
 

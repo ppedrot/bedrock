@@ -469,7 +469,7 @@ Lemma const_folding_expr_correct_list :
   forall es m local,
     agree_with local m ->
     List.map (fun e => eval local (const_folding_expr e m)) es = List.map (eval local) es.
-Proof.
+Proof using .
   induction es; simpl; intuition; rewrite_expr; f_equal; eauto.
 Qed.
 

@@ -69,6 +69,7 @@ Lemma four_plus_variablePosition : forall x ns',
   ~In "rp" ns'
   -> In x ns'
   -> 4 + variablePosition ns' x = variablePosition ("rp" :: ns') x.
+Proof using .
   unfold variablePosition at 2; intros.
   destruct (string_dec "rp" x); auto; subst; tauto.
 Qed.
@@ -142,6 +143,7 @@ Theorem scratchOnlySp : forall stn st' is st,
   scratchOnly is
   -> evalInstrs stn st is = Some st'
   -> Regs st' Sp = Regs st Sp.
+Proof using .
   induction is as [ | [ [ ] | [ ] ] ]; simpl; intuition; matcher; try congruence;
     erewrite IHis by eassumption; apply rupd_ne; auto.
 Qed.
@@ -150,6 +152,7 @@ Theorem scratchOnlyMem : forall stn st' is st,
   scratchOnly is
   -> evalInstrs stn st is = Some st'
   -> Mem st' = Mem st.
+Proof using .
   induction is as [ | [ [ ] | [ ] ] ]; simpl; intuition; matcher; try congruence;
     erewrite IHis by eassumption; reflexivity.
 Qed.
@@ -158,6 +161,7 @@ Theorem sepFormula_Mem : forall specs stn st st' P,
   interp specs (![P] (stn, st))
   -> Mem st' = Mem st
   -> interp specs (![P] (stn, st')).
+Proof using .
   rewrite sepFormula_eq; unfold sepFormula_def; simpl; intros; congruence.
 Qed.
 
@@ -173,6 +177,7 @@ Theorem splessSp : forall stn st' is st,
   spless is
   -> evalInstrs stn st is = Some st'
   -> Regs st' Sp = Regs st Sp.
+Proof using .
   induction is as [ | [ [ ] | [ ] ] ]; simpl; intuition; matcher; try congruence;
     erewrite IHis by eassumption; simpl; try rewrite rupd_ne by auto; auto.
 Qed.
@@ -181,6 +186,7 @@ Theorem spless_app : forall is1 is2,
   spless is1
   -> spless is2
   -> spless (is1 ++ is2).
+Proof using .
   induction is1 as [ | [ ] ]; simpl; intuition;
     destruct l; intuition.
 Qed.
@@ -189,6 +195,7 @@ Lemma evalInstrs_app_fwd_None : forall stn is2 is1 st,
   evalInstrs stn st (is1 ++ is2) = None
   -> evalInstrs stn st is1 = None
   \/ (exists st', evalInstrs stn st is1 = Some st' /\ evalInstrs stn st' is2 = None).
+Proof using .
   induction is1; simpl; intuition eauto.
   destruct (evalInstr stn st a); eauto.
 Qed.
@@ -197,18 +204,21 @@ Lemma evalInstrs_app_fwd : forall stn is2 st' is1 st,
   evalInstrs stn st (is1 ++ is2) = Some st'
   -> exists st'', evalInstrs stn st is1 = Some st''
     /\ evalInstrs stn st'' is2 = Some st'.
+Proof using .
   induction is1; simpl; intuition eauto.
   destruct (evalInstr stn st a); eauto; discriminate.
 Qed.
 
 Lemma evalInstr_evalInstrs : forall stn st i,
   evalInstr stn st i = evalInstrs stn st (i :: nil).
+Proof using .
   simpl; intros; destruct (evalInstr stn st i); auto.
 Qed.
 
 Lemma evalAssign_rhs : forall stn st lv rv rv',
   evalRvalue stn st rv = evalRvalue stn st rv'
   -> evalInstr stn st (Assign lv rv) = evalInstr stn st (Assign lv rv').
+Proof using .
   simpl; intros.
   rewrite H; reflexivity.
 Qed.

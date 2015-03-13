@@ -10,16 +10,19 @@ Fixpoint upd_sublist big base small :=
   end.
 
 Lemma length_updN : forall a b c, length (updN a b c) = length a.
+Proof using .
   induction a; simpl; intuition.
   destruct b; simpl; auto.
 Qed.
 
 Lemma length_upd_sublist' : forall b a n, length (upd_sublist a n b) = length a.
+Proof using .
   induction b; simpl; intuition.
   rewrite IHb.
   apply length_updN.
 Qed.
 
 Lemma length_upd_sublist : forall a n b, length (upd_sublist a n b) = length a.
+Proof using .
   auto using length_upd_sublist'.
 Qed.

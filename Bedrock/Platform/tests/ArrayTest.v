@@ -161,6 +161,7 @@ Hint Resolve final_bound.
 Lemma reveal_middle' : forall (ls1 ls2 : list B),
   (length ls1 < length (ls1 ++ ls2))%nat
   -> exists x, exists ls2', ls2 = x :: ls2'.
+Proof using .
   intros; rewrite app_length in *.
   assert (length ls2 <> 0) by omega.
   destruct ls2; simpl in *; intuition eauto.
@@ -191,6 +192,7 @@ Hint Rewrite DepList.pf_list_simpl : sepFormula.
 
 Lemma length_addendum : forall A (x : A) ls,
   length (ls ++ x :: nil) = length ls + 1.
+Proof using .
   intros; rewrite app_length; auto.
 Qed.
 

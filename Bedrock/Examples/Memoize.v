@@ -172,6 +172,7 @@ Qed.
 Lemma switchUp : forall specs P Q R,
   himp specs P R
   -> himp specs (P * Q)%Sep (Q * R)%Sep.
+Proof using .
   intros; etransitivity; [ apply himp_star_comm | ]; apply himp_star_frame; auto; reflexivity.
 Qed.
 

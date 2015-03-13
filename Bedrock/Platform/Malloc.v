@@ -16,10 +16,12 @@ Definition freeable (p : W) (sz : nat) := (sz >= 2)%nat
   /\ noWrapAround p sz.
 
 Lemma BigEnough : forall p sz, freeable p sz -> (sz >= 2)%nat.
+Proof using .
   unfold freeable; tauto.
 Qed.
 
 Lemma SmallEnough : forall p sz, freeable p sz -> noWrapAround p sz.
+Proof using .
   unfold freeable; tauto.
 Qed.
 
@@ -119,18 +121,21 @@ Ltac expose := intros w ?; case_eq (wordToNat w); [ intro Heq;
 Lemma expose2N : forall n,
   (n >= 2)%nat
   -> exists n', n = S (S n').
+Proof using .
   destruct n as [ | [ | ] ]; eauto; intros; omega.
 Qed.
 
 Lemma expose2' : forall w : W,
   $2 <= w
   -> exists n', wordToNat w = S (S n').
+Proof using .
   expose.
 Qed.
 
 Lemma expose3' : forall (w : W),
   w >= $3
   -> exists n, wordToNat w = S (S (S n)).
+Proof using .
   expose.
 Qed.
 
@@ -354,6 +359,7 @@ Local Hint Extern 5 (_ <= _)%nat => omega.
 Lemma three_le : forall w : W,
   $3 <= w
   -> (wordToNat w >= 3)%nat.
+Proof using .
   intros; destruct (le_lt_dec (wordToNat w) 3); auto.
   pre_nomega.
   change (wordToNat (natToWord _ 3)) with 3 in H.
@@ -364,6 +370,7 @@ Lemma noWrapAround_plus4 : forall p (sz : W),
   noWrapAround p (wordToNat sz - 1)
   -> $3 <= sz
   -> p <> $0.
+Proof using .
   intros.
   intro.
   eapply H.
@@ -377,6 +384,7 @@ Lemma noWrapAround_weaken : forall p sz p' sz',
   -> (sz' <= sz)%nat
   -> p' = p ^+ $ (4 * (sz - sz'))
   -> noWrapAround p' sz'.
+Proof using .
   unfold noWrapAround; intros; subst.
   intro.
   rewrite <- wplus_assoc in H1.
@@ -391,6 +399,7 @@ Local Hint Extern 1 (noWrapAround _ _) =>
 Lemma weq_cong : forall (w : W) n m,
   n = m
   -> w ^+ $ (n) = w ^+ $ (m).
+Proof using .
   intros; subst; W_eq.
 Qed.
 
@@ -398,6 +407,7 @@ Lemma weq_0 : forall (w w' : W) n,
   w = w'
   -> n = 0
   -> w = w' ^+ $ (n).
+Proof using .
   intros; subst; W_eq.
 Qed.
 
@@ -406,6 +416,7 @@ Local Hint Resolve weq_0 weq_cong.
 Lemma two_ge : forall w : W,
   (wordToNat w >= 2)%nat
   -> w >= $2.
+Proof using .
   intros.
   intro.
   red in H0.
@@ -417,6 +428,7 @@ Qed.
 Lemma wminus0 : forall (w : W),
   (wordToNat w >= 2)%nat
   -> wordToNat (w ^- $2) = wordToNat w - 2.
+Proof using .
   intros; rewrite wordToNat_wminus; auto.
   apply two_ge; auto.
 Qed.
@@ -427,6 +439,7 @@ Lemma sub2 : forall w w' : W,
   w' ^+ $2 = w
   -> $2 <= w
   -> wordToNat w - 2 = wordToNat w'.
+Proof using .
   intros; apply (f_equal (fun x => x ^- $2)) in H.
   replace (w' ^+ $2 ^- $2) with w' in H by W_eq.
   subst.
@@ -436,6 +449,7 @@ Qed.
 Lemma two_le : forall w : W,
   $2 <= w
   -> (2 <= wordToNat w)%nat.
+Proof using .
   intros.
   destruct (le_lt_dec 2 (wordToNat w)); auto.
   elimtype False; apply H.
@@ -446,6 +460,7 @@ Qed.
 
 Lemma four_times_wordToNat : forall w : W,
   $ (4 * wordToNat w) = $4 ^* w.
+Proof using .
   intros; rewrite wmult_alt; auto.
 Qed.
 
@@ -453,11 +468,13 @@ Lemma noWrapAround_weaken' : forall p sz sz',
   noWrapAround p sz
   -> (sz' <= sz)%nat
   -> noWrapAround p sz'.
+Proof using .
   unfold noWrapAround; auto.
 Qed.
 
 Lemma the_ole_switcheroo : forall a b : W,
   a ^+ natToW 8 ^+ $ (4 * wordToNat b) = a ^+ natToW 4 ^* (b ^+ natToW 2) ^+ $0.
+Proof using .
   intros; replace (natToW 4 ^* (b ^+ natToW 2)) with ($4 ^* b ^+ $8) by words;
     rewrite four_times_wordToNat; words.
 Qed.
@@ -467,6 +484,7 @@ Lemma noWrapAround_merge_before : forall p n cur (sz : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> p ^+ natToW 4 ^* n = cur
   -> noWrapAround p (S (S (wordToNat sz + wordToNat n))).
+Proof using .
   unfold noWrapAround in *; intros; subst.
 
   destruct (le_lt_dec (4 * wordToNat n) n0); auto.
@@ -504,6 +522,7 @@ Ltac deS := repeat deS1.
 Lemma allocatedSS : forall base offset len,
   (Ex v1, Ex v2, (base ^+ natToW offset) =*> v1 * (base ^+ natToW offset ^+ $4) =*> v2 * allocated base (8 + offset) len)
   ===> allocated base offset (S (S len)).
+Proof using .
   sepLemma; destruct offset; sepLemma.
 
   match goal with
@@ -514,6 +533,7 @@ Lemma allocatedSS : forall base offset len,
 Qed.
 
 Lemma goodSize_dec : forall n, {goodSize n} + {~goodSize n}.
+Proof using .
   Transparent goodSize.
   unfold goodSize, Nlt; intros.
   destruct (N.of_nat n ?= Npow2 32)%N; auto; right; discriminate.
@@ -521,6 +541,7 @@ Lemma goodSize_dec : forall n, {goodSize n} + {~goodSize n}.
 Qed.
 
 Lemma not_goodSize : forall n, ~goodSize n -> (n >= pow2 32)%nat.
+Proof using .
   Transparent goodSize.
   unfold goodSize; intros.
   generalize dependent 32; intro sz; intros.
@@ -537,6 +558,7 @@ Lemma noWrapAround_goodSize' : forall p (n : W) cur (sz : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> p ^+ natToW 4 ^* n = cur
   -> goodSize (4 * (wordToNat sz + wordToNat n)).
+Proof using .
   intros; assert (noWrapAround p (S (S (wordToNat sz + wordToNat n)))) by eauto.
   destruct (goodSize_dec (4 * (wordToNat sz + wordToNat n))); auto.
   clear H H0.
@@ -557,6 +579,7 @@ Lemma noWrapAround_goodSize : forall p (n : W) cur (sz : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> p ^+ natToW 4 ^* n = cur
   -> goodSize (wordToNat sz + wordToNat n).
+Proof using .
   intros; eapply goodSize_weaken; [ eapply noWrapAround_goodSize'; eauto | omega ].
 Qed.
 
@@ -567,6 +590,7 @@ Lemma noWrapAround_merge_after : forall p (n : W) cur (sz : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> cur ^+ natToW 4 ^* sz ^+ natToW 8 = p
   -> noWrapAround cur (S (S (wordToNat sz + wordToNat n))).
+Proof using .
   unfold noWrapAround in *; intros; subst.
 
   destruct (le_lt_dec (4 * S (S (wordToNat sz))) n0); auto.
@@ -590,6 +614,7 @@ Lemma noWrapAround_after_goodSize' : forall p (n : W) cur (sz : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> cur ^+ natToW 4 ^* sz ^+ natToW 8 = p
   -> goodSize (4 * (wordToNat sz + wordToNat n)).
+Proof using .
   intros; assert (noWrapAround cur (S (S (wordToNat sz + wordToNat n)))) by eauto.
   destruct (goodSize_dec (4 * (wordToNat sz + wordToNat n))); auto.
   clear H H0.
@@ -609,6 +634,7 @@ Lemma noWrapAround_after_goodSize : forall p (n : W) cur (sz : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> cur ^+ natToW 4 ^* sz ^+ natToW 8 = p
   -> goodSize (wordToNat sz + wordToNat n).
+Proof using .
   intros; eapply goodSize_weaken; [ eapply noWrapAround_after_goodSize'; eauto | omega ].
 Qed.
 
@@ -620,6 +646,7 @@ Lemma noWrapAround_merge_middle : forall p (n : W) cur (sz sz' : W),
   -> noWrapAround (p ^+ natToW 4 ^* n) (S (S (wordToNat sz')))
   -> cur ^+ natToW 4 ^* sz ^+ natToW 8 = p
   -> noWrapAround cur (S (S (wordToNat sz' + wordToNat n + 2 + wordToNat sz))).
+Proof using .
   unfold noWrapAround in *; intros; subst.
 
   destruct (le_lt_dec (4 * S (S (wordToNat sz))) n0); auto.
@@ -666,6 +693,7 @@ Lemma noWrapAround_middle_goodSize' : forall p (n : W) cur (sz sz' : W),
   -> noWrapAround (p ^+ natToW 4 ^* n) (S (S (wordToNat sz')))
   -> cur ^+ natToW 4 ^* sz ^+ natToW 8 = p
   -> goodSize (4 * (wordToNat sz + wordToNat n + wordToNat (natToW 2) + wordToNat sz')).
+Proof using .
   change (wordToNat (natToW 2)) with 2.
   intros; assert (noWrapAround cur (S (S (wordToNat sz' + wordToNat n + 2 + wordToNat sz)))) by eauto.
   destruct (goodSize_dec (4 * (wordToNat sz + wordToNat n + 2 + wordToNat sz'))); auto.
@@ -687,6 +715,7 @@ Lemma noWrapAround_middle_goodSize : forall p (n : W) cur (sz sz' : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> cur ^+ natToW 4 ^* sz ^+ natToW 8 = p
   -> goodSize (wordToNat sz' + wordToNat n + wordToNat (natToW 2) + wordToNat sz).
+Proof using .
   intros; replace (wordToNat sz' + wordToNat n + wordToNat (natToW 2) + wordToNat sz)
     with (wordToNat sz + wordToNat n + wordToNat (natToW 2) + wordToNat sz') by omega.
   eapply goodSize_weaken; [ eapply noWrapAround_middle_goodSize'; try apply H; eauto | omega ].
@@ -698,12 +727,14 @@ Lemma noWrapAround_middle_goodSize_less : forall p (n : W) cur (sz sz' : W),
   -> noWrapAround cur (S (S (wordToNat sz)))
   -> noWrapAround p (wordToNat n)
   -> goodSize (wordToNat sz' + wordToNat n + wordToNat (natToW 2)).
+Proof using .
   intros; eapply goodSize_weaken; [ eapply noWrapAround_middle_goodSize; eauto | omega ].
 Qed.
 
 Local Hint Immediate noWrapAround_middle_goodSize noWrapAround_middle_goodSize_less.
 
 Lemma tickle : forall n, (n >= 2)%nat -> S (S (n - 2)) = n.
+Proof using .
   intros; omega.
 Qed.
 

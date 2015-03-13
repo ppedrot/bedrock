@@ -14,18 +14,22 @@ Fixpoint gen_ns n :=
   end.
 
 Lemma gen_ns_len : forall n, length (gen_ns n) = n.
+Proof using .
   induction n; simpl; intuition.
 Qed.
 
 Lemma gen_str_inj : forall a b, gen_str a = gen_str b -> a = b.
+Proof using .
   induction a; induction b; simpl; intuition.
 Qed.
 
 Lemma fold_gen_str : forall n, String "0" (gen_str n) = gen_str (S n).
+Proof using .
   eauto.
 Qed.
 
 Lemma longer_str_not_in : forall r n, (n <= r)%nat -> ~ List.In (gen_str r) (gen_ns n).
+Proof using .
   induction r; induction n; simpl; intuition.
   rewrite fold_gen_str in *.
   eapply gen_str_inj in H1.
@@ -36,6 +40,7 @@ Hint Resolve longer_str_not_in.
 Hint Constructors NoDup.
 
 Lemma gen_ns_NoDup : forall n, NoDup (gen_ns n).
+Proof using .
   induction n; simpl; intuition.
 Qed.
 
@@ -47,6 +52,7 @@ Proof using .
 Qed.
 
 Lemma buf_2_fwd : forall p len, (2 <= len)%nat -> p =?> len ===> p =?> 2 * (p ^+ $8) =?> (len - 2).
+Proof using .
   destruct len; simpl; intros; try omega.
   destruct len; simpl; intros; try omega.
   sepLemma; eapply allocated_shift_base; [ words | intuition ].

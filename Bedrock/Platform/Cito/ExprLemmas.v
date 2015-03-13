@@ -1,12 +1,15 @@
 Require Import Bedrock.Platform.AutoSep Coq.omega.Omega.
 
 Lemma S_le_lt : forall a b c, (a + S b <= c -> a < c)%nat.
+Proof using .
   intros; omega.
 Qed.
 Lemma lt_goodSize'' : forall a b, (a < b)%nat -> goodSize b -> natToW a < natToW b.
+Proof using .
   intros; apply lt_goodSize; auto; eapply goodSize_weaken; eauto.
 Qed.
 Lemma max_le_1 : forall b d1 d2 n, (b + S (max d1 d2) <= n -> b + d1 <= n)%nat.
+Proof using .
   intros.
   eapply (Le.le_trans _ _ _ _ H).
   Grab Existential Variables.
@@ -15,6 +18,7 @@ Lemma max_le_1 : forall b d1 d2 n, (b + S (max d1 d2) <= n -> b + d1 <= n)%nat.
   eapply Max.le_max_l.
 Qed.
 Lemma max_le_2 : forall b d1 d2 n, (b + S (max d1 d2) <= n -> S b + d2 <= n)%nat.
+Proof using .
   intros.
   simpl.
   eapply (Le.le_trans _ _ _ _ H).
@@ -25,22 +29,27 @@ Lemma max_le_2 : forall b d1 d2 n, (b + S (max d1 d2) <= n -> S b + d2 <= n)%nat
   eapply Max.le_max_r.
 Qed.
 Lemma selN_updN : forall ls n v, (n < length ls)%nat -> selN (updN ls n v) n = v.
+Proof using .
   induction ls; induction n; simpl; intuition.
 Qed.
 Lemma sel_upd : forall n ls v, (n < length ls)%nat -> goodSize (length ls) -> Array.sel (Array.upd ls (natToW n) v) (natToW n) = v.
+Proof using .
   intros; rewrite sel_selN; try (eapply goodSize_weaken; eauto).
   rewrite upd_updN; try (eapply goodSize_weaken; eauto).
   apply selN_updN; auto.
 Qed.
 Lemma sel_firstn' : forall ls1 ls2 n, (n < length ls1 -> length ls1 = length ls2 -> firstn (S n) ls1 = firstn (S n) ls2 -> selN ls1 n = selN ls2 n)%nat.
+Proof using .
   induction ls1; induction ls2; induction n; simpl; intuition.
   apply IHls1; simpl in *; intuition.
 Qed.
 Lemma sel_firstn : forall ls1 ls2 n, (n < length ls1 -> length ls1 = length ls2 -> firstn (S n) ls1 = firstn (S n) ls2 -> goodSize (length ls1) -> Array.sel ls1 (natToW n) = Array.sel ls2 (natToW n))%nat.
+Proof using .
   intros; repeat rewrite sel_selN; try (eapply goodSize_weaken; eauto).
   eapply sel_firstn'; eauto.
 Qed.
 Lemma sel_upd_firstn : forall n ls1 ls2 v, (n < length ls1)%nat -> length ls1 = length ls2 -> goodSize (length ls1) -> firstn (S n) ls1 = firstn (S n) (Array.upd ls2 (natToW n) v) -> Array.sel ls1 (natToW n) = v.
+Proof using .
   intros.
   erewrite sel_firstn.
   Focus 4.
@@ -54,16 +63,19 @@ Lemma sel_upd_firstn : forall n ls1 ls2 v, (n < length ls1)%nat -> length ls1 = 
   auto.
 Qed.
 Lemma firstn_S : forall A n (ls1 ls2 : list A), (n < length ls1)%nat -> length ls1 = length ls2 -> firstn (S n) ls1 = firstn (S n) ls2 -> firstn n ls1 = firstn n ls2.
+Proof using .
   intros.
   rewrite <- removelast_firstn; try congruence.
   rewrite H1.
   apply removelast_firstn; congruence.
 Qed.
 Lemma upd_firstn : forall ls n v, firstn n (updN ls n v) = firstn n ls.
+Proof using .
   induction ls; induction n; simpl; intuition.
 Qed.
 Hint Immediate upd_firstn.
 Lemma firstn_S_upd : forall n ls1 ls2 v, (n < length ls2)%nat -> length ls1 = length ls2 -> goodSize (length ls1) -> firstn (S n) ls1 = firstn (S n) (Array.upd ls2 (natToW n) v) -> firstn n ls1 = firstn n ls2.
+Proof using .
   clear.
   intros.
   apply firstn_S in H2; try rewrite upd_length; try congruence.
@@ -75,6 +87,7 @@ Qed.
 Lemma evalInstrs_cons_fwd : forall i is stn st st_new,
   evalInstrs stn st (i :: is) = Some st_new -> exists st',
     evalInstr stn st i = Some st' /\ evalInstrs stn st' is = Some st_new.
+Proof using .
   Transparent evalInstrs.
   simpl; intros.
   destruct (evalInstr stn st i); try discriminate.
@@ -90,6 +103,7 @@ Lemma evalInstrs_cons_fwd_None : forall (stn : settings) i (is1 : list instr) (s
   evalInstr stn st i = None \/
   (exists st' : state,
     evalInstr stn st i = Some st' /\ evalInstrs stn st' is1 = None).
+Proof using .
   intros; rewrite evalInstr_evalInstrs in *.
   apply evalInstrs_app_fwd_None. auto.
 Qed.

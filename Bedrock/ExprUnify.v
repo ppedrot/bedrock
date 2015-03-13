@@ -175,7 +175,7 @@ Inductive R_expr (ts : list type) : expr ts -> expr ts -> Prop :=
   In arg args -> R_expr arg (Func f args).
 
 Lemma wf_R_expr' ts : well_founded (@R_expr ts).
-Proof.
+Proof using .
   red; induction a; constructor; inversion 1; try assumption.
 
   subst. clear H0. generalize dependent y. generalize dependent l. clear.
@@ -185,7 +185,7 @@ Proof.
 Defined.
 
 Lemma wf_R_expr ts : well_founded (@R_expr ts).
-Proof.
+Proof using .
   let v := eval cbv beta iota zeta delta [ wf_R_expr' list_ind list_rec list_rect eq_ind eq_ind_r eq_rect eq_sym expr_ind ] in (@wf_R_expr' ts) in
   exact  v.
 Defined.

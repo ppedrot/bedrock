@@ -6,6 +6,7 @@ Set Implicit Arguments.
 Lemma wordToNat_positive : forall w : W,
   ($0 < w)%word
   -> wordToNat w = S (wordToNat (w ^- $1)).
+Proof using .
   intros.
   replace (wordToNat w) with (wordToNat ($1 ^+ (w ^- $1))) by (f_equal; words).
   rewrite wordToNat_wplus; auto.

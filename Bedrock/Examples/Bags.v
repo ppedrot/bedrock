@@ -5,6 +5,7 @@ Require Import Bedrock.Examples.AutoSep Bedrock.Examples.Malloc.
 Definition bag := W * W -> nat.
 
 Theorem W_W_dec : forall x y : W * W, {x = y} + {x <> y}.
+Proof using .
   decide equality; apply weq.
 Qed.
 

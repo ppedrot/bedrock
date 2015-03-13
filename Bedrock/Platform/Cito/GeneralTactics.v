@@ -51,6 +51,7 @@ Ltac sp_solver :=
   end.
 
 Lemma pair_eq: forall A B (a b:A) (c d:B), (a, c) = (b, d) -> a = b /\ c = d.
+Proof using .
   intuition;
   inversion H; auto.
 Qed.

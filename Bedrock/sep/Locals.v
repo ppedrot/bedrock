@@ -22,13 +22,14 @@ Definition ascii_eq (a1 a2 : ascii) : bool :=
 
 Lemma ascii_eq_true : forall a,
   ascii_eq a a = true.
-Proof.
+Proof using .
   destruct a; simpl; intuition.
   repeat rewrite eqb_reflx; reflexivity.
 Qed.
 
 Lemma ascii_eq_false : forall a b,
   a <> b -> ascii_eq a b = false.
+Proof using .
   destruct b, a; simpl; intuition.
   match goal with
     | [ |- ?E = _ ] => case_eq E
@@ -47,12 +48,13 @@ Fixpoint string_eq (s1 s2 : string) : bool :=
   end.
 
 Theorem string_eq_true : forall s,  string_eq s s = true.
-Proof.
+Proof using .
   induction s; simpl; intuition; rewrite ascii_eq_true; assumption.
 Qed.
 
 Theorem string_eq_false : forall s1 s2,
   s1 <> s2 -> string_eq s1 s2 = false.
+Proof using .
   induction s1; destruct s2; simpl; intuition.
   match goal with
     | [ |- ?E = _ ] => case_eq E
@@ -70,7 +72,7 @@ Qed.
 
 Theorem string_eq_correct : forall s1 s2,
   string_eq s1 s2 = true -> s1 = s2.
-Proof.
+Proof using .
   intros; destruct (string_dec s1 s2); subst; auto.
   apply string_eq_false in n; congruence.
 Qed.
@@ -1100,7 +1102,7 @@ Theorem MemEvaluator_correct types' funcs' preds'
   (IL.settings * IL.state) (tvType 0) (tvType 0)
   (@IL_mem_satisfies (types types')) (@IL_ReadWord (types types')) (@IL_WriteWord (types types'))
   (@IL_ReadByte (types types')) (@IL_WriteByte (types types')).
-Proof.
+Proof using .
   intros. eapply (@MemPredEval_To_MemEvaluator_correct (types types')); simpl; intros; try discriminate.
   eapply (@sym_read_correct (types types')); eauto.
   eapply (@sym_write_correct (types types')); eauto.
@@ -1126,14 +1128,14 @@ Definition pack : MEVAL.MemEvaluatorPackage types_r (tvType 0) (tvType 1) (tvTyp
 Theorem sel_upd_eq : forall vs nm v nm',
   nm = nm'
   -> sel (upd vs nm v) nm' = v.
-Proof.
+Proof using .
   unfold sel, upd; intros; subst; rewrite string_eq_true; reflexivity.
 Qed.
 
 Theorem sel_upd_ne : forall vs nm v nm',
   nm <> nm'
   -> sel (upd vs nm v) nm' = sel vs nm'.
-Proof.
+Proof using .
   unfold sel, upd; intros; subst; rewrite string_eq_false; auto.
 Qed.
 
@@ -1149,6 +1151,7 @@ Lemma behold_the_array' : forall p ns,
   NoDup ns
   -> forall offset, allocated p offset (length ns)
     ===> Ex vs, ptsto32m' nil p offset (toArray ns vs).
+Proof using .
   induction 1; simpl length; unfold allocated; fold allocated; intros.
 
   simpl.
@@ -1183,12 +1186,14 @@ Qed.
 
 Theorem Himp_star_Emp : forall P,
   Emp * P ===> P.
+Proof using .
   intros; intro cs.
   destruct (heq_star_emp_l cs P); auto.
 Qed.
 
 Theorem ptsto32m'_out : forall a vs offset,
   ptsto32m' _ a offset vs ===> ptsto32m _ a offset vs.
+Proof using .
   induction vs; intros.
 
   apply Himp_refl.
@@ -1210,6 +1215,7 @@ Qed.
 Theorem Himp_ex : forall T (P Q : T -> _),
   (forall v, P v ===> Q v) ->
   ex P ===> ex Q.
+Proof using .
   intros; intro cs; apply himp_ex; firstorder.
 Qed.
 
@@ -1217,6 +1223,7 @@ Lemma behold_the_array : forall p ns,
   NoDup ns
   -> forall offset, allocated p offset (length ns)
     ===> Ex vs, ptsto32m nil p offset (toArray ns vs).
+Proof using .
   intros.
   eapply Himp_trans; [ apply behold_the_array' | ]; auto.
   apply Himp_ex; intro.
@@ -1229,7 +1236,7 @@ Lemma do_call' : forall ns ns' vs avail avail' p p',
   -> p' = p ^+ natToW (4 * length ns)
   -> NoDup ns'
   -> locals ns vs avail p ===> locals ns vs 0 p * Ex vs', locals ns' vs' avail' p'.
-Proof.
+Proof using .
   intros.
   unfold locals.
   eapply Himp_trans; [ | apply Himp_star_assoc' ].
@@ -1268,7 +1275,7 @@ Lemma expose_avail : forall ns vs avail p expose avail',
   -> avail' = avail - expose
   -> locals ns vs avail p ===> locals ns vs avail' p
   * reserved (p ^+ natToW (4 * (length ns + avail'))) expose.
-Proof.
+Proof using .
   unfold locals; intros.
   eapply Himp_trans; [ | apply Himp_star_assoc' ].
   apply Himp_star_frame.
@@ -1285,6 +1292,7 @@ Qed.
 Theorem Himp_refl' : forall P Q,
   P = Q
   -> P ===> Q.
+Proof using .
   intros; subst; apply Himp_refl.
 Qed.
 
@@ -1298,7 +1306,7 @@ Theorem do_call : forall ns ns' vs avail avail' p p',
   * Ex vs', locals ns' vs' avail' p'
   * reserved (p ^+ natToW (4 * (length ns + length ns' + avail')))
   (avail - length ns' - avail').
-Proof.
+Proof using .
   intros; subst.
   eapply Himp_trans; [ apply do_call' | ]; eauto.
   apply Himp_star_frame; [ apply Himp_refl | ].
@@ -1320,6 +1328,7 @@ Qed.
 
 Lemma ptsto32m'_allocated : forall (p : W) (ls : list W) (offset : nat),
   ptsto32m' nil p offset ls ===> allocated p offset (length ls).
+Proof using .
   induction ls.
 
   intros; apply Himp_refl.
@@ -1338,6 +1347,7 @@ Qed.
 
 Lemma ptsto32m_allocated : forall (p : W) (ls : list W) (offset : nat),
   ptsto32m nil p offset ls ===> allocated p offset (length ls).
+Proof using .
   intros; eapply Himp_trans.
   apply ptsto32m'_in.
   apply ptsto32m'_allocated.
@@ -1347,6 +1357,7 @@ Lemma do_return' : forall ns ns' vs avail avail' p p',
   avail = avail' + length ns'
   -> p' = p ^+ natToW (4 * length ns)
   -> (locals ns vs 0 p * Ex vs', locals ns' vs' avail' p') ===> locals ns vs avail p.
+Proof using .
   unfold locals; intros.
   eapply Himp_trans; [ apply Himp_star_assoc | ].
   apply Himp_star_frame; [ apply Himp_refl | ].
@@ -1373,6 +1384,7 @@ Lemma unexpose_avail : forall ns vs avail p expose avail',
   -> locals ns vs avail' p
   * reserved (p ^+ natToW (4 * (length ns + avail'))) expose
   ===> locals ns vs avail p.
+Proof using .
   unfold locals; intros.
   eapply Himp_trans; [ apply Himp_star_assoc | ].
   apply Himp_star_frame; [ apply Himp_refl | ].
@@ -1391,6 +1403,7 @@ Lemma do_return : forall ns ns' vs avail avail' p p',
     * reserved (p ^+ natToW (4 * (length ns + length ns' + avail')))
     (avail - length ns' - avail'))
     ===> locals ns vs avail p.
+Proof using .
   intros.
   eapply Himp_trans; [ | apply do_return' ].
   3: eassumption.
@@ -1427,13 +1440,13 @@ Lemma Forall_weaken : forall A (P P' : A -> Prop),
   (forall x, P x -> P' x)
   -> forall ls, List.Forall P ls
     -> List.Forall P' ls.
-Proof.
+Proof using .
   induction 2; simpl; intuition.
 Qed.
 
 Theorem merge_agree : forall vs vs' ns,
   agree_on (merge vs vs' ns) vs ns.
-Proof.
+Proof using .
   induction ns; simpl; intuition; constructor.
   unfold sel, upd.
   rewrite string_eq_true; reflexivity.
@@ -1447,13 +1460,13 @@ Qed.
 Lemma NoDup_unapp2 : forall A (ls1 ls2 : list A),
   NoDup (ls1 ++ ls2)
   -> NoDup ls2.
-Proof.
+Proof using .
   induction ls1; inversion 1; simpl in *; intuition.
 Qed.
 
 Lemma toArray_vals_eq : forall vs vs' ns, agree_on vs vs' ns
   -> toArray ns vs = toArray ns vs'.
-Proof.
+Proof using .
   induction ns; simpl; intuition.
   inversion H; clear H; subst.
   f_equal; auto.
@@ -1461,7 +1474,7 @@ Qed.
 
 Lemma agree_on_symm : forall vs vs' nm, agree_on vs vs' nm
   -> agree_on vs' vs nm.
-Proof.
+Proof using .
   intros; eapply Forall_weaken; [ | eauto ].
   intuition.
 Qed.
@@ -1470,7 +1483,7 @@ Lemma Forall_weaken' : forall A (P P' : A -> Prop) ls,
   List.Forall P ls
   -> (forall x, In x ls -> P x -> P' x)
   -> List.Forall P' ls.
-Proof.
+Proof using .
   induction 1; simpl; intuition.
 Qed.
 
@@ -1480,6 +1493,7 @@ Lemma ptsto32m'_merge : forall p vs' ns' ns offset vs vs'',
   -> ptsto32m' nil p offset (toArray ns vs)
   * ptsto32m' nil p (offset + 4 * length ns) (toArray ns' vs')
   ===> ptsto32m' nil p offset (toArray (ns ++ ns') vs'').
+Proof using .
   induction ns; simpl app; intros.
 
   simpl.
@@ -1525,7 +1539,7 @@ Lemma ptsto32m_merge : forall p vs' ns' ns offset vs vs'',
   -> ptsto32m nil p offset (toArray ns vs)
   * ptsto32m nil p (offset + 4 * length ns) (toArray ns' vs')
   ===> ptsto32m nil p offset (toArray (ns ++ ns') vs'').
-Proof.
+Proof using .
   intros.
   eapply Himp_trans.
   apply Himp_star_frame; apply ptsto32m'_in.
@@ -1535,7 +1549,7 @@ Qed.
 
 Lemma agree_on_refl : forall vs ns,
   agree_on vs vs ns.
-Proof.
+Proof using .
   unfold agree_on; induction ns; simpl; intuition.
 Qed.
 
@@ -1543,6 +1557,7 @@ Lemma ptsto32m'_shift_base : forall p n ls offset,
   (n <= offset)%nat
   -> ptsto32m' nil (p ^+ $ (n)) (offset - n) ls
   ===> ptsto32m' nil p offset ls.
+Proof using .
   induction ls.
 
   intros; apply Himp_refl.
@@ -1564,6 +1579,7 @@ Lemma ptsto32m_shift_base : forall p n ls offset,
   (n <= offset)%nat
   -> ptsto32m nil (p ^+ $ (n)) (offset - n) ls
   ===> ptsto32m nil p offset ls.
+Proof using .
   intros; eapply Himp_trans.
   apply ptsto32m'_in.
   eapply Himp_trans.
@@ -1576,6 +1592,7 @@ Theorem prelude_in : forall ns ns' vs avail p,
   -> NoDup (ns ++ ns')
   -> locals ns vs avail p ===>
   Ex vs', locals (ns ++ ns') (merge vs vs' ns) (avail - length ns') p.
+Proof using .
   unfold locals; intros.
   eapply Himp_trans; [ apply Himp_star_assoc | ].
   apply Himp_star_pure_c; intro Hns.
@@ -1624,7 +1641,7 @@ Lemma ptsto32m'_split : forall p ns' ns offset vs,
   ptsto32m' nil p offset (toArray (ns ++ ns') vs)
   ===> ptsto32m' nil p offset (toArray ns vs)
   * ptsto32m' nil p (offset + 4 * length ns) (toArray ns' vs).
-Proof.
+Proof using .
   induction ns.
 
   simpl.
@@ -1647,6 +1664,7 @@ Lemma ptsto32m_split : forall p ns' ns offset vs,
   ptsto32m nil p offset (toArray (ns ++ ns') vs)
   ===> ptsto32m nil p offset (toArray ns vs)
   * ptsto32m nil p (offset + 4 * length ns) (toArray ns' vs).
+Proof using .
   intros; eapply Himp_trans.
   apply ptsto32m'_in.
   eapply Himp_trans.
@@ -1657,6 +1675,7 @@ Qed.
 Lemma NoDup_unapp1 : forall A (ls1 ls2 : list A),
   NoDup (ls1 ++ ls2)
   -> NoDup ls1.
+Proof using .
   induction ls1; inversion 1; simpl in *; intuition; subst; constructor.
   intro; apply H2.
   apply in_or_app; auto.
@@ -1667,6 +1686,7 @@ Lemma ptsto32m'_shift_base' : forall p n ls offset,
   (n <= offset)%nat
   -> ptsto32m' nil p offset ls
   ===> ptsto32m' nil (p ^+ $ (n)) (offset - n) ls.
+Proof using .
   induction ls.
 
   intros; apply Himp_refl.
@@ -1688,6 +1708,7 @@ Lemma ptsto32m_shift_base' : forall p n ls offset,
   (n <= offset)%nat
   -> ptsto32m nil p offset ls
   ===> ptsto32m nil (p ^+ $ (n)) (offset - n) ls.
+Proof using .
   intros; eapply Himp_trans.
   apply ptsto32m'_in.
   eapply Himp_trans.
@@ -1700,6 +1721,7 @@ Theorem prelude_out : forall ns ns' vs avail p,
   (length ns' <= avail)%nat
   -> locals (ns ++ ns') vs (avail - length ns') p
   ===> locals ns vs avail p.
+Proof using .
   unfold locals; intros.
   eapply Himp_trans; [ apply Himp_star_assoc | ].
   apply Himp_star_pure_c; intro Hboth.
@@ -1729,6 +1751,7 @@ Lemma toArray_sel : forall x V V' ns',
   In x ns'
   -> toArray ns' V' = toArray ns' V
   -> sel V' x = sel V x.
+Proof using .
   unfold toArray; induction ns'; simpl; intuition.
   subst.
   injection H0; intros.

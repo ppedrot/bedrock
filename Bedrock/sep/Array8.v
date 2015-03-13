@@ -548,7 +548,7 @@ Theorem MemEvaluator_correct types' funcs' preds'
   (IL.settings * IL.state) (tvType 0) (tvType 0)
   (@IL_mem_satisfies (types types')) (@IL_ReadWord (types types')) (@IL_WriteWord (types types'))
   (@IL_ReadByte (types types')) (@IL_WriteByte (types types')).
-Proof.
+Proof using .
   intros. eapply (@MemPredEval_To_MemEvaluator_correct (types types')); try reflexivity;
   intros; unfold MemEval in *; simpl in *; try discriminate.
   { generalize (@sym_read_correct types' funcs' P PE). simpl in *. intro.

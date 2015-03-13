@@ -8,11 +8,13 @@ Lemma hlist_eta' : forall A (B : A -> Type) b (h : hlist B b),
     | nil => fun _ => True
     | a :: b => fun h => h = HCons (hlist_hd h) (hlist_tl h)
   end h.
+Proof using .
   destruct h; auto.
 Qed.
 
 Theorem hlist_eta : forall A (B : A -> Type) a b (h : hlist B (a :: b)),
   h = HCons (hlist_hd h) (hlist_tl h).
+Proof using .
   intros; apply (hlist_eta' h).
 Qed.
 
@@ -20,6 +22,7 @@ Lemma smem_eta : forall ls (sm sm' : smem' ls),
   NoDup ls
   -> List.Forall (fun w => smem_get' ls w sm = smem_get' ls w sm') ls
   -> sm = sm'.
+Proof using .
   induction sm; simpl; intuition.
   rewrite hlist_nil; auto.
   inversion H0; clear H0; subst.
@@ -34,12 +37,14 @@ Qed.
 
 Lemma get_emp' : forall w ls,
   smem_get' ls w (smem_emp' ls) = None.
+Proof using .
   induction ls; simpl; intuition.
   destruct (H.addr_dec a w); auto.
 Qed.
 
 Lemma get_emp : forall w,
   smem_get w smem_emp = None.
+Proof using .
   intros.
   apply get_emp'.
 Qed.
@@ -47,6 +52,7 @@ Qed.
 Lemma empty_mem : forall (sm : smem),
   (forall w, smem_get w sm = None)
   -> sm = smem_emp.
+Proof using .
   intros.
   apply smem_eta.
   apply NoDup_allWords.
@@ -73,6 +79,7 @@ Lemma disjoint_get' : forall ls sm1 sm2,
   NoDup ls
   -> List.Forall (fun w => smem_get' ls w sm1 <> None -> smem_get' ls w sm2 <> None -> False) ls
   -> disjoint' ls sm1 sm2.
+Proof using .
   induction sm1; simpl; intuition; rewrite (hlist_eta sm2) in *; simpl in *.
   inversion H; clear H; subst.
   inversion H0; clear H0; subst.
@@ -91,6 +98,7 @@ Qed.
 Lemma disjoint_get : forall sm1 sm2,
   (forall w, smem_get w sm1 <> None -> smem_get w sm2 <> None -> False)
   -> disjoint sm1 sm2.
+Proof using .
   intros; apply disjoint_get'.
   apply BedrockHeap.NoDup_all_addr.
   apply Forall_forall; intros.
@@ -101,6 +109,7 @@ Lemma disjoint_get_fwd' : forall ls sm1 sm2,
   disjoint' ls sm1 sm2
   -> NoDup ls
   -> List.Forall (fun w => smem_get' ls w sm1 <> None -> smem_get' ls w sm2 <> None -> False) ls.
+Proof using .
   induction sm1; simpl; intuition; rewrite (hlist_eta sm2) in *; simpl in *;
     subst; constructor; simpl.
   destruct (H.addr_dec x x); tauto.
@@ -123,6 +132,7 @@ Lemma allWordsUpto_universal : forall width init w,
   (wordToNat w < init)%nat
   -> (init <= pow2 width)%nat
   -> In w (allWordsUpto width init).
+Proof using .
   induction init; simpl; intuition.
   destruct (weq w $ (init)); subst; auto; right.
   assert (wordToNat w <> init).
@@ -134,6 +144,7 @@ Qed.
 
 Lemma allWords_universal : forall sz w,
   In w (allWords sz).
+Proof using .
   rewrite allWords_eq; intros; apply allWordsUpto_universal.
   apply wordToNat_bound.
   auto.
@@ -142,6 +153,7 @@ Qed.
 Lemma disjoint_get_fwd : forall sm1 sm2,
   disjoint sm1 sm2
   -> (forall w, smem_get w sm1 <> None -> smem_get w sm2 <> None -> False).
+Proof using .
   intros; eapply disjoint_get_fwd' in H; try apply BedrockHeap.NoDup_all_addr.
   assert (In w H.all_addr) by apply allWords_universal.
   generalize (proj1 (Forall_forall _ _) H _ H2); tauto.
@@ -150,6 +162,7 @@ Qed.
 Lemma get_clear_ne' : forall a a' ls (sm : smem' ls),
   a <> a'
   -> smem_get' ls a (smem_clear sm a') = smem_get' ls a sm.
+Proof using .
   induction sm; simpl; intuition.
   destruct (H.addr_dec x a); auto.
   destruct (H.addr_dec a' x); congruence.
@@ -158,11 +171,13 @@ Qed.
 Lemma get_clear_ne : forall a a' sm,
   a <> a'
   -> smem_get a (smem_clear sm a') = smem_get a sm.
+Proof using .
   intros; apply get_clear_ne'; auto.
 Qed.
 
 Lemma get_clear_eq' : forall a ls (sm : smem' ls),
   smem_get' ls a (smem_clear sm a) = None.
+Proof using .
   induction sm; simpl; intuition.
   destruct (H.addr_dec x a); auto.
   destruct (H.addr_dec a x); congruence.
@@ -170,6 +185,7 @@ Qed.
 
 Lemma get_clear_eq : forall a sm,
   smem_get a (smem_clear sm a) = None.
+Proof using .
   intros; apply get_clear_eq'.
 Qed.
 
@@ -179,6 +195,7 @@ Hint Rewrite get_clear_eq get_clear_ne
 Lemma get_put_eq' : forall a v ls (sm : smem' ls),
   In a ls
   -> smem_get' ls a (smem_put sm a v) = Some v.
+Proof using .
   induction sm; simpl; intuition.
   subst.
   destruct (H.addr_dec a a); intuition idtac.
@@ -189,6 +206,7 @@ Qed.
 
 Lemma get_put_eq : forall a v sm,
   smem_get a (smem_put sm a v) = Some v.
+Proof using .
   intros; apply get_put_eq'.
   apply allWords_universal.
 Qed.
@@ -196,6 +214,7 @@ Qed.
 Lemma get_put_ne' : forall a a' v ls (sm : smem' ls),
   a <> a'
   -> smem_get' ls a (smem_put sm a' v) = smem_get' ls a sm.
+Proof using .
   induction sm; simpl; intuition.
   destruct (H.addr_dec a' x); intuition idtac.
   destruct (H.addr_dec x a); intuition idtac.
@@ -206,6 +225,7 @@ Qed.
 Lemma get_put_ne : forall a a' v sm,
   a <> a'
   -> smem_get a (smem_put sm a' v) = smem_get a sm.
+Proof using .
   intros; apply get_put_ne'; auto.
 Qed.
 
@@ -215,6 +235,7 @@ Hint Rewrite get_emp get_put_eq get_put_ne
 Lemma join_None' : forall a ls sm1 sm2,
   smem_get' ls a sm1 = None
   -> smem_get' ls a (join' ls sm1 sm2) = smem_get' ls a sm2.
+Proof using .
   induction sm1; simpl; intuition.
   destruct (H.addr_dec x a); subst; auto.
 Qed.
@@ -222,12 +243,14 @@ Qed.
 Lemma join_None : forall a sm1 sm2,
   smem_get a sm1 = None
   -> smem_get a (join sm1 sm2) = smem_get a sm2.
+Proof using .
   intros; apply join_None'; auto.
 Qed.
 
 Lemma join_Some' : forall a v ls sm1 sm2,
   smem_get' ls a sm1 = Some v
   -> smem_get' ls a (join' ls sm1 sm2) = Some v.
+Proof using .
   induction sm1; simpl; intuition.
   destruct (H.addr_dec x a); subst; auto.
 Qed.
@@ -235,6 +258,7 @@ Qed.
 Lemma join_Some : forall a v sm1 sm2,
   smem_get a sm1 = Some v
   -> smem_get a (join sm1 sm2) = Some v.
+Proof using .
   intros; apply join_Some'; auto.
 Qed.
 
@@ -242,6 +266,7 @@ Lemma split_put_clear : forall sm sm1 sm2 a v,
   split sm sm1 sm2
   -> smem_get a sm2 = Some v
   -> split sm (smem_put sm1 a v) (smem_clear sm2 a).
+Proof using .
   unfold split; intuition subst.
   apply disjoint_get; intros.
   destruct (weq w a); subst.
@@ -279,6 +304,7 @@ Qed.
 Lemma wordToNat_ninj : forall sz (u v : word sz),
   u <> v
   -> wordToNat u <> wordToNat v.
+Proof using .
   intros; intro; apply H.
   assert (natToWord sz (wordToNat u) = natToWord sz (wordToNat v)) by congruence.
   repeat rewrite natToWord_wordToNat in H1.
@@ -288,6 +314,7 @@ Qed.
 Lemma wordToNat_ninj' : forall sz (u v : word sz),
   wordToNat u <> wordToNat v
   -> u <> v.
+Proof using .
   congruence.
 Qed.
 
@@ -297,6 +324,7 @@ Theorem materialize_allocated' : forall specs stn size base sm,
   -> (forall w, base ^+ $ (4 * size) <= w -> smem_get w sm = None)
   -> goodSize (wordToNat base + 4 * size)%nat
   -> interp specs ((base =?> size)%Sep stn sm).
+Proof using .
   induction size.
 
   propxFo.
@@ -580,6 +608,7 @@ Lemma get_memoryIn' : forall m w init,
   (wordToNat w < init)%nat
   -> goodSize' init
   -> smem_get' (allWordsUpto 32 init) w (memoryIn' m _) = m w.
+Proof using .
   induction init; simpl; intuition.
   destruct (H.addr_dec $ (init) w).
   unfold H.mem_get, ReadByte.
@@ -606,6 +635,7 @@ Qed.
 
 Lemma pow2_N : forall n,
   N.of_nat (pow2 n) = Npow2 n.
+Proof using .
   intros.
   assert (N.to_nat (N.of_nat (pow2 n)) = N.to_nat (Npow2 n)).
   autorewrite with N.
@@ -617,6 +647,7 @@ Qed.
 
 Lemma get_memoryIn : forall m w,
   smem_get w (memoryIn m) = m w.
+Proof using .
   intros.
   unfold smem_get, memoryIn, HT.memoryIn, H.all_addr.
   rewrite allWords_eq.
@@ -633,6 +664,7 @@ Theorem materialize_allocated : forall stn st size specs,
   -> (forall w, $ (size * 4) <= w -> st.(Mem) w = None)
   -> goodSize (size * 4)%nat
   -> interp specs (![ 0 =?> size ] (stn, st)).
+Proof using .
   rewrite sepFormula_eq; intros.
   apply materialize_allocated'; simpl.
   intros.

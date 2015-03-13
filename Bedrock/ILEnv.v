@@ -23,6 +23,7 @@ Definition test_seq l r : bool :=
   end.
 
 Theorem test_seq_compare : forall x y, test_seq x y = true -> x = y.
+Proof using .
   destruct x; destruct y; simpl; (reflexivity || congruence).
 Defined.
 *)
@@ -36,16 +37,19 @@ Definition reg_seq l r : bool :=
   end.
 
 Theorem reg_seq_compare : forall x y, reg_seq x y = true -> x = y.
+Proof using .
   destruct x; destruct y; simpl; (reflexivity || congruence).
 Defined.
 
 Definition W_seq (l r : W) : bool := Word.weqb l r.
 
 Theorem W_seq_compare : forall x y, W_seq x y = true -> x = y.
+Proof using .
   intros. apply weqb_sound. unfold W_seq in *. apply H.
 Defined.
 
 Lemma all_false_compare T : forall x y : T, false = true -> x = y.
+Proof using .
   congruence.
 Defined.
 

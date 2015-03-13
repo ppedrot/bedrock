@@ -29,38 +29,47 @@ Ltac t := unfold syn_req, CompileExpr.syn_req, CompileExprs.syn_req, SaveRet.syn
 Local Hint Constructors WellFormed.args_not_too_long.
 
 Lemma Subset_syn_req_In : forall x vars temp_size s, syn_req vars temp_size s -> Subset (singleton x) (free_vars s) -> List.In x vars.
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_Seq_Seq : forall vars temp_size a b c, syn_req vars temp_size ((a ;; b) ;; c) -> syn_req vars temp_size (a ;; b ;; c).
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_Seq : forall vars temp_size a b c, syn_req vars temp_size ((a ;; b) ;; c) -> syn_req vars temp_size (b ;; c).
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_If_true : forall vars temp_size e t f k, syn_req vars temp_size (Syntax.If e t f ;; k) -> syn_req vars temp_size (t ;; k).
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_If_false : forall vars temp_size e t f k, syn_req vars temp_size (Syntax.If e t f ;; k) -> syn_req vars temp_size (f ;; k).
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_If_e : forall vars temp_size e t f k, syn_req vars temp_size (Syntax.If e t f ;; k) -> CompileExpr.syn_req vars temp_size e 0.
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_While_e : forall vars temp_size e s k, syn_req vars temp_size (Syntax.While e s ;; k) -> CompileExpr.syn_req vars temp_size e 0.
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_While : forall vars temp_size e s k, syn_req vars temp_size (Syntax.While e s ;; k) -> syn_req vars temp_size (s ;; Syntax.While e s ;; k).
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_Call_f : forall vars temp_size x f args k, syn_req vars temp_size (Syntax.Call x f args ;; k) -> CompileExpr.syn_req vars temp_size f 0.
+Proof using .
   t.
 Qed.
 
@@ -69,6 +78,7 @@ Local Hint Resolve Max.le_max_l Max.le_max_r.
 Lemma max_more : forall n m k,
   (n <= m)%nat
   -> (n <= max m k)%nat.
+Proof using .
   intros; transitivity m; eauto.
 Qed.
 
@@ -79,12 +89,14 @@ Require Import Coq.Lists.List.
 Lemma args_bound' : forall x args,
   In x args
   -> (DepthExpr.depth x <= fold_right max 0 (map DepthExpr.depth args))%nat.
+Proof using .
   induction args; simpl; intuition (subst; auto).
   eapply Le.le_trans; [ | eapply Max.le_max_r]; eauto.
 Qed.
 
 Lemma args_bound : forall args,
   List.Forall (fun e => (DepthExpr.depth e <= CompileExprs.depth args)%nat) args.
+Proof using .
   intros; apply Forall_forall; intros.
   apply args_bound'; auto.
 Qed.
@@ -92,19 +104,23 @@ Qed.
 Local Hint Resolve args_bound.
 
 Lemma syn_req_Call_args : forall vars temp_size x f args k, syn_req vars temp_size (Syntax.Call x f args ;; k) -> CompileExprs.syn_req vars temp_size args args 0.
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_Call_ret : forall vars temp_size x f args k, syn_req vars temp_size (Syntax.Call x f args ;; k) -> SaveRet.syn_req vars x.
+Proof using .
   t.
 Qed.
 
 Require Import Bedrock.Platform.AutoSep.
 
 Lemma syn_req_goodSize : forall vars temp_size x f args k, syn_req vars temp_size (Syntax.Call x f args ;; k) -> goodSize (2 + List.length args).
+Proof using .
   t.
 Qed.
 
 Lemma syn_req_Seq_Skip : forall vars temp_size s, syn_req vars temp_size s -> syn_req vars temp_size (s ;; Syntax.Skip).
+Proof using .
   t.
 Qed.

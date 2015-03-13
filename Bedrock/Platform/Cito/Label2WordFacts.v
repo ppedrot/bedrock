@@ -15,7 +15,7 @@ Require Import Bedrock.Platform.Cito.ListFacts1.
 Require Import Bedrock.Platform.Cito.GeneralTactics.
 
 Lemma find_by_word_elements_elim A l2w d p (v : A) : find_by_word l2w (elements d) p = Some v -> exists lbl : glabel, find lbl d = Some v /\ l2w lbl = Some p.
-Proof.
+Proof using .
   intros e.
   unfold find_by_word in *.
   destruct (option_dec (List.find (is_label_map_to_word' l2w p) (elements d))).
@@ -52,7 +52,7 @@ Proof.
 Qed.
 
 Lemma find_by_word_elements_intro A l2w (lbl : glabel) p d (v : A) : l2w lbl = Some p -> stn_injective (fun k => In k d) l2w -> find lbl d = Some v -> find_by_word l2w (elements d) p = Some v.
-Proof.
+Proof using .
   intros H0 HH H.
   rename lbl into x.
   unfold find_by_word in *.

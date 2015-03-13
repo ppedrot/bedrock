@@ -19,7 +19,7 @@ Import FSetNotationsTrial.
 Local Open Scope fset_scope.
 
 Lemma inits_elim stmt : forall x, In x (inits stmt) -> Wf.writes stmt x.
-Proof.
+Proof using .
   induction stmt; simpl; intros x Hin.
   - eapply empty_iff in Hin; eauto.
   - eapply union_iff in Hin.
@@ -45,7 +45,7 @@ Require Import Bedrock.Platform.Cito.GeneralTactics Bedrock.Platform.Cito.Genera
 Require Import Bedrock.Platform.Cito.FreeVarsExpr.
 
 Lemma expReads_free_vars e : forall uninited x, Wf.expReads uninited e x -> In x (free_vars e) /\ uninited x.
-Proof.
+Proof using .
   induction e; simpl; intros uninited x Hr.
   - openhyp.
     split; eauto.
@@ -74,7 +74,7 @@ Qed.
 Definition disj uninited inited := forall x, uninited x -> In x inited -> False.
 
 Lemma expReads_free_vars_diff e x uninited inited : Wf.expReads uninited e x -> disj uninited inited -> In x (free_vars e - inited).
-Proof.
+Proof using .
   intros Hr Hdisj.
   eapply diff_iff.
   eapply expReads_free_vars in Hr.
@@ -86,7 +86,7 @@ Require Import Coq.Strings.String.
 Definition sub_set (a : string -> Prop) b := forall x, a x -> In x b.
 
 Lemma ExistsR_fold_left' elt (ls : list elt) : forall a0 b0 a b all, sub_set a0 b0 -> (forall e, sub_set (a e) (b e)) -> (forall x, all x <-> (a0 x \/ Wf.ExistsR (fun e => a e x) ls)) -> sub_set all (fold_left (fun acc e => b e + acc) ls b0).
-Proof.
+Proof using .
   induction ls; simpl; intros a0 b0 af bf all Hss0 Hss Heq.
   - unfold sub_set in *.
     intros x Hin.
@@ -105,14 +105,14 @@ Proof.
 Qed.
 
 Lemma ExistsR_fold_left elt (ls : list elt) : forall a0 b0 a b, sub_set a0 b0 -> (forall e, sub_set (a e) (b e)) -> sub_set (fun x => a0 x \/ Wf.ExistsR (fun e => a e x) ls) (fold_left (fun acc e => b e + acc) ls b0).
-Proof.
+Proof using .
   intros.
   eapply ExistsR_fold_left'; eauto.
   intuition.
 Qed.
 
 Lemma uninited_reads_intro' stmt : forall x uninited inited, Wf.reads uninited stmt x -> disj uninited inited -> In x (uninited_reads inited stmt).
-Proof.
+Proof using .
   induction stmt; simpl; intros x uninited inited Hr Hdisj.
   - eapply empty_iff; eauto.
   - eapply union_iff.
@@ -155,7 +155,7 @@ Proof.
 Qed.
 
 Lemma uninited_reads_intro stmt : forall x inited, Wf.reads (fun x => ~ List.In x inited) stmt x -> In x (uninited_reads (of_list inited) stmt).
-Proof.
+Proof using .
   intros.
   eapply uninited_reads_intro'; eauto.
   unfold disj.
@@ -167,7 +167,7 @@ Qed.
 Require Import Bedrock.Platform.Cito.FuncCore.
 
 Lemma is_no_uninited_reads_sound f : is_no_uninited_reads f = true -> forall x, ~ Wf.reads (fun x => ~ List.In x (ArgVars f)) (Body f) x.
-Proof.
+Proof using .
   intros Hb x.
   unfold is_no_uninited_reads in *.
   nintro.
@@ -178,7 +178,7 @@ Proof.
 Qed.
 
 Lemma is_no_uninited_sound f : is_no_uninited f = true -> Wf.NoUninitialized (ArgVars f) (RetVar f) (Body f).
-Proof.
+Proof using .
   intros Hb.
   unfold is_no_uninited, Wf.NoUninitialized in *.
   eapply andb_true_iff in Hb.

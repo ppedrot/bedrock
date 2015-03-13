@@ -16,7 +16,7 @@ Definition option_dec A (x : option A) : {a | x = Some a} + {x = None}.
 Qed.
 
 Lemma option_map_some_elim A B (f : A -> B) o b : option_map f o = Some b -> exists a, o = Some a /\ f a = b.
-Proof.
+Proof using .
   intros H.
   destruct (option_dec o) as [[a Ha]| Hn]; [rewrite Ha in H | rewrite Hn in H; discriminate]; simpl in *.
   injection H; intros; subst.
@@ -24,7 +24,7 @@ Proof.
 Qed.
 
 Lemma option_map_some_intro A B (f : A -> B) o a b : o = Some a -> b = f a -> option_map f o = Some b.
-Proof.
+Proof using .
   intros Ho Hb.
   destruct (option_dec o) as [[a' Ha]| Hn]; [rewrite Ha in * | rewrite Hn in *; discriminate]; simpl in *.
   injection Ho; intros; subst.

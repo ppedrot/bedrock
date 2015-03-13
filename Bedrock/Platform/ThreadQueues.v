@@ -107,6 +107,7 @@ Import Tqs.
 Export Tqs.
 
 Theorem tqs_empty_bwd : forall w, Emp ===> tqs empty w.
+Proof using .
   intros; rewrite tqs_eq; apply tqs'_empty_bwd.
 Qed.
 
@@ -114,16 +115,19 @@ Definition exitize_me a b c d := locals a b c d.
 
 Lemma switchedy : forall P Q R S : HProp,
   (P * (Q * R)) * S ===> P * (Q * (R * S)).
+Proof using .
   sepLemma.
 Qed.
 
 Lemma swatchedy : forall P Q R : HProp,
   P * (Q * R) ===> P * Q * R.
+Proof using .
   sepLemma.
 Qed.
 
 Lemma exitize_locals : forall xx yy ns vs res sp,
   exitize_me ("rp" :: xx :: yy :: ns) vs res sp ===> Ex vs', locals ("rp" :: "sc" :: "ss" :: nil) (upd vs' "ss" (sel vs yy)) (res + length ns) sp.
+Proof using .
   unfold exitize_me, locals; intros.
   simpl; unfold upd; simpl.
   apply Himp_ex_c; exists (fun x => if string_dec x "rp" then vs "rp" else vs xx).
@@ -190,6 +194,7 @@ Lemma starting_elim : forall specs ts w pc ss P stn st,
       /\ ![ locals ("rp" :: nil) vs ss (Regs st' Sp)
       * tqs ts' w' * M.globalInv ts' w' * mallocHeap 0 ] (stn, st')
     ---> pre (stn, st'))%PropX).
+Proof using .
   cptr.
   generalize (split_semp _ _ _ H0 H); intros; subst; auto.
   rewrite <- sepFormula_eq; descend; step auto_ext.
@@ -244,12 +249,14 @@ Local Notation "'PREy' [ vs ] pre" := (yieldInvariantCont (fun vs _ => pre%qspec
 Definition stackSize := 25.
 
 Lemma stackSize_bound : natToW stackSize >= natToW 2.
+Proof using .
   unfold stackSize; auto.
 Qed.
 
 Hint Immediate stackSize_bound.
 
 Lemma stackSize_split : stackSize = length ("rp" :: "enq" :: "deq" :: "sp" :: nil) + 21.
+Proof using .
   reflexivity.
 Qed.
 
@@ -333,6 +340,7 @@ Lemma eq_neq_0 : forall u v : W,
   -> v = 0
   -> u = v
   -> False.
+Proof using .
   congruence.
 Qed.
 
@@ -340,6 +348,7 @@ Lemma freeable_cong : forall (u v : W) n,
   freeable v n
   -> v = u
   -> freeable u n.
+Proof using .
   congruence.
 Qed.
 
@@ -358,22 +367,26 @@ Local Hint Extern 1 (himp _ _ _) => apply tqs'_del_bwd.
 Lemma switchy : forall P Q R S T R',
   R ===> R'
   -> P * Q * (R * S) * T ===> P * Q * R' * S * T.
+Proof using .
   sepLemma.
 Qed.
 
 Lemma swatchy : forall P Q Q' R S,
   Q' ===> Q
   -> P * (Q' * R * S) ===> P * (Q * R * S).
+Proof using .
   sepLemma.
 Qed.
 
 Lemma swotchy : forall P Q R S T U S',
   S ===> S'
   -> P * star Q (star R (star (S * T) U)) ===> P * Q * R * S' * T * U.
+Proof using .
   sepLemma.
 Qed.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen.
 
   t.

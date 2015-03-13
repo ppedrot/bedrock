@@ -7,7 +7,7 @@ Require Coq.Logic.Eqdep_dec.
 
 Theorem EquivDec_refl_left (T : Type) {c : EqDec T (@eq T)} :
   forall (n : T), equiv_dec n n = left (refl_equal _).
-Proof.
+Proof using .
   intros. destruct (equiv_dec n n); try congruence.
   rewrite (Eqdep_dec.UIP_dec (A := T) (@equiv_dec _ _ _ c) e (refl_equal _)).
   reflexivity.
@@ -25,7 +25,7 @@ Global Instance EquivDec_SemiDec t (EQ : EqDec t (@eq t)) : SemiDec t :=
 
 Theorem SemiDec_EquivDec_refl_left : forall T (equ : EqDec T (@eq T)),
   forall x, @seq_dec T (@EquivDec_SemiDec _ equ) x x = Some refl_equal.
-Proof.
+Proof using .
   intros; unfold seq_dec, EquivDec_SemiDec. rewrite EquivDec_refl_left. reflexivity.
 Qed.
 

@@ -19,7 +19,7 @@ Inductive semi_reflect (P : Prop) : bool -> Type :=
 Lemma iff_to_reflect {A B} (P : A -> B -> Prop) (T : A -> B -> bool)  :
   (forall x y, T x y = true <-> P x y) ->
   (forall x y, reflect (P x y) (~P x y) (T x y)).
-Proof.
+Proof using .
   intros. case_eq (T x y); intros Hxy; constructor.
   rewrite <- H; auto.
   intros Hf;   rewrite <- H, Hxy in Hf; discriminate.
@@ -28,27 +28,27 @@ Qed.
 Lemma impl_to_semireflect {A B} (P : A -> B -> Prop) (T : A -> B -> bool)  :
   (forall x y, T x y = true -> P x y) ->
   (forall x y, semi_reflect (P x y) (T x y)).
-Proof.
+Proof using .
   intros. case_eq (T x y); intros Hxy; constructor.
   apply H; auto.
 Qed.
 
 Lemma reflect_true_inv P Q : reflect P Q true -> P.
-Proof.
+Proof using .
   exact (fun x => match x in reflect _ _ b
                     return if b then P else ID
                  with | reflect_true H => H | reflect_false H => (fun _ x => x) end).
 Qed.
 
 Lemma reflect_false_inv P Q : reflect P Q false -> Q.
-Proof.
+Proof using .
   exact (fun x => match x in reflect _ _ b
                     return if b then ID else Q
                  with | reflect_true H => fun _ x => x | reflect_false H => H end).
 Qed.
 
 Lemma semi_reflect_true_inv P : semi_reflect P true -> P.
-Proof.
+Proof using .
   exact (fun x => match x in semi_reflect _ b
                     return if b then P else ID
                  with | semi_reflect_true H => H | semi_reflect_false => (fun _ x => x) end).

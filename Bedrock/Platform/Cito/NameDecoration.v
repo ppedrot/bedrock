@@ -14,12 +14,14 @@ Definition is_good_module_name s := ! (prefix CMI s).
 Definition IsGoodModuleName (s : string) := is_good_module_name s = true.
 
 Lemma is_good_module_name_sound : forall s, is_good_module_name s = true -> IsGoodModuleName s.
+Proof using .
   eauto.
 Qed.
 
 Require Import Bedrock.Platform.Cito.GeneralTactics.
 
 Lemma IsGoodModuleName_not_impl_module_name : forall s, IsGoodModuleName s -> ~ exists s', impl_module_name s' = s.
+Proof using .
   unfold IsGoodModuleName, impl_module_name.
   intros.
   intuition.
@@ -30,6 +32,6 @@ Lemma IsGoodModuleName_not_impl_module_name : forall s, IsGoodModuleName s -> ~ 
 Qed.
 
 Lemma cito_module_impl_prefix_not_empty : cito_module_impl_prefix <> "".
-Proof.
+Proof using .
   unfold cito_module_impl_prefix; discriminate.
 Qed.

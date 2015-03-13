@@ -7,10 +7,12 @@ Inductive factR : W -> W -> Prop :=
 | FRS : forall w r : W, w <> 0 -> factR (w ^- $1) r -> factR w (w ^* r).
 
 Lemma FR0' : forall w : W, w = 0 -> factR w $1.
+Proof using .
   intros; subst; apply FR0.
 Qed.
 
 Lemma FRS' : forall w r v : W, w <> 0 -> factR (w ^- $1) r -> v = w ^* r -> factR w v.
+Proof using .
   intros; subst; eapply FRS; eauto.
 Qed.
 

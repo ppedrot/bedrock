@@ -29,6 +29,7 @@ Definition to_good_functions : forall (ls : list Func), List.Forall (GoodFunc * 
 Defined.
 
 Lemma to_good_functions_name : forall ls (h : List.Forall (GoodFunc * Core) ls), map (fun f : GoodFunction => FName f) (to_good_functions h) = map FName ls.
+Proof using .
   induction ls; simpl; intros.
   eauto.
   f_equal; eauto.

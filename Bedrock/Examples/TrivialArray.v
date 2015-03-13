@@ -87,6 +87,7 @@ Qed.
 
 Theorem selN_hd : forall pending done,
   selN (done ++ pending) (length done) = hd $0 pending.
+Proof using .
   induction done; simpl; intuition;
     destruct pending; reflexivity.
 Qed.

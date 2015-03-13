@@ -20,7 +20,7 @@ Definition cfuns_to_gfuns (fs : StringMap.t CFun) : list GoodFunction := List.ma
 Require Import Bedrock.Platform.Cito.NameDecoration.
 
 Lemma cfuns_to_gfuns_nodup fs : NoDup (List.map (fun (f : GoodFunction) => SyntaxFunc.Name f) (cfuns_to_gfuns fs)).
-Proof.
+Proof using .
   unfold cfuns_to_gfuns.
   rewrite map_map.
   simpl.
@@ -35,7 +35,7 @@ Defined.
 Require Import Bedrock.Platform.Cito.GoodModuleDecFacts.
 
 Lemma NoDup_ArgVars (f : CFun) : NoDup (ArgVars f).
-Proof.
+Proof using .
   destruct f; simpl.
   eapply is_good_func_sound in good_func.
   destruct good_func.

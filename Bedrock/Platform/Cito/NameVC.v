@@ -13,6 +13,7 @@ Definition fst_2 A B C (x : A * B * C) := fst (fst x).
 Notation fst2 := (@fst_2 _ _ _).
 
 Lemma NotIn_NameNotInImports : forall imps mn, ~ In mn (map fst2 imps) -> NameNotInImports mn imps.
+Proof using .
   clear.
   unfold NameNotInImports.
   induction imps; simpl; intros.
@@ -54,7 +55,7 @@ Lemma NoDup_NoDupFuncNames' :
     NoDup names ->
     (forall x, List.In x names -> LabelMap.mem (elt := unit) (x, Local 0) init = false) ->
     @NoDupFuncNames' init mod_name funcs.
-Proof.
+Proof using .
   induction funcs; simpl; intuition.
   compute; eauto.
   unfold NoDupFuncNames' in *; simpl in *.
@@ -73,6 +74,7 @@ Proof.
 Qed.
 
 Lemma NoDup_NoDupFuncNames : forall mod_name funcs, NoDup (map (fun f => fst (fst f)) funcs) -> @NoDupFuncNames mod_name funcs.
+Proof using .
   intros.
   eapply NoDup_NoDupFuncNames'.
   eauto.

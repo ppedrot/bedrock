@@ -78,19 +78,19 @@ Lemma Forall_app : forall A (P : A -> Prop) ls1 ls2,
   Forall P ls1
   -> Forall P ls2
   -> Forall P (ls1 ++ ls2).
-Proof.
+Proof using .
   induction 1; simpl; auto.
 Qed.
 
 Lemma all2_map_2 : forall T U V (P : T -> U -> bool) (F : V -> _) l1 l2,
   all2 P l1 (map F l2) = all2 (fun x y => P x (F y)) l1 l2.
-Proof.
+Proof using .
   clear. induction l1; destruct l2; simpl; auto.
   destruct (P a (F v)); auto.
 Qed.
 Lemma all2_map_1 : forall T U V (P : T -> U -> bool) (F : V -> _) l1 l2,
   all2 P (map F l1) l2 = all2 (fun x y => P (F x) y) l1 l2.
-Proof.
+Proof using .
   clear. induction l1; destruct l2; simpl; auto.
   destruct (P (F a) u); auto.
 Qed.
@@ -99,7 +99,7 @@ Lemma all2_impl : forall T U (P P' : T -> U -> bool) l1 l2,
   all2 P' l1 l2 = true ->
   (forall x y, P' x y = true -> P x y = true) ->
   all2 P l1 l2 = true .
-Proof.
+Proof using .
   clear; induction l1; destruct l2; simpl; intros; auto.
   consider (P' a u); intros. rewrite H0; eauto.
 Qed.
@@ -117,7 +117,7 @@ End allb.
 
 Lemma allb_app : forall T (P : T -> _) a b,
   allb P (a ++ b) = allb P a && allb P b.
-Proof.
+Proof using .
   induction a; simpl; intros; auto. destruct (P a); auto.
 Qed.
 
@@ -125,7 +125,7 @@ Lemma all2_eq : forall (T U : Type) (P P' : T -> U -> bool)
   (l1 : list T) (l2 : list U),
   (forall (x : T) (y : U), P' x y = P x y) ->
   all2 P' l1 l2 = all2 P l1 l2.
-Proof.
+Proof using .
   clear. induction l1; destruct l2; simpl; intros; auto.
   rewrite H. rewrite IHl1. auto. auto.
 Qed.
@@ -133,14 +133,14 @@ Qed.
 Lemma allb_ext : forall T (P P' : T -> _) ls,
   (forall x, P x = P' x) ->
   allb P ls = allb P' ls.
-Proof.
+Proof using .
   clear; induction ls; simpl; intros; auto.
   rewrite H. rewrite IHls; auto.
 Qed.
 
 Lemma allb_map : forall T U (F : T -> U) P ls,
   allb P (map F ls) = allb (fun x => P (F x)) ls.
-Proof.
+Proof using .
   clear. induction ls; simpl; intros; auto.
   rewrite IHls; auto.
 Qed.
@@ -149,7 +149,7 @@ Lemma allb_impl : forall T (P P' : T -> _) ls,
   allb P' ls = true ->
   (forall x, P' x = true -> P x = true) ->
   allb P ls = true.
-Proof.
+Proof using .
   induction ls; simpl; intros; auto. consider (P' a); auto; intros;
   rewrite H0; auto.
 Qed.

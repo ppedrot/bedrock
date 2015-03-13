@@ -71,12 +71,12 @@ Fixpoint consistent {ts} (vals : list { x : tvar & option (tvarD ts x) }) (e : l
 Lemma ex_iff : forall T (P P' : T -> Prop),
   (forall x, P x <-> P' x) ->
   ((exists x, P x) <-> (exists x, P' x)).
-Proof. split; intuition; destruct H0 as [ x ? ]; exists x; firstorder. Qed.
+Proof using . split; intuition; destruct H0 as [ x ? ]; exists x; firstorder. Qed.
 
 Theorem existsMaybe_sem : forall types vals (ret : env types -> Prop),
   existsMaybe vals ret <->
   existsEach (map (@projT1 _ _) vals) (fun e => consistent vals e /\ ret e).
-Proof.
+Proof using .
   induction vals; simpl; intros.
   { intuition. }
   { destruct a. destruct o.
@@ -91,7 +91,7 @@ Qed.
 Lemma substInEnv_sem : forall types funcs meta_env var_env sub vals from ret,
   @substInEnv types funcs meta_env var_env sub from vals ret <->
   (U.Subst_equations_to funcs meta_env var_env sub from vals /\ ret vals).
-Proof.
+Proof using .
   induction vals; simpl; intros.
   { intuition. }
   { destruct a; simpl in *.
@@ -106,7 +106,7 @@ Lemma existsSubst_sem : forall ts (funcs : functions ts) vals sub vars_env from 
   existsSubst funcs vars_env sub from vals ret <->
   existsEach (map (@projT1 _ _) vals) (fun meta_env =>
     consistent vals meta_env /\ U.Subst_equations_to funcs meta_env vars_env sub from meta_env /\ ret meta_env).
-Proof.
+Proof using .
   intros. unfold existsSubst.
   rewrite existsMaybe_sem. rewrite existsEach_sem. rewrite existsEach_sem.
   apply ex_iff. intros. rewrite substInEnv_sem. intuition.
@@ -116,7 +116,7 @@ Lemma AllProvable_impl_AllProvable : forall ts (funcs : functions ts) U G P ps,
   AllProvable funcs U G ps ->
   AllProvable_impl funcs U G P ps ->
   P.
-Proof. clear. induction ps; simpl; intros; eauto. intuition. Qed.
+Proof using . clear. induction ps; simpl; intros; eauto. intuition. Qed.
 
 Section canceller.
   Variable ts : list type.

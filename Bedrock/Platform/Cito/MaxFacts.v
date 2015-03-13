@@ -22,6 +22,7 @@ Ltac max_solver :=
     end.
 
 Lemma both_le : forall a b a' b', a <= a' -> b <= b' -> max a b <= max a' b'.
+Proof using .
   intros; max_solver; eauto.
   eapply le_trans; [ | eapply le_max_l]; eauto.
   eapply le_trans; [ | eapply le_max_r]; eauto.

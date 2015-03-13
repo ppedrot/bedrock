@@ -8,6 +8,7 @@ Definition goodSize' (n : nat) := (N.of_nat n < 1 + Npow2 32)%N.
 Lemma wordToNat_ninj : forall sz (u v : word sz),
   u <> v
   -> wordToNat u <> wordToNat v.
+Proof using .
   intros; intro; apply H.
   assert (natToWord sz (wordToNat u) = natToWord sz (wordToNat v)) by congruence.
   repeat rewrite natToWord_wordToNat in H1.
@@ -18,6 +19,7 @@ Lemma get_memoryIn' : forall m w init,
   (wordToNat w < init)%nat
   -> goodSize' init
   -> smem_get' (allWordsUpto 32 init) w (memoryIn' m _) = m w.
+Proof using .
   induction init; simpl; intuition.
   destruct (H.addr_dec $ (init) w).
   unfold H.mem_get, ReadByte.
@@ -44,6 +46,7 @@ Qed.
 
 Lemma pow2_N : forall n,
   N.of_nat (pow2 n) = Npow2 n.
+Proof using .
   intros.
   assert (N.to_nat (N.of_nat (pow2 n)) = N.to_nat (Npow2 n)).
   autorewrite with N.
@@ -55,6 +58,7 @@ Qed.
 
 Lemma get_memoryIn : forall m w,
   smem_get w (memoryIn m) = m w.
+Proof using .
   intros.
   unfold smem_get, memoryIn, HT.memoryIn, H.all_addr.
   rewrite allWords_eq.

@@ -1080,7 +1080,7 @@ End env.
 Lemma lookupAs_weaken : forall types t vars vars' x v,
   lookupAs (types := types) vars t x = Some v ->
   lookupAs (vars ++ vars') t x = Some v.
-Proof.
+Proof using .
   unfold lookupAs. intros. revert H.
   case_eq (nth_error vars x); intros.
   eapply nth_error_weaken in H. rewrite H. eauto.
@@ -1091,7 +1091,7 @@ Qed.
 Lemma exprSubstU_exprD : forall ts tf tu tg tg' tg'' s t,
   exprD (types := ts) tf tu (tg ++ tg' ++ tg'') s t =
   exprD tf (tu ++ tg') (tg ++ tg'') (exprSubstU (length tg) (length tg' + length tg) (length tu) s) t.
-Proof.
+Proof using .
   induction s; simpl; intros; think; auto.
   { consider (PeanoNat.Nat.ltb x (length tg)); intros; simpl; unfold lookupAs in *; simpl.
     repeat rewrite nth_error_app_L in * by omega. reflexivity.
@@ -1117,7 +1117,7 @@ Qed.
 Lemma exprD_weaken : forall types (fs : functions types) uvars uvars' vars vars' e t v,
   exprD fs uvars vars e t = Some v ->
   exprD fs (uvars ++ uvars') (vars ++ vars') e t = Some v.
-Proof.
+Proof using .
   clear. induction e; simpl; intros; eauto using lookupAs_weaken;
   repeat match goal with
            | [ H : match ?X with
@@ -1144,7 +1144,7 @@ Qed.
 Lemma applyD_weaken : forall types (funcs : functions types) l D R F U G UE GE v,
   applyD (exprD funcs U G) D l R F = Some v ->
   applyD (exprD funcs (U ++ UE) (G ++ GE)) D l R F = Some v.
-Proof.
+Proof using .
   induction l; destruct D; simpl; intros; try congruence.
   consider (exprD funcs U G a t); intros.
   erewrite exprD_weaken by eauto. auto. congruence.
@@ -1153,7 +1153,7 @@ Qed.
 Lemma Provable_weaken : forall types (fs : functions types) P U G UE GE,
   Provable fs U G P ->
   Provable fs (U ++ UE) (G ++ GE) P.
-Proof.
+Proof using .
   unfold Provable; intros. consider (exprD fs U G P tvProp); intros; try contradiction.
   erewrite exprD_weaken; eauto.
 Qed.
@@ -1161,14 +1161,14 @@ Qed.
 Lemma AllProvable_weaken : forall types (fs : functions types) U G UE GE P,
   AllProvable fs U G P ->
   AllProvable fs (U ++ UE) (G ++ GE) P.
-Proof.
+Proof using .
   induction P; auto; intros; simpl in *; intuition eauto using Provable_weaken.
 Qed.
 
 Lemma liftExpr_ext : forall types (funcs : functions types) U U' U'' G G' G'' e t,
   exprD funcs (U'' ++ U) (G'' ++ G) e t =
   exprD funcs (U'' ++ U' ++ U) (G'' ++ G' ++ G) (liftExpr (length U'') (length U') (length G'') (length G') e) t.
-Proof.
+Proof using .
   clear. induction e; simpl; intros; unfold lookupAs; think; try reflexivity;
     repeat match goal with
              | [ |- context [ PeanoNat.Nat.ltb ?X ?Y ] ] =>
@@ -1298,7 +1298,7 @@ Lemma applyD_impl_Forall : forall types F F' P Dom args R D v,
   Forall P args ->
   (forall x y v, P x -> F x y = Some v -> F' x y = Some v) ->
   applyD F' Dom args R D = Some v.
-Proof.
+Proof using .
   induction Dom; destruct args; simpl; intros; think; auto. inversion H0; subst; intros.
   erewrite H1; eauto.
 Qed.
@@ -1306,14 +1306,14 @@ Qed.
 Lemma applyD_impl : forall types F F' Dom args R D,
   (forall x y, F x y = F' x y) ->
   applyD (types := types) F Dom args R D = applyD F' Dom args R D.
-Proof.
+Proof using .
   induction Dom; destruct args; simpl; intros; think; auto.
   destruct (F' e a); auto.
 Qed.
 
 Lemma applyD_map : forall types F F' Dom args R D,
   applyD (types := types) F Dom (map F' args) R D = applyD (fun x y => F (F' x) y) Dom args R D.
-Proof.
+Proof using .
   induction Dom; destruct args; simpl; intros; think; auto.
   destruct (F (F' e) a); auto.
 Qed.

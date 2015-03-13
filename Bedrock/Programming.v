@@ -380,6 +380,7 @@ Notation "'bimport' is 'bmodule' name fs" := (bmodule_ is%SPimps name fs%SPfuncs
 (** * Tactics *)
 
 Theorem evalInstrs_nil : forall stn st, evalInstrs stn st nil = Some st.
+Proof using .
   reflexivity.
 Qed.
 
@@ -388,6 +389,7 @@ Theorem evalInstrs_cons : forall stn st i is, evalInstrs stn st (i :: is)
       | None => None
       | Some st' => evalInstrs stn st' is
     end.
+Proof using .
   reflexivity.
 Qed.
 
@@ -396,6 +398,7 @@ Local Transparent evalInstrs.
 Theorem evalInstrs_app : forall stn st2 st3 is2 is1 st1, evalInstrs stn st1 is1 = Some st2
   -> evalInstrs stn st2 is2 = st3
   -> evalInstrs stn st1 (is1 ++ is2) = st3.
+Proof using .
   induction is1; simpl; intuition.
   congruence.
   destruct (evalInstr stn st1 a); auto; congruence.
@@ -427,10 +430,12 @@ Fixpoint vcsImp (Ps : list Prop) (goal : Prop) : Prop :=
 Local Hint Constructors vcs.
 
 Lemma vcsImp_correct' : forall Ps (goal : Prop), (vcs Ps -> goal) -> vcsImp Ps goal.
+Proof using .
   induction Ps; simpl; auto.
 Qed.
 
 Theorem vcsImp_correct : forall Ps, vcsImp Ps (vcs Ps).
+Proof using .
   intros; apply vcsImp_correct'; auto.
 Qed.
 
@@ -469,6 +474,7 @@ Lemma specs_cong : forall (specs : codeSpec W (settings * state)) x p,
   specs x = p
   -> forall y, x = y
     -> specs y = p.
+Proof using .
   congruence.
 Qed.
 
@@ -482,11 +488,13 @@ Hint Extern 1 (?specs _ = Some _) =>
 Lemma use_himp : forall pc state specs (P Q : hprop pc state nil), himp specs P Q
   -> forall s m, interp specs (P s m)
     -> interp specs (Q s m).
+Proof using .
   intros; apply (Imply_sound (H _ _)); auto.
 Qed.
 
 Lemma Imply_refl : forall pc state specs (P : PropX pc state),
   interp specs (P ---> P).
+Proof using .
   intros; apply Imply_I; apply Env; simpl; auto.
 Qed.
 
@@ -739,18 +747,21 @@ Ltac propToWord := unfold propToWord, IF_then_else; tauto.
 Lemma use_propToWord : forall P b, P \is b
   -> forall P', (P' <-> P)
     -> P' \is b.
+Proof using .
   propToWord.
 Qed.
 
 Lemma propToWord_true : forall (P : Prop) (b : W), b = 1
   -> P
   -> P \is b.
+Proof using .
   propToWord.
 Qed.
 
 Lemma propToWord_false : forall (P : Prop) (b : W), b = 0
   -> ~P
   -> P \is b.
+Proof using .
   propToWord.
 Qed.
 

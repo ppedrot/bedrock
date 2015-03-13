@@ -11,5 +11,6 @@ Module B.
 End B.
 
 Lemma e : A.t = B.t.
+Proof using .
   eauto.
 Qed.

@@ -20,12 +20,14 @@ Definition labelsOf (M : LabelMap.t (assert * block)) : (label -> option W) * (W
   labelsOf' M (wzero _, (fun _ => None, fun _ => None)).
 
 Lemma lt_trans : forall n m o, (n < o)%N -> m = n -> (m < o)%N.
+Proof using .
   congruence.
 Qed.
 
 Lemma lt_rearrange : forall n p m k,
   (n + (p + m) < k)%N
   -> (p + n < k)%N.
+Proof using .
   intros; nomega.
 Qed.
 
@@ -33,6 +35,7 @@ Lemma contra : forall x b n,
   (n < b)%nat
   -> (S x * b <= n)%nat
   -> False.
+Proof using .
   simpl; intros.
   assert (b <= n)%nat.
   generalize dependent (x * b)%nat.
@@ -48,6 +51,7 @@ Lemma labelsOf'_inj : forall M l1 l2 w w' labels prog,
     -> (forall l w'', labels l = Some w'' -> (wordToNat w'' < wordToNat w')%nat)
     -> (wordToN w' + N_of_nat (LabelMap.cardinal M) < Npow2 32)%N
     -> l1 = l2.
+Proof using .
   unfold labelsOf'; simpl; intros.
   rewrite LabelMap.fold_1 in *.
   rewrite LabelMap.cardinal_1 in *.
@@ -195,6 +199,7 @@ Theorem labelsOf_inj : forall M l1 l2 w, fst (labelsOf M) l1 = Some w
   -> fst (labelsOf M) l2 = Some w
   -> (N_of_nat (LabelMap.cardinal M) < Npow2 32)%N
   -> l1 = l2.
+Proof using .
   intros; eapply labelsOf'_inj; eauto; simpl; intuition; discriminate.
 Qed.
 
@@ -217,6 +222,7 @@ Lemma labels_keep : forall k v w ls w' labels prog,
                     if weq w'0 w then Some bl0 else prog0 w'0))) ls
       (w', (labels, prog))))
      k = Some w.
+Proof using .
   induction ls as [ | [ ? [ ] ] ]; simpl; intuition.
   apply IHls; auto.
   destruct (LabelFacts.eq_dec k k0).
@@ -230,6 +236,7 @@ Lemma slow : forall x ln w' n,
   (w' + S ln < n)%nat
   -> (S x * n <= 1 + w')%nat
   -> False.
+Proof using .
   simpl; intros.
   generalize dependent (x * n); intros; omega.
 Qed.
@@ -254,6 +261,7 @@ Lemma prog_keep : forall w bl ls w' labels prog,
                     if weq w'0 w then Some bl0 else prog0 w'0))) ls
       (w', (labels, prog))))
      w = Some bl.
+Proof using .
   induction ls as [ | [ ? [ ] ] ]; simpl; intuition.
   apply IHls; auto.
   destruct (weq w w').
@@ -339,6 +347,7 @@ Lemma labelsOf'_agree : forall M l pre bl w' labels prog, LabelMap.MapsTo l (pre
   -> (wordToN w' + N_of_nat (LabelMap.cardinal M) < Npow2 32)%N
   -> exists w, fst (labelsOf' M (w', (labels, prog))) l = Some w
     /\ snd (labelsOf' M (w', (labels, prog))) w = Some bl.
+Proof using .
   unfold labelsOf'; simpl; intros.
   rewrite LabelMap.fold_1 in *.
   rewrite LabelMap.cardinal_1 in *.
@@ -538,6 +547,7 @@ Theorem labelsOf_agree : forall M l pre bl, LabelMap.MapsTo l (pre, bl) M
   -> (N_of_nat (LabelMap.cardinal M) < Npow2 32)%N
   -> exists w, fst (labelsOf M) l = Some w
     /\ snd (labelsOf M) w = Some bl.
+Proof using .
   intros; eapply labelsOf'_agree; intuition eauto; discriminate.
 Qed.
 
@@ -546,6 +556,7 @@ Qed.
 
 
 Theorem wlt_not_refl : forall n (w : word n), w < w -> False.
+Proof using .
   unfold wlt; intros; nomega.
 Qed.
 
@@ -555,6 +566,7 @@ Lemma use_separated : forall (k : W) q,
   (forall n m, (n < 4)%nat -> (m < 4)%nat -> k ^+ $ q ^+ $ n = k ^+ $ m -> False)
   -> (q < 4)%nat
   -> False.
+Proof using .
   intros.
   apply H with 0 q; auto.
   word_eq.
@@ -564,6 +576,7 @@ Lemma use_separated' : forall (k : W) q,
   (forall n m, (n < 4)%nat -> (m < 4)%nat -> k ^+ $ n = k ^+ $ q ^+ $ m -> False)
   -> (q < 4)%nat
   -> False.
+Proof using .
   intros.
   apply H with q 0; auto.
   word_eq.

@@ -55,6 +55,7 @@ Hint Extern 5 (~ _ %in _) => sets.
 Hint Extern 5 (_ <-> _) => sets.
 
 Lemma wlt_trans : forall a b c : W, a < b -> b < c -> a < c.
+Proof using .
   intros; nomega.
 Qed.
 

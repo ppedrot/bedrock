@@ -6,14 +6,17 @@ Set Implicit Arguments.
 Local Open Scope nat.
 
 Lemma fold_4_mult : forall n, n + (n + (n + (n + 0))) = 4 * n.
+Proof using .
   intros; ring.
 Qed.
 
 Lemma fold_4_mult_2 : 4 * 2 = 8.
+Proof using .
   eauto.
 Qed.
 
 Lemma fold_4_mult_1 : 4 * 1 = 4.
+Proof using .
   eauto.
 Qed.
 
@@ -22,6 +25,7 @@ Require Import Bedrock.IL.
 Require Import Bedrock.Memory.
 
 Lemma wplus_0 : forall w : W, w ^+ $0 = w.
+Proof using .
   intros; rewrite wplus_comm; eapply wplus_unit.
 Qed.
 
@@ -34,10 +38,12 @@ Ltac rewrite_natToW_plus :=
          end.
 
 Lemma wplus_wminus : forall (a b : W), a ^+ b ^- b = a.
+Proof using .
   intros; W_eq.
 Qed.
 
 Lemma wordToNat_natToW_le : forall n, (wordToNat (natToW n) <= n)%nat.
+Proof using .
   unfold natToW; intros.
   edestruct wordToNat_natToWord as [ ? [ ] ].
   rewrite H.
@@ -48,10 +54,12 @@ Qed.
 Require Import Bedrock.Arrays.
 
 Lemma wle_goodSize_le : forall a b, (natToW a <= natToW b)%word -> goodSize a -> (a <= b)%nat.
+Proof using .
   intros; eapply le_wordToN in H; eauto; eapply le_trans; eauto; eapply wordToNat_natToW_le.
 Qed.
 
 Lemma wordToNat_eq_eq : forall x y : W, wordToNat x = wordToNat y -> x = y.
+Proof using .
   intros.
   assert (natToW (wordToNat x) = natToW (wordToNat y)).
   congruence.

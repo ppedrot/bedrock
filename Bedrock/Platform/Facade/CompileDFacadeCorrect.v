@@ -26,7 +26,7 @@ Import StringSet.
 Require Import Bedrock.Platform.Cito.StringSetFacts.
 
 Lemma syntax_ok_fptr_not_fv s : is_syntax_ok s = true -> ~ In fun_ptr_varname (free_vars s).
-Proof.
+Proof using .
   intros Hsyn.
   unfold is_syntax_ok in *.
   eapply andb_true_iff in Hsyn.

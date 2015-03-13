@@ -14,6 +14,7 @@ Fixpoint allocated (base : W) (offset len : nat) : HProp :=
 Notation "p =?> len" := (allocated p O len) (at level 39) : Sep_scope.
 
 Theorem allocated_extensional : forall base offset len, HProp_extensional (allocated base offset len).
+Proof using .
   destruct len; reflexivity.
 Qed.
 
@@ -21,6 +22,7 @@ Hint Immediate allocated_extensional.
 
 
 Lemma Himp_refl : forall p, p ===> p.
+Proof using .
   intros; hnf; intros; hnf; intros.
   apply PropX.Imply_I.
   apply PropX.Env.
@@ -30,7 +32,7 @@ Qed.
 Lemma allocated_shift_base' : forall base base' len offset offset',
   base ^+ $ (offset) = base' ^+ $ (offset')
   -> allocated base offset len ===> allocated base' offset' len.
-Proof.
+Proof using .
   induction len; intros.
 
   apply Himp_refl.
@@ -68,20 +70,24 @@ Theorem allocated_shift_base : forall base base' len len' offset offset',
   base ^+ $ (offset) = base' ^+ $ (offset')
   -> len = len'
   -> allocated base offset len ===> allocated base' offset' len'.
+Proof using .
   intros; subst; apply allocated_shift_base'; auto.
 Qed.
 
 Lemma disjoint'_emp : forall addrs, disjoint' addrs (smem_emp' _) (smem_emp' _).
+Proof using .
   induction addrs; simpl; intuition.
 Qed.
 
 Lemma join'_emp : forall addrs, smem_emp' _ = join' addrs (smem_emp' _) (smem_emp' _).
+Proof using .
   induction addrs; simpl; intuition.
   congruence.
 Qed.
 
 Lemma split_empty : forall m, semp m
   -> split m m m.
+Proof using .
   unfold semp; intros; subst.
   split.
   apply disjoint'_emp.
@@ -92,7 +98,7 @@ Qed.
 Theorem allocated_split : forall base len' len offset,
   (len' <= len)%nat
   -> allocated base offset len ===> allocated base offset len' * allocated base (offset + 4 * len') (len - len').
-Proof.
+Proof using .
   induction len'; inversion 1.
   { simpl. intro. unfold empB, starB.
     rewrite heq_star_emp_r. reflexivity. }
@@ -115,7 +121,7 @@ Qed.
 Theorem allocated_join : forall base len' len offset,
   (len' <= len)%nat
   -> allocated base offset len' * allocated base (offset + 4 * len') (len - len') ===> allocated base offset len.
-Proof.
+Proof using .
   induction len'; inversion 1.
   { intro; unfold starB, empB; simpl. rewrite heq_star_emp_r. reflexivity. }
   { replace (offset + 4 * 0) with offset by omega.

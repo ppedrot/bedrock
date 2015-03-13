@@ -275,6 +275,7 @@ Ltac sep_easy := auto with contradiction.
 Lemma frame_reflexivity : forall pcT stateT p q specs,
   q = (fun pr => p (fst pr) (snd pr))
   -> himp (pcType := pcT) (stateType := stateT) specs p (fun st m => q (st, m)).
+Proof using .
   intros; hnf; simpl; intros; subst.
   apply Imply_I; eauto.
 Qed.
@@ -1103,6 +1104,7 @@ Ltac ho := Programming.ho unf; reduce.
 Theorem implyR : forall pc state specs (P Q R : PropX pc state),
   interp specs (P ---> R)
   -> interp specs (P ---> Q ---> R)%PropX.
+Proof using .
   intros.
   do 2 apply Imply_I.
   eapply Imply_E.
@@ -1120,6 +1122,7 @@ Inductive pureConsequences : HProp -> list Prop -> Prop :=
 Theorem pureConsequences_correct : forall P P',
   pureConsequences P P'
   -> forall specs stn st, interp specs (P stn st ---> [| List.Forall (fun p => p) P' |]%PropX).
+Proof using .
   induction 1; intros.
 
   unfold injB, inj.
@@ -1156,6 +1159,7 @@ Theorem extractPure : forall specs P Q Q' R st,
   pureConsequences Q Q'
   -> (List.Forall (fun p => p) Q' -> interp specs (P ---> R))
   -> interp specs (P ---> ![Q] st ---> R)%PropX.
+Proof using .
   intros.
   do 2 apply Imply_I.
   eapply Inj_E.
@@ -1180,6 +1184,7 @@ Definition locals_return ns vs avail p (ns' : list string) (avail' offset : nat)
 
 Theorem create_locals_return : forall ns' avail' ns avail offset vs p,
   locals ns vs avail p = locals_return ns vs avail p ns' avail' offset.
+Proof using .
   reflexivity.
 Qed.
 
@@ -1200,6 +1205,7 @@ Global Opaque merge.
 
 Theorem use_HProp_extensional : forall p, HProp_extensional p
   -> (fun st sm => p st sm) = p.
+Proof using .
   auto.
 Qed.
 
@@ -1251,6 +1257,7 @@ Lemma make_call : forall ns ns' vs avail avail' p offset,
   locals ns vs 0 p
   * Ex vs', locals ns' vs' avail' (p ^+ natToW offset)
   * excessStack p ns avail ns' avail'.
+Proof using .
   unfold ok_call; intuition; subst; eapply do_call; eauto.
 Qed.
 
@@ -1260,6 +1267,7 @@ Lemma make_return : forall ns ns' vs avail avail' p offset,
     * Ex vs', locals ns' vs' avail' (p ^+ natToW offset)
     * excessStack p ns avail ns' avail')
   ===> locals_return ns vs avail p ns' avail' offset.
+Proof using .
   unfold ok_return; intuition; subst; apply do_return; omega || words.
 Qed.
 
@@ -1276,6 +1284,7 @@ Theorem init_in : forall ns ns' ns'' vs avail p avail',
   ok_in ns avail ns' ns'' avail'
   -> locals_in ns vs avail p ns' ns'' avail' ===>
   Ex vs', locals ns'' (merge vs vs' ns) avail' p.
+Proof using .
   unfold ok_in; intuition; subst; apply prelude_in; auto.
 Qed.
 
@@ -1290,6 +1299,7 @@ Theorem init_out : forall ns ns' ns'' vs avail p avail',
   ok_out ns avail ns' ns'' avail'
   -> locals ns'' vs avail' p
   ===> locals_out ns vs avail p ns' ns'' avail'.
+Proof using .
   unfold ok_out; intuition; subst; apply prelude_out; auto.
 Qed.
 
@@ -1306,12 +1316,14 @@ Defined.
 
 Theorem create_locals_out : forall ns' ns'' avail' ns avail vs p,
   locals ns vs avail p = locals_out ns vs avail p ns' ns'' avail'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem unandL : forall pc state specs (P Q R : PropX pc state),
   interp specs (P /\ Q ---> R)%PropX
   -> interp specs (P ---> Q ---> R)%PropX.
+Proof using .
   intros; do 2 apply Imply_I.
   eapply Imply_E; eauto.
   apply And_I; eapply Env; simpl; eauto.
@@ -1320,6 +1332,7 @@ Qed.
 Lemma breakout : forall A (P : A -> _) Q R x specs,
   (forall v, interp specs (![P v * Q] x ---> R)%PropX)
   -> interp specs (![exB P * Q] x ---> R)%PropX.
+Proof using .
   rewrite sepFormula_eq; propxFo.
   unfold sepFormula_def, exB, ex.
   simpl.
@@ -1539,6 +1552,7 @@ Hint Rewrite sel_upd_eq sel_upd_ne using congruence : sepFormula.
 Lemma sel_merge : forall vs vs' ns nm,
   In nm ns
   -> sel (merge vs vs' ns) nm = sel vs nm.
+Proof using .
   intros.
   generalize (merge_agree vs vs' ns); intro Hl.
   eapply Forall_forall in Hl; eauto.
@@ -1547,6 +1561,7 @@ Qed.
 Hint Rewrite sel_merge using (simpl; tauto) : sepFormula.
 
 Theorem lift0 : forall P, lift nil P = P.
+Proof using .
   reflexivity.
 Qed.
 
@@ -1592,5 +1607,6 @@ Ltac icall formals :=
 Definition any : HProp := fun _ _ => [| True |]%PropX.
 
 Theorem any_easy : forall P, P ===> any.
+Proof using .
   unfold any; repeat intro; step auto_ext; auto.
 Qed.

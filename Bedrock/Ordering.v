@@ -48,7 +48,7 @@ End Sorting.
 
 Lemma insert_in_order_inserts : forall T C x l,
   exists h t, insert_in_order T C x l = h ++ x :: t /\ l = h ++ t.
-Proof.
+Proof using .
   clear. induction l; simpl; intros.
   exists nil; exists nil; eauto.
   destruct (C x a).
@@ -62,7 +62,7 @@ Require Import Coq.Sorting.Permutation.
 
 Lemma sort_permutation : forall T (C : T -> T -> _) x,
   Permutation (sort _ C x) x.
-Proof.
+Proof using .
   induction x; simpl.
   { reflexivity. }
   { destruct (insert_in_order_inserts T C a (sort T C x)) as [ ? [ ? ? ] ].

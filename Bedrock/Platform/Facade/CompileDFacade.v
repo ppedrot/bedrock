@@ -39,7 +39,7 @@ Fixpoint compile (s : Stmt) : Facade.Stmt :=
   end.
 
 Lemma compile_assigned s : forall x, is_good_varname x = true -> In x (Facade.assigned (compile s)) -> In x (assigned s).
-Proof.
+Proof using .
   induction s; simpl; intros x Hgn Hin.
   - eapply empty_iff in Hin; intuition.
   - eapply union_iff in Hin; openhyp; eapply union_iff; eauto.
@@ -52,7 +52,7 @@ Proof.
 Qed.
 
 Lemma compile_no_assign_to_args (spec : OperationalSpec) : is_disjoint (Facade.assigned (compile (Body spec))) (of_list (ArgVars spec)) = true.
-Proof.
+Proof using .
   destruct spec; simpl.
   eapply is_disjoint_iff.
   eapply is_disjoint_iff in no_assign_to_args.

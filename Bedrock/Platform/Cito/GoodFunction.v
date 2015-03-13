@@ -19,14 +19,17 @@ Definition to_good_function (f : Func) : GoodFunc f -> GoodFunction.
 Defined.
 
 Lemma to_good_function_fun : forall (f : Func) (H : GoodFunc f), Fun (to_good_function f H) = f.
+Proof using .
   eauto.
 Qed.
 
 Lemma to_good_function_name : forall (f : Func) (H : GoodFunc f), Name (to_good_function f H) = Name f.
+Proof using .
   eauto.
 Qed.
 
 Lemma to_func_good : forall (f : GoodFunction), GoodFunc f.
+Proof using .
   intros; destruct f; eauto.
 Qed.
 

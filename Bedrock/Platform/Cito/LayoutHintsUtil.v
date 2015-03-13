@@ -10,6 +10,7 @@ Lemma starL_in : forall A P x (ls : list A),
   -> exists ls', (P x * Bags.starL P ls' ===> Bags.starL P ls)
     /\ NoDup ls'
     /\ (forall y, In y ls' <-> y <> x /\ In y ls).
+Proof using .
   induction 1; simpl; intuition subst.
 
   eexists; intuition idtac.
@@ -47,6 +48,7 @@ Lemma starL_out : forall A P x (ls : list A),
   -> exists ls', (Bags.starL P ls ===> P x * Bags.starL P ls')
     /\ NoDup ls'
     /\ (forall y, In y ls' <-> y <> x /\ In y ls).
+Proof using .
   induction 1; simpl; intuition subst.
 
   eexists; intuition idtac.
@@ -83,6 +85,7 @@ Lemma starL_permute : forall A P (ls1 : list A),
   -> forall ls2, NoDup ls2
     -> (forall x, In x ls1 <-> In x ls2)
     -> Bags.starL P ls1 ===> Bags.starL P ls2.
+Proof using .
   induction 1.
 
   inversion_clear 1; simpl; intros.

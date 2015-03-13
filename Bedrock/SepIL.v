@@ -29,6 +29,7 @@ Definition memoryIn_def (width : nat) :=
 Theorem fcong : forall A (B : A -> Type) (f g : forall x, B x) x,
   f = g
   -> f x = g x.
+Proof using .
   congruence.
 Defined.
 
@@ -72,6 +73,7 @@ Lemma natToWord_injective : forall width n n',
   -> (n' < pow2 width)%nat
   -> natToWord width n = natToWord width n'
   -> n = n'.
+Proof using .
   intros.
   destruct (wordToNat_natToWord width n);
     destruct (wordToNat_natToWord width n');
@@ -99,6 +101,7 @@ Local Hint Constructors NoDup.
 Lemma NoDup_allWordsUpto' : forall width init' init,
   init <= init' < pow2 width
   -> ~In (natToWord width init') (allWordsUpto width init).
+Proof using .
   induction init; simpl; intuition;
     match goal with
       | [ H : _ |- _ ] => apply natToWord_injective in H; omega
@@ -110,11 +113,13 @@ Local Hint Resolve NoDup_allWordsUpto'.
 Theorem NoDup_allWordsUpto : forall width init,
   (init <= pow2 width)%nat
   -> NoDup (allWordsUpto width init).
+Proof using .
   induction init; simpl; intuition.
 Qed.
 
 Theorem NoDup_allWords : forall width,
   NoDup (allWords width).
+Proof using .
   rewrite allWords_eq; intros; apply NoDup_allWordsUpto; omega.
 Qed.
 
@@ -358,6 +363,7 @@ Definition substH sos (p1 : hpropB sos) (p2 : last sos -> PropX W (settings * st
 
 Theorem subst_sepFormula : forall sos (p1 : hpropB sos) p2 st,
   subst (sepFormula p1 st) p2 = sepFormula (substH p1 p2) st.
+Proof using .
   rewrite sepFormula_eq; reflexivity.
 Qed.
 
@@ -365,36 +371,43 @@ Hint Rewrite subst_sepFormula : sepFormula.
 
 Theorem substH_inj : forall sos P p,
   substH (injB sos P) p = injB _ P.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_injX : forall sos P p,
   substH (injBX (sos := sos) P) p = injBX (subst P p).
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_ptsto8 : forall sos a v p,
   substH (ptsto8 sos a v) p = ptsto8 _ a v.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_ptsto32 : forall sos a v p,
   substH (ptsto32 sos a v) p = ptsto32 _ a v.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_star : forall sos (p1 p2 : hpropB sos) p3,
   substH (starB p1 p2) p3 = starB (substH p1 p3) (substH p2 p3).
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_ex : forall sos A (p1 : A -> hpropB sos) p2,
   substH (exB p1) p2 = exB (fun x => substH (p1 x) p2).
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_hvar : forall sos (x : settings * smem -> propX W (settings * state) sos) p,
   substH (hvarB x) p = hvarB (fun m => subst (x m) p).
+Proof using .
   reflexivity.
 Qed.
 
@@ -406,63 +419,74 @@ Hint Extern 1 (HProp_extensional _ ) => reflexivity.
 Theorem substH_lift1 : forall p' t p,
   HProp_extensional p'
   -> substH (lift (t :: nil) p') p = p'.
+Proof using .
   intros; rewrite H; reflexivity.
 Qed.
 
 Theorem substH_lift2 : forall p' t1 t2 p,
   substH (lift (t1 :: t2 :: nil) p') p = lift (t1 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift3 : forall p' t1 t2 t3 p,
   substH (lift (t1 :: t2 :: t3 :: nil) p') p = lift (t1 :: t2 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift4 : forall p' t1 t2 t3 t4 p,
   substH (lift (t1 :: t2 :: t3 :: t4 :: nil) p') p = lift (t1 :: t2 :: t3 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift5 : forall p' t1 t2 t3 t4 t5 p,
   substH (lift (t1 :: t2 :: t3 :: t4 :: t5 :: nil) p') p = lift (t1 :: t2 :: t3 :: t4 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift6 : forall p' t1 t2 t3 t4 t5 t6 p,
   substH (lift (t1 :: t2 :: t3 :: t4 :: t5 :: t6 :: nil) p') p = lift (t1 :: t2 :: t3 :: t4 :: t5 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift7 : forall p' t1 t2 t3 t4 t5 t6 t7 p,
   substH (lift (t1 :: t2 :: t3 :: t4 :: t5 :: t6 :: t7 :: nil) p') p = lift (t1 :: t2 :: t3 :: t4 :: t5 :: t6 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift8 : forall p' t1 t2 t3 t4 t5 t6 t7 t8 p,
   substH (lift (t1 :: t2 :: t3 :: t4 :: t5 :: t6 :: t7 :: t8 :: nil) p') p = lift (t1 :: t2 :: t3 :: t4 :: t5 :: t6 :: t7 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift9 : forall p' t1 t2 t3 t4 t5 t6 t7 t8 t9 p,
   substH (lift (t1 :: t2 :: t3 :: t4 :: t5 :: t6 :: t7 :: t8 :: t9 :: nil) p') p = lift (t1 :: t2 :: t3 :: t4 :: t5 :: t6 :: t7 :: t8 :: nil) p'.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem substH_lift1_eatLast : forall T U P p,
   HProp_extensional P ->
   substH (sos := eatLast (T :: U :: nil)) (^[P])%Sep p = P.
-Proof.
+Proof using .
   intros. simpl eatLast. rewrite substH_lift1; auto.
 Qed.
 
 Theorem star_eta1 : forall sos (p1 p2 : hpropB sos),
   starB (fun st m => p1 st m) p2 = starB p1 p2.
+Proof using .
   reflexivity.
 Qed.
 
 Theorem star_eta2 : forall sos (p1 p2 : hpropB sos),
   starB p1 (fun st m => p2 st m) = starB p1 p2.
+Proof using .
   reflexivity.
 Qed.
 
@@ -486,10 +510,12 @@ Module SEP := SepExpr.Make ST.
 Module SH := SepHeap.Make SEP.
 
 Theorem natToW_plus : forall n m, natToW (n + m) = natToW n ^+ natToW m.
+Proof using .
   apply natToWord_plus.
 Qed.
 
 Lemma natToW_S : forall n, natToW (S n) = $1 ^+ natToW n.
+Proof using .
   apply natToWord_S.
 Qed.
 
@@ -497,6 +523,7 @@ Hint Rewrite <- natToW_plus : sepFormula.
 
 Lemma natToW_minus : forall n m, (m <= n)%nat
   -> natToW (n - m) = natToW n ^- natToW m.
+Proof using .
   intros; apply wplus_cancel with (natToW m).
   rewrite <- natToWord_plus.
   replace (n - m + m) with n by omega.
@@ -505,6 +532,7 @@ Lemma natToW_minus : forall n m, (m <= n)%nat
 Qed.
 
 Lemma natToW_times4 : forall n, natToW (n * 4) = natToW n ^* natToW 4.
+Proof using .
   intros.
   replace (natToW n ^* natToW 4) with (natToW n ^+ (natToW n ^+ (natToW n ^+ (natToW n ^+ natToW 0)))).
   autorewrite with sepFormula.
@@ -517,6 +545,7 @@ Lemma Himp_trans : forall p q r,
   p ===> q
   -> q ===> r
   -> p ===> r.
+Proof using .
   unfold Himp, himp; eauto using Imply_trans.
 Qed.
 
@@ -524,6 +553,7 @@ Lemma himp_star_frame_comm :
   forall (pcType stateType : Type) (cs : codeSpec pcType stateType)
     (P Q R S : hprop pcType stateType nil),
     himp cs P Q -> himp cs R S -> himp cs (star P R) (star S Q).
+Proof using .
   intros; eapply Trans_himp; [ | apply himp_star_comm ].
   apply himp_star_frame; auto.
 Qed.
@@ -534,5 +564,6 @@ Qed.
 Hint Extern 1 (goodSize _) => reflexivity.
 
 Lemma goodSize_plus_l : forall n m sz, (N.of_nat (n + m) < sz)%N -> (N.of_nat n < sz)%N.
+Proof using .
   unfold goodSize; intros; nomega.
 Qed.

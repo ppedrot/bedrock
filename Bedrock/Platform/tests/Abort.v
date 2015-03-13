@@ -12,5 +12,6 @@ Definition m := bimport [[ "sys"!"abort" @ [abortS] ]]
   }}.
 
 Theorem ok : moduleOk m.
+Proof using .
   vcgen; abstract sep_auto.
 Qed.

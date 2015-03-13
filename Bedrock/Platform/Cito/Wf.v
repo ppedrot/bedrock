@@ -79,6 +79,7 @@ Lemma eval_irrel : forall unwritten vs vs' e,
   (forall x, ~expReads unwritten e x)
   -> (forall x, sel vs' x <> sel vs x -> unwritten x)
   -> eval vs e = eval vs' e.
+Proof using .
   induction e; simpl; intuition.
   change (sel vs s = sel vs' s).
   specialize (H0 s).
@@ -113,6 +114,7 @@ Lemma expReads_weaken : forall x (unwritten1 unwritten2 : _ -> Prop),
   (forall y, unwritten1 y -> unwritten2 y)
   -> forall e, expReads unwritten1 e x
     -> expReads unwritten2 e x.
+Proof using .
   induction e; simpl; intuition.
 Qed.
 
@@ -129,6 +131,7 @@ Lemma reads_weaken : forall x s (unwritten1 unwritten2 : _ -> Prop),
   (forall y, unwritten1 y -> unwritten2 y)
   -> reads unwritten1 s x
   -> reads unwritten2 s x.
+Proof using .
   induction s; simpl; intuition eauto; user.
 Qed.
 

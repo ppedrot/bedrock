@@ -57,6 +57,7 @@ Ltac HypothesisParty H :=
   end.
 
 Lemma fold_4S : forall n, (S (S (S (S (4 * n))))) = (4 + (4 * n)).
+Proof using .
   eauto.
 Qed.
 
@@ -74,14 +75,17 @@ Ltac simpl_sp :=
 Require Import Bedrock.Platform.Wrap.
 
 Lemma pack_pair' : forall A B (x : A * B), (let (x, _) := x in x, let (_, y) := x in y) = x.
+Proof using .
   destruct x; simpl; intuition.
 Qed.
 
 Lemma fold_second : forall A B (p : A * B), (let (_, y) := p in y) = snd p.
+Proof using .
   destruct p; simpl; intuition.
 Qed.
 
 Lemma fold_first : forall A B (p : A * B), (let (x, _) := p in x) = fst p.
+Proof using .
   destruct p; simpl; intuition.
 Qed.
 

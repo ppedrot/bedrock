@@ -657,6 +657,7 @@ Definition memoryIn_def (width : nat) :=
 Theorem fcong : forall A (B : A -> Type) (f g : forall x, B x) x,
   f = g
   -> f x = g x.
+Proof using .
   congruence.
 Defined.
 

@@ -73,6 +73,7 @@ Lemma susp_intro : forall specs w sc pc sp P stn st,
             /\ [| Regs st' Sp = sp |]
             ---> pre (stn, st'))%PropX)
   -> interp specs (![ susp w sc pc sp * P ] (stn, st)).
+Proof using .
   cptr.
 Qed.
 
@@ -89,6 +90,7 @@ Lemma susp_elim : forall specs w sc pc sp P stn st,
                                           Mem := y |}) * substH (globalInv w' sc) tq * mallocHeap 0 ] (stn, st')
             /\ [| Regs st' Sp = sp |]
             ---> pre (stn, st'))%PropX).
+Proof using .
   cptr.
   propxFo; eauto.
   descend; eauto.
