@@ -18,12 +18,17 @@ Import StringMap.
 Require Import Bedrock.Platform.Cito.StringMapFacts.
 
 Definition const_dec : forall e, {w | e = Const w} + {~ exists w, e = Const w}.
-  intros; destruct e; solve [ right; intuition; openhyp; intuition | left; eauto ].
-Qed.
+Proof.
+  intros; destruct e; solve [ right; abstract (intuition; openhyp; intuition) | left; abstract eauto ].
+Defined.
 
 Definition const_zero_dec : forall e, {e = Const $0} + {e <> Const $0}.
-  intros; destruct e; solve [right; intuition | destruct (weq w $0); intuition ].
-Qed.
+Proof.
+  intros; destruct e; try solve [right; abstract intuition | destruct (weq w $0); [ left | right ]; abstract intuition ].
+Defined.
+
+Global Arguments const_dec : simpl never.
+Global Arguments const_zero_dec : simpl never.
 
 Ltac f_equal' :=
   match goal with

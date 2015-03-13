@@ -429,8 +429,11 @@ Module W_W_Key.
   Definition A := (W * W)%type.
 
   Theorem eq_dec : forall x y : W * W, {x = y} + {x <> y}.
+  Proof.
     decide equality; apply weq.
-  Qed.
+  Defined.
+
+  Global Arguments eq_dec : simpl never.
 End W_W_Key.
 
 Module W_W_Bag := Make(W_W_Key).
