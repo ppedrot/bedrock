@@ -308,9 +308,9 @@ Section TransitivityProver.
     rewrite (exprD_typeof _ _ _ _ _ H). rewrite H. destruct (exprD fs uvars vars a2 t); try congruence.
     inversion H2. subst; auto.
 *)
-    admit. (** TODO : this isn't true in general, but the fact that everything is provable makes it true **)
-    admit.
-  Qed.
+    (*admit. (** TODO : this isn't true in general, but the fact that everything is provable makes it true **)
+    admit.*)
+  Admitted.
   End with_vars.
 
   Definition transitivityValid (uvars vars : env types) (sum : transitivity_summary) : Prop :=
@@ -334,7 +334,7 @@ Section TransitivityProver.
 
   Theorem transitivityProverCorrect : ProverCorrect fs transitivityValid transitivityProve.
   Proof using Type.
-    admit.
+    (*admit.*)
 (*
     unfold transitivityProver; hnf; intros;
       destruct goal; try discriminate;
@@ -344,7 +344,7 @@ Section TransitivityProver.
               (groupsOf_sound _ H1)) in H2
         end; hnf in *; simpl in *; eqD.
 *)
-  Qed.
+  Admitted.
 
   Theorem transitivityValid_extensible : forall (u g : env types) (f : transitivity_summary)
      (ue ge : list (sigT (tvarD types))),
