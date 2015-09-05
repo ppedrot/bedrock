@@ -457,7 +457,7 @@ Ltac link_simp := simpl Imports; simpl Exports;
     Bool.bool_dec bool_rec bool_rect eq_rec_r eq_rec eq_rect eq_sym
     label'_lt label'_eq label'_rec label'_rect
     LabelMap.Raw.bal LabelMap.Raw.create
-    Int.Z_as_Int.gt_le_dec Int.Z_as_Int.plus Int.Z_as_Int.ge_lt_dec
+    Int.Z_as_Int.gt_le_dec Int.Z_as_Int.add Int.Z_as_Int.ge_lt_dec
     LabelMap.Raw.height
     ZArith_dec.Z_gt_le_dec Int.Z_as_Int._0
     BinInt.Z.add Int.Z_as_Int._1 Int.Z_as_Int._2

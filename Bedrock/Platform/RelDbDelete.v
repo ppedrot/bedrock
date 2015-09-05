@@ -193,7 +193,7 @@ Section Delete.
         snd labl Ascii.N_of_ascii Ascii.N_of_digits N.compare N.mul
         Pos.compare Pos.compare_cont Pos.mul Pos.add
         Int.Z_as_Int.gt_le_dec Int.Z_as_Int.ge_lt_dec
-        ZArith_dec.Z_gt_le_dec Int.Z_as_Int.plus Int.Z_as_Int.max
+        ZArith_dec.Z_gt_le_dec Int.Z_as_Int.add Int.Z_as_Int.max
         ZArith_dec.Z_gt_dec Int.Z_as_Int._1 BinInt.Z.add
         Int.Z_as_Int._0 Int.Z_as_Int._2 BinInt.Z.max ZArith_dec.Zcompare_rec
         ZArith_dec.Z_ge_lt_dec BinInt.Z.compare ZArith_dec.Zcompare_rect
