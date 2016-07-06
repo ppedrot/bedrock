@@ -141,7 +141,7 @@ Inductive debufferize := Debufferize.
 Hint Constructors debufferize.
 
 Definition hints : TacPackage.
-  prepare (tree_fwd, tree'_nil_fwd, tree'_cons_fwd, tree''_zero_fwd, tree''_nonzero_fwd)
+  admit; prepare (tree_fwd, tree'_nil_fwd, tree'_cons_fwd, tree''_zero_fwd, tree''_nonzero_fwd)
   (tree_bwd, tree'_nil_bwd, tree'_cons_bwd, tree''_zero_bwd, tree''_nonzero_bwd).
 Defined.
 

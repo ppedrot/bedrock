@@ -30,7 +30,7 @@ Import Adt.
 Export Adt.
 
 Definition hints : TacPackage.
-  prepare (tuple_fwd, allocate_array) (tuple_bwd, free_array).
+  admit; prepare (tuple_fwd, allocate_array) (tuple_bwd, free_array).
 Defined.
 
 Definition newS := newS tuple 7.

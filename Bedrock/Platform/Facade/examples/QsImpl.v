@@ -22,7 +22,7 @@ Import LinkMake.StubsMake.StubMake.CompileFuncSpecMake.InvMake2.
 Import LinkMake.StubsMake.StubMake.CompileFuncSpecMake.InvMake.
 
 Definition hints : TacPackage.
-  prepare (store_pair_inl_fwd, store_pair_inr_fwd)
+  admit; prepare (store_pair_inl_fwd, store_pair_inr_fwd)
   (store_pair_inl_bwd, store_pair_inr_bwd).
 Defined.
 

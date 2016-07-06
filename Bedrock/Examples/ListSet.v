@@ -99,7 +99,7 @@ Hint Immediate usl_extensional usl'_extensional.
 
 Definition hints : TacPackage.
 (*TIME idtac "tree-set:prepare1". Time *)
-  prepare (usl_fwd, nil_fwd, cons_fwd) (usl_bwd, nil_bwd, cons_bwd).
+  admit; prepare (usl_fwd, nil_fwd, cons_fwd) (usl_bwd, nil_bwd, cons_bwd).
 (*TIME Time *)Defined.
 
 Definition initS := initS usl 7.

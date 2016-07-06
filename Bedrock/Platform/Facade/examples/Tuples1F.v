@@ -243,7 +243,7 @@ Import Adt.
 Export Adt.
 
 Definition hints : TacPackage.
-  prepare (tuples1_fwd, tree_leaf_fwd, tree_node_fwd, stack_nil_fwd, stack_cons_fwd)
+  admit; prepare (tuples1_fwd, tree_leaf_fwd, tree_node_fwd, stack_nil_fwd, stack_cons_fwd)
           (tuples1_bwd, tree_leaf_bwd, tree_node_bwd, stack_nil_bwd, stack_cons_bwd).
 Defined.
 

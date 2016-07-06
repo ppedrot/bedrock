@@ -269,7 +269,7 @@ Hint Immediate goodSize8.
 Opaque array8 allocated.
 
 Definition hints : TacPackage.
-  prepare (materialize_array8_tagged, decomission_array8_tagged) tt.
+  admit; prepare (materialize_array8_tagged, decomission_array8_tagged) tt.
 Defined.
 
 Ltac useHyp := match goal with

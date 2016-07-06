@@ -94,7 +94,7 @@ Definition m := bimport [[ "sys"!"abort" @ [abortS], "sys"!"printInt" @ [printIn
   }}.
 
 Definition hints : TacPackage.
-  prepare (materialize_buffer, buffer_split_tagged) buffer_join_tagged.
+  admit; prepare (materialize_buffer, buffer_split_tagged) buffer_join_tagged.
 Defined.
 
 Hint Extern 1 (@eq W _ _) => words.

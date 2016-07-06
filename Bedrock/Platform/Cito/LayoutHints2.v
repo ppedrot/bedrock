@@ -235,7 +235,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
     Qed.
 
     Definition hints_split_heap : TacPackage.
-      prepare split_heap tt.
+      admit; prepare split_heap tt.
     Defined.
 
   End TopSection.

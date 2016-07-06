@@ -63,7 +63,7 @@ Definition pair := bmodule "pair" {{
 
 Definition hints : TacPackage.
   (*TIME idtac "pair:prepare". Time *)
-  prepare pair_fwd pair_bwd.
+  admit; prepare pair_fwd pair_bwd.
 Defined.
 
 Theorem pairOk : moduleOk pair.

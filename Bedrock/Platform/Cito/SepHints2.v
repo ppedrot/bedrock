@@ -55,15 +55,15 @@ Section TopSection.
   Qed.
 
   Definition hints_array_split : TacPackage.
-    prepare array_split tt.
+    admit; prepare array_split tt.
   Defined.
 
   Definition hints_array_elim : TacPackage.
-    prepare array_elim tt.
+    admit; prepare array_elim tt.
   Defined.
 
   Definition hints_buf_split_bwd : TacPackage.
-    prepare tt buf_split_bwd.
+    admit; prepare tt buf_split_bwd.
   Defined.
 
 End TopSection.

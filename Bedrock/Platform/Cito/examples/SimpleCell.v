@@ -34,7 +34,7 @@ Import Adt.
 Export Adt.
 
 Definition hints : TacPackage.
-  prepare cell_fwd cell_bwd.
+  admit; prepare cell_fwd cell_bwd.
 Defined.
 
 Definition newS := newS cell 8.

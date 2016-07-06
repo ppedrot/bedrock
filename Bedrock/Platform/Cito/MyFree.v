@@ -56,10 +56,10 @@ Lemma consume_the_array : forall ls p, array ls p ===> p =?> length ls.
   intros; apply ptsto32m_allocated.
 Qed.
 Definition hints : TacPackage.
-  prepare tt buf_2_bwd.
+  admit; prepare tt buf_2_bwd.
 Defined.
 Definition hints2 : TacPackage.
-  prepare consume_the_array tt.
+  admit; prepare consume_the_array tt.
 Defined.
 
 Theorem ok : moduleOk m.

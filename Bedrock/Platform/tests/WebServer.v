@@ -125,7 +125,7 @@ Module MyIo := Io.Make(MyM).
 
 
 Definition hints : TacPackage.
-  prepare (buffer_split_tagged, strings_fwd, strings'_fwd_zero, strings'_fwd_nonzero, keyValues_pick_fwd)
+  admit; prepare (buffer_split_tagged, strings_fwd, strings'_fwd_zero, strings'_fwd_nonzero, keyValues_pick_fwd)
   (buffer_join_tagged, strings_bwd, keyValues_empty_bwd, keyValues_add_bwd, keyValues_pick_bwd).
 Defined.
 

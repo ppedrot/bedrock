@@ -1320,7 +1320,7 @@ Ltac prepare fwd bwd :=
     ILTacCommon.isConst auto_ext' tt tt (make_call, init_in, fwd) (make_return, init_out, bwd).
 
 Definition auto_ext : TacPackage.
-  prepare tt tt.
+  admit; prepare tt tt.
 Defined.
 
 Theorem create_locals_out : forall ns' ns'' avail' ns avail vs p,

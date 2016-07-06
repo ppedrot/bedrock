@@ -66,5 +66,5 @@ Export SinglyLinkedList.
 Hint Immediate sll_extensional.
 
 Definition hints : TacPackage.
-  prepare (nil_fwd, cons_fwd) (nil_bwd, cons_bwd).
+  admit; prepare (nil_fwd, cons_fwd) (nil_bwd, cons_bwd).
 Defined.

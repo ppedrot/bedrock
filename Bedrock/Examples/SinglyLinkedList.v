@@ -68,7 +68,7 @@ Hint Immediate sll_extensional.
 
 Definition hints : TacPackage.
 (*TIME idtac "sll:prepare". Time *)
-  prepare (nil_fwd, cons_fwd) (nil_bwd, cons_bwd).
+  admit; prepare (nil_fwd, cons_fwd) (nil_bwd, cons_bwd).
 (*TIME Time *)
 Defined.
 

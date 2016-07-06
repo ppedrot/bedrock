@@ -184,7 +184,7 @@ Lemma exitize_locals : forall xx ns vs res sp,
 Qed.
 
 Definition exitize_hints : TacPackage.
-  prepare exitize_locals tt.
+  admit; prepare exitize_locals tt.
 Defined.
 
 Ltac sep unf hints := unf; unfold localsInvariantMain;

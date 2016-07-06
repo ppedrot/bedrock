@@ -161,7 +161,7 @@ Lemma get_rval'' : forall specs st P (Q : Prop) R S Z,
 Qed.
 
 Definition hints : TacPackage.
-  prepare (store_pair_inl_fwd, store_pair_inr_fwd)
+  admit; prepare (store_pair_inl_fwd, store_pair_inr_fwd)
   (store_pair_inl_bwd, store_pair_inr_bwd).
 Defined.
 

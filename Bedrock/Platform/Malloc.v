@@ -164,7 +164,7 @@ Lemma expose3_fwd : forall p (sz : W),
 Qed.
 
 Definition hints : TacPackage.
-  prepare (mallocHeap_fwd, cons_fwd, freeable_fwd, expose3_fwd)
+  admit; prepare (mallocHeap_fwd, cons_fwd, freeable_fwd, expose3_fwd)
   (mallocHeap_bwd, nil_bwd, cons_bwd, expose2_bwd).
 Defined.
 

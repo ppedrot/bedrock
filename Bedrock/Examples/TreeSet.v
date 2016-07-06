@@ -105,7 +105,7 @@ Hint Immediate bst_extensional bst'_extensional.
 
 Definition hints : TacPackage.
 (*TIME idtac "tree-set:prepare1". Time *)
-  prepare (bst_fwd, nil_fwd, cons_fwd) (bst_bwd, nil_bwd, cons_bwd).
+  admit; prepare (bst_fwd, nil_fwd, cons_fwd) (bst_bwd, nil_bwd, cons_bwd).
 (*TIME Time *)Defined.
 
 Definition removeMaxS : spec := SPEC("prev") reserving 6

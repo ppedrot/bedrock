@@ -167,7 +167,7 @@ Lemma exitize_locals : forall xx yy ns vs res sp,
 Qed.
 
 Definition hints : TacPackage.
-  prepare (tqs'_del_fwd, create_stack, exitize_locals) (tqs'_empty_bwd, tqs'_add_bwd).
+  admit; prepare (tqs'_del_fwd, create_stack, exitize_locals) (tqs'_empty_bwd, tqs'_add_bwd).
 Defined.
 
 Definition starting (ts : bag) (w : M.world) (pc : W) (ss : nat) : HProp := fun s m =>

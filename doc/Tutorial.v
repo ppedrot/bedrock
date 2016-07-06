@@ -161,7 +161,7 @@ Qed.
 (** So that Bedrock knows to use these rules where applicable, we combine them into a _hint package_, using a Bedrock tactic [prepare]. *)
 
 Definition hints : TacPackage.
-  prepare (nil_fwd, cons_fwd) (nil_bwd, cons_bwd).
+  admit; prepare (nil_fwd, cons_fwd) (nil_bwd, cons_bwd).
 Defined.
 
 (** Now that we have our general %``%#"#theory of lists#"#%''% in place, we can specify and verify in-placed reversal for lists. *)

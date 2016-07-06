@@ -18,7 +18,7 @@ Section TopSection.
   Qed.
 
   Definition hints_elim_locals : TacPackage.
-    prepare elim_locals tt.
+    admit; prepare elim_locals tt.
   Defined.
 
 End TopSection.

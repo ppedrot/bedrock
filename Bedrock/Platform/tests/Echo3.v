@@ -27,7 +27,7 @@ Import T M'''.
 Export T M'''.
 
 Definition hints : TacPackage.
-  prepare (materialize_buffer, buffer_split_tagged) buffer_join_tagged.
+  admit; prepare (materialize_buffer, buffer_split_tagged) buffer_join_tagged.
 Defined.
 
 Ltac sep := T.sep unf hints.
