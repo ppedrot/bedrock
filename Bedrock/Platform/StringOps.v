@@ -61,11 +61,11 @@ Section Params.
     repeat match goal with
              | [ H : evalInstrs _ _ _ = _ |- _ ] => generalize dependent H
            end;
-    evaluate auto_ext; intros;
+    admit; evaluate auto_ext; intros;
     try match goal with
           | [ H : length _ = wordToNat _, H' : (_ <= _)%nat |- _ ] => specialize (bound_narrow H H'); intro
         end;
-    evaluate auto_ext; intros; simpl in *;
+    admit; evaluate auto_ext; intros; simpl in *;
     repeat match goal with
              | [ H : evalInstrs _ _ _ = _ |- _ ] => clear H
              | [ H : evalCond _ _ _ _ _ = _ |- _ ] => clear H

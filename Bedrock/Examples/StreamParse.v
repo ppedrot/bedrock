@@ -182,7 +182,7 @@ Section Parse.
       -> Regs st Rv <= sel V size.
     clear H; induction p' as [ | [ ] ]; simpl; intuition eauto.
 
-    prep_locals; evaluate auto_ext; tauto.
+    prep_locals; admit; evaluate auto_ext; tauto.
   Qed.
 
   Lemma bexpSafe_guard : forall specs stn st ws V r fr,
@@ -198,7 +198,7 @@ Section Parse.
       -> bexpSafe (guard p' offset) stn st.
     clear H; induction p' as [ | [ ] ]; simpl; intuition.
 
-    prep_locals; evaluate auto_ext.
+    prep_locals; admit; evaluate auto_ext.
 
     apply IHp'.
     rewrite H4; f_equal; omega.
@@ -214,7 +214,7 @@ Section Parse.
     intros.
     apply wle_goodSize in H9; auto; eauto.
 
-    prep_locals; evaluate auto_ext.
+    prep_locals; admit; evaluate auto_ext.
 
     unfold evalCond; simpl.
     rewrite H2.
@@ -256,7 +256,7 @@ Section Parse.
     rewrite suffix_remains in * by auto.
     assert (natToW (offset + wordToNat (sel V pos)) < natToW (length ws))
       by (apply lt_goodSize; eauto).
-    prep_locals; evaluate auto_ext.
+    prep_locals; admit; evaluate auto_ext.
 
     split.
     subst.
@@ -317,7 +317,7 @@ Section Parse.
       -> ~matches p' (suffix (offset + wordToNat (sel V pos)) ws).
     clear H; induction p' as [ | [ ] ]; simpl; intuition.
 
-    prep_locals; evaluate auto_ext.
+    prep_locals; admit; evaluate auto_ext.
     rewrite H3 in *.
     apply lt_goodSize' in H13.
     omega.
@@ -330,7 +330,7 @@ Section Parse.
     rewrite suffix_remains in * by auto.
     assert (natToW (offset + wordToNat (sel V pos)) < natToW (length ws))
       by (apply lt_goodSize; eauto).
-    prep_locals; evaluate auto_ext.
+    prep_locals; admit; evaluate auto_ext.
     eapply IHp'; eauto.
     rewrite H5; f_equal; omega.
 
@@ -344,7 +344,7 @@ Section Parse.
         in *.
     assert (natToW (offset + wordToNat (sel V pos)) < natToW (length ws))
       by (apply lt_goodSize; eauto).
-    prep_locals; evaluate auto_ext.
+    prep_locals; admit; evaluate auto_ext.
     subst.
     apply H16.
     unfold Array.sel.
@@ -408,7 +408,7 @@ Section Parse.
     apply lt_goodSize; eauto.
     prep_locals.
     rewrite evalInstr_evalInstrs in H0.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intros.
     eapply IHp'.
     eauto.
@@ -447,7 +447,7 @@ Section Parse.
     apply lt_goodSize; eauto.
     prep_locals.
     rewrite evalInstr_evalInstrs in H0.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     simpl.
     match goal with
@@ -503,7 +503,7 @@ Section Parse.
     apply lt_goodSize; eauto.
     prep_locals.
     rewrite evalInstr_evalInstrs in H0.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intros.
     eapply (IHp' _ _ _ (upd V s (Array.sel ws (offset + wordToNat (sel V pos))))) in H13.
     rewrite <- H1.
@@ -543,7 +543,7 @@ Section Parse.
     apply lt_goodSize; eauto.
     prep_locals.
     rewrite evalInstr_evalInstrs in H0.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     simpl.
     match goal with
@@ -714,8 +714,8 @@ Section Parse.
             (LvMem (Imm (sel V stream ^+ $4 ^* $ (offset + wordToNat (sel V pos))))) :: nil)) in H10.
     assert (natToW (offset + wordToNat (sel V pos)) < $ (length ws)) by (apply lt_goodSize; eauto).
     prep_locals.
-    generalize dependent H0; evaluate auto_ext; intro.
-    case_eq (evalInstrs stn s0 (Assign Rv (variableSlot s ns) :: nil)); intros; prep_locals; evaluate auto_ext.
+    generalize dependent H0; admit; evaluate auto_ext; intro.
+    case_eq (evalInstrs stn s0 (Assign Rv (variableSlot s ns) :: nil)); intros; prep_locals; admit; evaluate auto_ext.
     rewrite sel_upd_eq in H17 by auto.
     unfold evalInstrs in H10, H15.
     repeat (match goal with
@@ -766,7 +766,7 @@ Section Parse.
     2: symmetry; eapply scratchOnlyMem; eauto; simpl; intuition.
     change (S (S (S (S (variablePosition ns s))))) with (4 + variablePosition ns s) in *.
     prep_locals.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     rewrite sel_upd_eq in H22 by auto.
     unfold Array.sel in H22.
     unfold natToW in H22; rewrite wordToNat_natToWord_idempotent in H22.
@@ -889,14 +889,14 @@ Section Parse.
       _ _); abstract (wrap;
         try match goal with
               | [ H : context[reads] |- _ ] => generalize dependent H
-            end; evaluate auto_ext; intros; eauto;
+            end; admit; evaluate auto_ext; intros; eauto;
         repeat match goal with
                  | [ H : evalInstrs _ _ (_ ++ _) = None |- _ ] =>
                    apply evalInstrs_app_fwd_None in H; destruct H as [ | [ ? [ ? ] ] ]; intuition
                  | [ H : evalInstrs _ _ (_ ++ _) = Some _ |- _ ] =>
                    apply evalInstrs_app_fwd in H; destruct H as [ ? [ ] ]
                  | [ H : evalInstrs _ _ (reads _ _) = Some _ |- _ ] =>
-                   edestruct (reads_exec _ _ H) as [V' [ ] ]; eauto; evaluate auto_ext
+                   edestruct (reads_exec _ _ H) as [V' [ ] ]; eauto; admit; evaluate auto_ext
                end;
         try match goal with
               | [ |- exists x, _ /\ _ ] => eexists; split; [ solve [ eauto ] | try split; intros ];

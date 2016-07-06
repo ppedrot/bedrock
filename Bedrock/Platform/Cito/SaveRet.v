@@ -109,7 +109,7 @@ Section TopLevel.
     eauto.
     clear H.
     unfold is_state in H0.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     destruct x; simpl in *.
     intuition.
     unfold is_state.
@@ -129,7 +129,7 @@ Section TopLevel.
     unfold vars_start in *.
     change (4 * 2) with 8 in *.
     clear_fancy.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     Transparent evalInstrs.
     discriminate.
     Opaque evalInstrs.

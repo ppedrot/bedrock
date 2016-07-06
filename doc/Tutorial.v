@@ -380,7 +380,7 @@ Proof.
 
   (** Next, we need to execute the instructions of the prior basic block symbolically, to reflect their effects in the predicate that characterizes the current machine state. *)
 
-  evaluate auto_ext.
+  admit; evaluate auto_ext.
 
   (** At this point, we are staring at the spec of ["swap"], which begins with some existential quantifiers and conjunctions.  One of the conjuncts comes from a use of the [@@] derived $\mathsf{PropX}$#PropX# operator, to express the postcondition via a fact about the return pointer we pass to ["swap"].  We call [descend] to peel away the quantifiers and conjunctions, leaving the conjuncts as distinct subgoals. *)
 

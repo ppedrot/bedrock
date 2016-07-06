@@ -176,7 +176,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
 
   Ltac evaluate_hints hints :=
     match goal with
-        H : evalInstrs _ ?ST _ = _ |- _ => generalize dependent H; evaluate hints; intro; evaluate auto_ext
+        H : evalInstrs _ ?ST _ = _ |- _ => generalize dependent H; evaluate hints; intro; admit; evaluate auto_ext
     end.
 
   Ltac my_evaluate hints :=

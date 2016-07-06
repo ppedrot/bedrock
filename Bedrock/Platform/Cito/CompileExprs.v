@@ -209,7 +209,7 @@ Section TopLevel.
     apply Himp_star_frame; [ | apply Himp_refl ].
     apply array_out; omega.
     destruct x6; simpl in *; try discriminate.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     destruct x0; simpl in *.
     descend.
     replace (Regs x2 Sp ^+ natToW dst0 ^+ natToW 4) with (Regs x2 Sp ^+ natToW (S (S (S (S dst0)))))
@@ -256,7 +256,7 @@ Section TopLevel.
     apply array_out; omega.
     unfold stack_slot in H4.
     clear H0; clear_fancy.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     destruct dst_buf; simpl in *; try discriminate.
     assert (interp specs0
       (![is_state (Regs x0 Sp) vs (upd_sublist temps base0 x) (S (S (S (S dst0)))) dst_buf *
@@ -392,7 +392,7 @@ Section TopLevel.
     apply array_out; omega.
     destruct x3; simpl in *; try discriminate.
     unfold stack_slot in *.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     apply IHexprs0; clear IHexprs0; clear_fancy.
     Focus 2.
@@ -422,7 +422,7 @@ Section TopLevel.
     apply array_out; omega.
     destruct x5; simpl in *; try discriminate.
     unfold stack_slot in *.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     destruct x; simpl in *.
     descend.
     rewrite H4.

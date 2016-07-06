@@ -332,7 +332,7 @@ Ltac evalu' := state_apart; unfold buffer in *;
                | [ H : evalInstrs _ _ _ = _ |- _ ] => generalize dependent H
                | [ H : evalCond _ _ _ _ _ = _ |- _ ] => generalize dependent H
              end;
-      evaluate auto_ext;
+      admit; evaluate auto_ext;
       match goal with
         | [ col := _, _ : context[posl ?cols] |- _ ] =>
           assert (natToW col < natToW (length (posl cols)))
@@ -343,9 +343,9 @@ Ltac evalu' := state_apart; unfold buffer in *;
       try match goal with
             | [ _ : evalCond _ _ _ _ ?s = _,
               H : evalInstrs _ ?s _ = _ |- _ ] =>
-            generalize dependent H; evaluate auto_ext; intro
+            generalize dependent H; admit; evaluate auto_ext; intro
           end;
-      evaluate auto_ext
+      admit; evaluate auto_ext
     | _ =>
       try match goal with
             | [ sch : schema |- _ ] => assert (even (length sch + length sch)) by (hnf; eauto)

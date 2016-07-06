@@ -352,7 +352,7 @@ Section Query.
     clear_fancy; induction c'; simpl; intuition;
       match goal with
         | [ _ : evalCond (expOut ?e1) _ (expOut ?e2) _ _ = None |- _ ] =>
-          destruct e1; destruct e2; (simpl in *; intuition idtac; prep_locals; evaluate auto_ext)
+          destruct e1; destruct e2; (simpl in *; intuition idtac; prep_locals; admit; evaluate auto_ext)
       end.
   Qed.
 
@@ -431,7 +431,7 @@ Section Query.
         match goal with
           | [ _ : evalCond (expOut ?e1) ?t (expOut ?e2) _ _ = _ |- _ ] =>
             destruct e1; destruct t; destruct e2;
-              (simpl in *; intuition idtac; prep_locals; evaluate auto_ext; auto)
+              (simpl in *; intuition idtac; prep_locals; admit; evaluate auto_ext; auto)
         end.
   Qed.
 
@@ -873,7 +873,7 @@ Section Query.
           | [ _ : bexpFalse _ _ _, H : evalInstrs _ _ (Binop _ _ Plus _ :: nil) = Some _ |- _ ] =>
             generalize dependent H
         end;
-    evaluate auto_ext; intros; subst;
+    admit; evaluate auto_ext; intros; subst;
       try match goal with
             | [ _ : sel _ size = natToW (length (_ ++ ?ws)) |- _ ] => assert (ws = nil) by auto; subst;
               try evolve
@@ -988,7 +988,7 @@ Section Query.
                       nonempty wPost;
                       repeat match goal with
                                | [ H : interp _ _ |- _ ] => clear H
-                             end; destruct Hf as [v']; evaluate auto_ext;
+                             end; destruct Hf as [v']; admit; evaluate auto_ext;
                       apply simplify_fwd'; unfold Substs; apply subst_qspecOut_bwd;
                         generalize dependent v'; locals_rewrite; intros; apply qspecOut_bwd with v'
           end.

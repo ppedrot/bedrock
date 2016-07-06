@@ -185,7 +185,7 @@ Theorem localsInvariant_in : forall ns' pre post ns res ns'' res' stn_st specs,
   red; intuition.
   change (LvMem (Sp + 0)%loc) with (LvMem (Sp + variablePosition ("rp" :: ns ++ ns') "rp")%loc) in H7.
   assert (In "rp" ("rp" :: ns ++ ns')) by intuition.
-  evaluate auto_ext.
+  admit; evaluate auto_ext.
   generalize dependent x2.
   rewrite <- H10.
   erewrite H4.

@@ -297,7 +297,7 @@ Ltac t := solve [
   try match goal with
         | [ |- forall stn_st specs, interp _ _ -> interp _ _ ] =>
           match goal with
-            | [ |- context[LvMem8] ] => post; evaluate auto_ext;
+            | [ |- context[LvMem8] ] => post; admit; evaluate auto_ext;
               match goal with
                 | [ H : goodSize (length (?done ++ _)) |- _ ] =>
                   let Ho := fresh in

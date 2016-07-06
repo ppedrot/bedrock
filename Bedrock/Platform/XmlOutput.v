@@ -1519,7 +1519,7 @@ Section Out.
           end | .. ].
 
   Ltac t := post; repeat invoke1; prep; propxFo;
-    repeat invoke1; prepl; evaluate auto_ext;
+    repeat invoke1; prepl; admit; evaluate auto_ext;
       desc; (repeat (bash; my_descend); eauto).
 
   Notation "l ~~ im ~~> s" := (LabelMap.find l%SP im = Some (Precondition s None)) (at level 0).

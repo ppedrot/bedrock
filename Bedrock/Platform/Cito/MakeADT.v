@@ -424,7 +424,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         do 2 (eapply Himp_star_frame; [ | apply Himp_refl ]);
           apply is_state_out; [ instantiate (1 := argNames); auto | .. ]; solve [ auto ] ]
     end;
-    evaluate auto_ext;
+    admit; evaluate auto_ext;
     match goal with
       | [ H : interp _ _ |- _ ] => eapply CompileExprs.change_hyp in H; [ |
         do 3 (apply Himp_star_frame; [ apply Himp_refl | ]);
@@ -482,7 +482,7 @@ Module Make (Import E : ADT) (Import M : RepInv E).
         do 2 (eapply Himp_star_frame; [ | apply Himp_refl ]);
           apply is_state_out; [ instantiate (1 := argNames); auto | .. ]; solve [ auto ] ]
     end;
-    evaluate auto_ext;
+    admit; evaluate auto_ext;
     match goal with
       | [ H : interp _ _ |- _ ] => eapply CompileExprs.change_hyp in H; [ |
         do 3 (apply Himp_star_frame; [ apply Himp_refl | ]);

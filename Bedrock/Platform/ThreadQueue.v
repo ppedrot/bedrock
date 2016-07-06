@@ -683,7 +683,7 @@ Theorem ok : moduleOk m.
   evaluate hints; sep hints; auto.
   evaluate hints; simpl; omega.
 
-  post; evaluate auto_ext.
+  post; admit; evaluate auto_ext.
   match goal with
     | [ H : interp _ _ |- _ ] =>
       toFront ltac:(fun P => match P with

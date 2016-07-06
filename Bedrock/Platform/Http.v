@@ -485,7 +485,7 @@ Ltac t' :=
   try match goal with
         | [ _ : context[match ?st with pair _ _ => _ end] |- _ ] => destruct st; simpl in *
       end; try abstract (sep_auto; eauto);
-  post; evaluate auto_ext; try congruence; descend;
+  post; admit; evaluate auto_ext; try congruence; descend;
   try match_locals; repeat (step auto_ext; descend); eauto.
 
 Ltac t := easy || prove_irrel || t'.

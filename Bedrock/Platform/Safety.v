@@ -1083,7 +1083,7 @@ Section OpSem.
           repeat match goal with
                    | [ H : interp _ _ |- _ ] => generalize dependent H
                    | [ H : context[evalInstrs] |- _ ] => generalize dependent H
-                 end; clear; intros; evaluate auto_ext; auto.
+                 end; clear; intros; admit; evaluate auto_ext; auto.
 
   Lemma progress : forall st, goodState st
     -> exists st', sys_step stn prog st st'.

@@ -349,7 +349,7 @@ Section ExprComp.
     change (4 * 2) with 8 in *.
     clear_fancy.
     unfold is_state in H1; simpl in H1.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     simpl.
     intuition idtac.
     exists nil; simpl; intuition idtac.
@@ -362,7 +362,7 @@ Section ExprComp.
     hnf; intros.
     simpl.
     clear_fancy.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intuition idtac.
     exists nil; simpl; intuition.
     step auto_ext.
@@ -407,7 +407,7 @@ Section ExprComp.
     unfold is_state in H7; simpl in H7.
     assert (natToW base < natToW (length (upd_sublist temps base x4)))%word.
     rewrite length_upd_sublist; assumption.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intros.
     hnf in H14.
     assert (interp specs0 (![is_state ((sm, x1)) # (Sp) vs
@@ -429,7 +429,7 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H16.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intuition idtac.
     congruence.
 
@@ -542,7 +542,7 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H16.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intuition idtac.
     congruence.
     rewrite sublist_irrel in H20.
@@ -625,7 +625,7 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H16.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intuition idtac.
     congruence.
     rewrite sublist_irrel in H20.
@@ -750,7 +750,7 @@ Section ExprComp.
     rewrite length_upd_sublist; auto.
     apply goodSize_weaken with (length (upd_sublist temps base x4)); eauto.
     rewrite length_upd_sublist; auto.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intros.
     assert (interp specs0 (![is_state ((sm, x1)) # (Sp) vs
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))* other] (sm, x1))).
@@ -789,8 +789,8 @@ Section ExprComp.
     generalize dependent H14.
     destruct t0; simpl.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -870,8 +870,8 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)); eauto.
     generalize (Max.le_max_r (depth expr1) (S (depth expr2))); omega.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -951,8 +951,8 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)); eauto.
     generalize (Max.le_max_r (depth expr1) (S (depth expr2))); omega.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -1031,8 +1031,8 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)); eauto.
     generalize (Max.le_max_r (depth expr1) (S (depth expr2))); omega.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -1151,7 +1151,7 @@ Section ExprComp.
     rewrite length_upd_sublist; auto.
     apply goodSize_weaken with (length (upd_sublist temps base x4)); eauto.
     rewrite length_upd_sublist; auto.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     intros.
     assert (interp specs0 (![is_state ((sm, x1)) # (Sp) vs
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))* other] (sm, x1))).
@@ -1190,8 +1190,8 @@ Section ExprComp.
     generalize dependent H14.
     destruct t0; simpl.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -1271,8 +1271,8 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)); eauto.
     generalize (Max.le_max_r (depth expr1) (S (depth expr2))); omega.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -1352,8 +1352,8 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)); eauto.
     generalize (Max.le_max_r (depth expr1) (S (depth expr2))); omega.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -1432,8 +1432,8 @@ Section ExprComp.
         (eval vs expr1)) (S base) x5)); eauto.
     generalize (Max.le_max_r (depth expr1) (S (depth expr2))); omega.
 
-    evaluate auto_ext.
-    intros; evaluate auto_ext.
+    admit; evaluate auto_ext.
+    intros; admit; evaluate auto_ext.
     intuition.
     assert (length (upd_sublist
       (Array.upd (upd_sublist temps base x4) base (eval vs expr1))
@@ -1538,11 +1538,11 @@ Section ExprComp.
     apply H0.
     apply StringFacts.singleton_iff; auto.
     clear_fancy.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     clear_fancy.
     clear H.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     apply IHexpr1; auto.
     do 2 intro.
@@ -1576,7 +1576,7 @@ Section ExprComp.
     rewrite length_upd_sublist.
     assert (max (depth expr1) (S (depth expr2)) >= S (depth expr2)) by apply Max.le_max_r; omega.
     clear IHexpr1 IHexpr2; clear_fancy.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     apply IHexpr2.
     Focus 2.
@@ -1610,7 +1610,7 @@ Section ExprComp.
     apply goodSize_weaken with (length (upd_sublist x4 base x5)); eauto.
     rewrite length_upd_sublist.
     assert (max (depth expr1) (S (depth expr2)) >= S (depth expr2)) by apply Max.le_max_r; omega.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     destruct x; simpl in *.
     descend.
     unfold is_state.
@@ -1654,7 +1654,7 @@ Section ExprComp.
     apply goodSize_weaken with (length (upd_sublist x4 base x5)); eauto.
     rewrite length_upd_sublist.
     assert (max (depth expr1) (S (depth expr2)) >= S (depth expr2)) by apply Max.le_max_r; omega.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     assert (interp specs (![is_state (Regs x Sp) x3
       (Array.upd (upd_sublist x4 base x5) base (eval x3 expr1))* (fun stn sm => x2 (stn, sm))] (stn, x))).
     unfold is_state.
@@ -1673,21 +1673,21 @@ Section ExprComp.
         (eval x3 expr1)) (S base) x6)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H15.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     assert (natToW base < natToW (length (upd_sublist
       (Array.upd (upd_sublist x4 base x5) base
         (eval x3 expr1)) (S base) x6)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H15.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     assert (natToW base < natToW (length (upd_sublist
       (Array.upd (upd_sublist x4 base x5) base
         (eval x3 expr1)) (S base) x6)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H15.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     Transparent evalInstrs.
     simpl in H3.
@@ -1717,7 +1717,7 @@ Section ExprComp.
     apply goodSize_weaken with (length x2); eauto.
     eauto.
     clear IHexpr1 IHexpr2; clear_fancy.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     assert (interp specs (![is_state (Regs x Sp) x1 x2 * (fun stn sm => x0 (stn, sm))] (stn, x))).
     unfold is_state.
     step auto_ext.
@@ -1726,7 +1726,7 @@ Section ExprComp.
     assert (natToW base < natToW (length (upd_sublist x2 base x3)))%word.
     rewrite length_upd_sublist; assumption.
     clear H8; unfold is_state in H7.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     apply IHexpr2; auto.
     Focus 2.
@@ -1757,7 +1757,7 @@ Section ExprComp.
     apply goodSize_weaken with (length (upd_sublist x4 base x5)); eauto.
     rewrite length_upd_sublist; auto.
     clear IHexpr1 IHexpr2; clear_fancy.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     destruct x; simpl in *.
     descend.
     unfold is_state.
@@ -1801,7 +1801,7 @@ Section ExprComp.
     apply goodSize_weaken with (length (upd_sublist x4 base x5)); eauto.
     rewrite length_upd_sublist.
     assert (max (depth expr1) (S (depth expr2)) >= S (depth expr2)) by apply Max.le_max_r; omega.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
     assert (interp specs (![is_state (Regs x Sp) x3
       (Array.upd (upd_sublist x4 base x5) base (eval x3 expr1))* (fun stn sm => x2 (stn, sm))] (stn, x))).
     unfold is_state.
@@ -1820,28 +1820,28 @@ Section ExprComp.
         (eval x3 expr1)) (S base) x6)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H15.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     assert (natToW base < natToW (length (upd_sublist
       (Array.upd (upd_sublist x4 base x5) base
         (eval x3 expr1)) (S base) x6)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H15.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     assert (natToW base < natToW (length (upd_sublist
       (Array.upd (upd_sublist x4 base x5) base
         (eval x3 expr1)) (S base) x6)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H15.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     assert (natToW base < natToW (length (upd_sublist
       (Array.upd (upd_sublist x4 base x5) base
         (eval x3 expr1)) (S base) x6)))%word.
     rewrite length_upd_sublist; rewrite upd_length; assumption.
     clear H12; unfold is_state in H15.
-    evaluate auto_ext.
+    admit; evaluate auto_ext.
 
     Transparent evalInstrs.
     discriminate.
