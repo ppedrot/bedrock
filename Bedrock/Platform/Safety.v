@@ -181,7 +181,7 @@ Section OpSem.
 
   Lemma comeOnOut : forall P Q R,
     P * Q * R ===> Q * (P * R).
-    clear; sepLemma.
+    clear; admit; sepLemma.
   Qed.
 
   Lemma locals_mapped' : forall specs stn st vs ns sp P,
@@ -258,7 +258,7 @@ Section OpSem.
       (![array (toArray ns vs) sp * ([|NoDup ns|] *
         (sp ^+ $ (Datatypes.length ns * 4)) =?> res * P)]
       (stn0, st))).
-    generalize H; clear; intros; step auto_ext.
+    generalize H; clear; intros; admit; step auto_ext.
     eapply locals_mapped'; eauto.
   Qed.
 
